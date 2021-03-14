@@ -1,11 +1,11 @@
-import rtmidi
-from .components import ButtonFace, Led, Grid, Panel
-from .utils import MidiPort, MidiClient, SystemMidiPortParser, Interface, Mode, Layout
-from .midi_messages import SysExMessages
+import rtmidi as _rtmidi
+from ._components import ButtonFace, Led, Grid, Panel
+from ._utils import SystemMidiPortParser as _SystemMidiPortParser, MidiPort as _MidiPort, MidiClient as _MidiClient, Interface, Mode, Layout
+from .midi_messages import SysExMessages as _SysExMessages
 
-_midi_out = rtmidi.MidiOut()
+_midi_out = _rtmidi.MidiOut()
 _out_ports = _midi_out.get_ports()
-_midi_in = rtmidi.MidiIn()
+_midi_in = _rtmidi.MidiIn()
 _in_ports = _midi_in.get_ports()
 _launchpad_port_prefixes = ['Launchpad Mini MK3 MIDI']
 
@@ -66,15 +66,15 @@ class LaunchpadMiniMk3:
 
     @property
     def interface(self):
-        self.send_message(SysExMessages.Interfaces.READBACK)
+        self.send_message(_SysExMessages.Interfaces.READBACK)
         return Interface(self.poll_for_event())
 
     @interface.setter
     def interface(self, value):
         if value.lower() == Interface.MIDI:
-            self.send_message(SysExMessages.Interfaces.MIDI)
+            self.send_message(_SysExMessages.Interfaces.MIDI)
         elif value.lower() == Interface.DAW:
-            self.send_message(SysExMessages.Interfaces.DAW)
+            self.send_message(_SysExMessages.Interfaces.DAW)
         else:
             raise ValueError('Invalid interface set.')
 
@@ -88,43 +88,43 @@ class LaunchpadMiniMk3:
 
     @property
     def mode(self):
-        self.send_message(SysExMessages.Modes.READBACK)
+        self.send_message(_SysExMessages.Modes.READBACK)
         return Mode(self.poll_for_event())
 
     @mode.setter
     def mode(self, value):
         if value.lower() == Mode.LIVE:
-            self.send_message(SysExMessages.Modes.LIVE)
+            self.send_message(_SysExMessages.Modes.LIVE)
         elif value.lower() == Mode.PROG:
-            self.send_message(SysExMessages.Modes.PROG)
+            self.send_message(_SysExMessages.Modes.PROG)
         else:
             raise ValueError('Invalid mode set.')
 
     @property
     def layout(self):
-        self.send_message(SysExMessages.Layouts.READBACK)
+        self.send_message(_SysExMessages.Layouts.READBACK)
         return Layout(self.poll_for_event())
 
     @layout.setter
     def layout(self, value):
         if value.lower() == Layout.SESSION:
-            self.send_message(SysExMessages.Layouts.SESSION)
+            self.send_message(_SysExMessages.Layouts.SESSION)
         elif value.lower() == Layout.CUSTOM_1:
-            self.send_message(SysExMessages.Layouts.CUSTOM_1)
+            self.send_message(_SysExMessages.Layouts.CUSTOM_1)
         elif value.lower() == Layout.CUSTOM_2:
-            self.send_message(SysExMessages.Layouts.CUSTOM_2)
+            self.send_message(_SysExMessages.Layouts.CUSTOM_2)
         elif value.lower() == Layout.CUSTOM_3:
-            self.send_message(SysExMessages.Layouts.CUSTOM_3)
+            self.send_message(_SysExMessages.Layouts.CUSTOM_3)
         elif value.lower() == Layout.DAW_FADERS:
-            self.send_message(SysExMessages.Layouts.DAW_FADERS)
+            self.send_message(_SysExMessages.Layouts.DAW_FADERS)
         elif value.lower() == Layout.PROG:
-            self.send_message(SysExMessages.Layouts.PROG)
+            self.send_message(_SysExMessages.Layouts.PROG)
         else:
             raise ValueError('Invalid layout set.')
 
     def device_inquiry(self):
         self.mode = Mode.PROG
-        self.send_message(SysExMessages.DEVICE_INQUIRY)
+        self.send_message(_SysExMessages.DEVICE_INQUIRY)
         return self.poll_for_event()
 
 def find_launchpads():
@@ -132,11 +132,11 @@ def find_launchpads():
     found_launchpad_in_ports = [port for port in _in_ports if any(launchpad in port for launchpad in _launchpad_port_prefixes)] 
     found_midi_clients = {}
     for full_port_name in found_launchpad_out_ports:
-        client_name, port_name = SystemMidiPortParser.extract_names(full_port_name)
-        client_number, port_number = SystemMidiPortParser.extract_numbers(full_port_name)
-        midi_client = MidiClient(client_name, client_number)
+        client_name, port_name = _SystemMidiPortParser.extract_names(full_port_name)
+        client_number, port_number = _SystemMidiPortParser.extract_numbers(full_port_name)
+        midi_client = _MidiClient(client_name, client_number)
         port_index = _out_ports.index(full_port_name)
-        midi_port = MidiPort(port_name, port_number, port_index, full_port_name, direction=MidiPort.OUT, midi_out=_midi_out)
+        midi_port = _MidiPort(port_name, port_number, port_index, full_port_name, direction=_MidiPort.OUT, midi_out=_midi_out)
         midi_client.append_out_port(midi_port)
 
         if midi_client.client_number not in found_midi_clients:
@@ -146,11 +146,11 @@ def find_launchpads():
             existing_midi_client.append_out_port(midi_port)
 
     for full_port_name in found_launchpad_in_ports:
-        client_name, port_name = SystemMidiPortParser.extract_names(full_port_name)
-        client_number, port_number = SystemMidiPortParser.extract_numbers(full_port_name)
+        client_name, port_name = _SystemMidiPortParser.extract_names(full_port_name)
+        client_number, port_number = _SystemMidiPortParser.extract_numbers(full_port_name)
         port_index = _in_ports.index(full_port_name)
-        midi_client = MidiClient(client_name, client_number)
-        midi_port = MidiPort(port_name, port_number, port_index, full_port_name, midi_in=_midi_in, direction=MidiPort.IN)
+        midi_client = _MidiClient(client_name, client_number)
+        midi_port = _MidiPort(port_name, port_number, port_index, full_port_name, midi_in=_midi_in, direction=_MidiPort.IN)
         midi_client.append_in_port(midi_port)
 
         if midi_client.client_number not in found_midi_clients:
