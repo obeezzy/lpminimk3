@@ -1,5 +1,5 @@
-from utils import Interface
-from colors import ColorShade, ColorShadeStore, RgbColor
+from .utils import Interface
+from .colors import ColorShade, ColorShadeStore, RgbColor
 
 class Animable(object):
     def animate(self, animation, *, timeout=0):
