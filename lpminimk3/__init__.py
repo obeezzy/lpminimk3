@@ -1,7 +1,7 @@
 import rtmidi
-from components import ButtonFace, Led, Grid, Panel
-from utils import MidiPort, MidiClient, SystemMidiPortParser, Interface, Mode, Layout
-from midi_messages import SysExMessages
+from .components import ButtonFace, Led, Grid, Panel
+from .utils import MidiPort, MidiClient, SystemMidiPortParser, Interface, Mode, Layout
+from .midi_messages import SysExMessages
 
 _midi_out = rtmidi.MidiOut()
 _out_ports = _midi_out.get_ports()
