@@ -1,4 +1,4 @@
-from .utils import Interface
+from ._utils import Interface
 from .colors import ColorShade, ColorShadeStore, RgbColor
 
 class Animable(object):
@@ -61,7 +61,7 @@ class Led:
         if self._x < 0 and self._y < 0:
             self._determine_coordinates(name)
         self._determine_note_number(layout)
-        
+
     def _determine_coordinates(self, name):
         found = False
         for row, button_row in enumerate(self._button_names):
@@ -86,14 +86,14 @@ class Led:
         if not self._is_within_range():
             raise RuntimeError('LED out of range.')
         self._note_number = layout[self._x][self._y]
-        
+
     def _determine_bounds(self):
         if len(self._button_names) > 0:
             self._max_x = len(self._button_names[0])
             self._max_y = len(self._button_names)
         else:
             raise RuntimeError('No button names passed in.')
-        
+
     @property
     def id(self):
         if not self._is_within_range():
