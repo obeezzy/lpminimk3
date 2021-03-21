@@ -5,10 +5,14 @@ from ._utils import SystemMidiPortParser as _SystemMidiPortParser,\
                     Interface, Mode, Layout
 from .midi_messages import SysExMessages as _SysExMessages
 
-_midi_out = _MidiOut()
-_out_ports = _midi_out.get_ports()
-_midi_in = _MidiIn()
-_in_ports = _midi_in.get_ports()
+try:
+    _midi_out = _MidiOut()
+    _out_ports = _midi_out.get_ports()
+    _midi_in = _MidiIn()
+    _in_ports = _midi_in.get_ports()
+except:
+    print('Test mode activated.')
+
 _launchpad_port_prefixes = ['Launchpad Mini MK3 MIDI']
 
 
