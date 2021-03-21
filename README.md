@@ -1,4 +1,4 @@
-![CI](https://github.com/obeezzy/lpminimk3/actions/workflows/CI/main.yml/badge.svg?branch=main&event=push)
+![CI](https://github.com/obeezzy/lpminimk3/actions/workflows/CI/badge.svg?branch=main&event=push)
 
 # lpminimk3
 Python API for the [Launchpad Mini MK3](https://novationmusic.com/en/launch/launchpad-mini) with an object-oriented approach.
