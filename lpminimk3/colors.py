@@ -1,5 +1,6 @@
 import re
 
+
 class RgbColor:
     _MIN_HEX_LENGTH = 4
     _MAX_HEX_LENGTH = 7
@@ -7,11 +8,15 @@ class RgbColor:
     _MAX_COLOR_VALUE = 255
 
     def __init__(self, value):
-        if not isinstance(value, str) and not isinstance(value, tuple) and not isinstance(value, list):
+        if (not isinstance(value, str)
+            and not isinstance(value, tuple)
+                and not isinstance(value, list)):
             raise RuntimeError('RGB color must be str or tuple or list.')
-        if isinstance(value, str) and len(value) != RgbColor._MIN_HEX_LENGTH \
-                and len(value) != RgbColor._MAX_HEX_LENGTH:
-            raise RuntimeError('Only hex values in the #rgb and #rrggbb formats are accepted.')
+        if (isinstance(value, str)
+            and len(value) != RgbColor._MIN_HEX_LENGTH
+                and len(value) != RgbColor._MAX_HEX_LENGTH):
+            raise RuntimeError('Only hex values in the '
+                               '#rgb and #rrggbb formats are accepted.')
         self._parse(value)
 
     @staticmethod
@@ -59,6 +64,7 @@ class RgbColor:
     def __repr__(self):
         return 'RgbColor(r={}, g={}, b={})'.format(self.r, self.g, self.b)
 
+
 class ColorShade:
     MIN_COLOR_ID = 0
     MAX_COLOR_ID = 127
@@ -67,40 +73,44 @@ class ColorShade:
             '#b3b3b3',
             '#ffffff',
             '#ffb3b3',
-            '#ff6161', # 5
+            '#ff6161',  # 5
             '#dd6161',
             '#b36161',
             '#fff3d5',
             '#ffb361',
-            '#dd8c61', # 10
+            '#dd8c61',  # 10
             '#b37661',
             '#ffeea1',
             '#ffff61',
             '#dddd61',
-            '#b3b361', # 15
+            '#b3b361',  # 15
             '#ddffa1',
             '#a1dd61',
             '#81b361',
             '#c2ffb3',
-            '#c2ffb3', # 20
+            '#c2ffb3',  # 20
             '#61ff61',
             '#61dd61',
             '#61b361',
             '#c2ffc2',
-            '#61ff8c', # 25
+            '#61ff8c',  # 25
             '#61dd76',
             '#61b36b',
             '#c2ffcc',
             '#61ffcc',
-            '#61dda1', # 30
+            '#61dda1',  # 30
     ]
 
     def __init__(self, color_id, color_group):
         self._color_id = color_id
         self._color_group = color_group
 
+    @staticmethod
     def is_valid_id(value):
-        return True if value >= ColorShade.MIN_COLOR_ID and value <= ColorShade.MAX_COLOR_ID else False
+        return (True
+                if value >= ColorShade.MIN_COLOR_ID
+                and value <= ColorShade.MAX_COLOR_ID
+                else False)
 
     @property
     def hex(self):
@@ -115,7 +125,9 @@ class ColorShade:
         return self._color_group
 
     def __repr__(self):
-        return 'ColorShade(group={}, id={})'.format(self.color_group, self.color_id)
+        return ('ColorShade(group={}, id={})'
+                .format(self.color_group, self.color_id))
+
 
 class ColorPalette:
     class Red:
@@ -130,6 +142,7 @@ class ColorPalette:
         SHADE_9 = ColorShade(0x78, 'red')
         SHADE_10 = ColorShade(0x79, 'red')
         SHADE_11 = ColorShade(0x7f, 'red')
+
     class Orange:
         SHADE_1 = ColorShade(0x0a, 'orange')
         SHADE_2 = ColorShade(0x09, 'orange')
@@ -138,6 +151,7 @@ class ColorPalette:
         SHADE_5 = ColorShade(0x60, 'orange')
         SHADE_6 = ColorShade(0x6c, 'orange')
         SHADE_7 = ColorShade(0x7e, 'orange')
+
     class Yellow:
         SHADE_1 = ColorShade(0x08, 'yellow')
         SHADE_2 = ColorShade(0x0c, 'yellow')
@@ -159,6 +173,7 @@ class ColorPalette:
         SHADE_18 = ColorShade(0x71, 'yellow')
         SHADE_19 = ColorShade(0x7c, 'yellow')
         SHADE_20 = ColorShade(0x7d, 'yellow')
+
     class Blue:
         SHADE_1 = ColorShade(0x1d, 'blue')
         SHADE_2 = ColorShade(0x20, 'blue')
@@ -179,6 +194,7 @@ class ColorPalette:
         SHADE_17 = ColorShade(0x5a, 'blue')
         SHADE_18 = ColorShade(0x5b, 'blue')
         SHADE_19 = ColorShade(0x68, 'blue')
+
     class Green:
         SHADE_1 = ColorShade(0x10, 'green')
         SHADE_2 = ColorShade(0x11, 'green')
@@ -212,6 +228,7 @@ class ColorPalette:
         SHADE_30 = ColorShade(0x72, 'green')
         SHADE_31 = ColorShade(0x7a, 'green')
         SHADE_32 = ColorShade(0x7b, 'green')
+
     class Violet:
         SHADE_1 = ColorShade(0x2c, 'violet')
         SHADE_2 = ColorShade(0x2d, 'violet')
@@ -243,9 +260,11 @@ class ColorPalette:
         SHADE_28 = ColorShade(0x70, 'violet')
         SHADE_29 = ColorShade(0x73, 'violet')
         SHADE_30 = ColorShade(0x74, 'violet')
+
     class White:
         SHADE_1 = ColorShade(0x04, 'white')
         SHADE_2 = ColorShade(0x77, 'white')
+
     class Gray:
         SHADE_1 = ColorShade(0x01, 'gray')
         SHADE_2 = ColorShade(0x02, 'gray')
@@ -253,24 +272,30 @@ class ColorPalette:
         SHADE_4 = ColorShade(0x75, 'gray')
         SHADE_5 = ColorShade(0x76, 'gray')
 
+
 class ColorShadeStore:
-    COLOR_GROUPS = ['red', 'orange', 'yellow', 'green', 'blue', 'violet', 'white', 'gray']
-    COLOR_GROUP_SYMBOLS = ['r', 'o', 'y', 'g', 'b', 'v', 'w', 'z']
+    COLOR_GROUPS = ['red', 'orange', 'yellow', 'green',
+                    'blue', 'violet', 'white', 'gray']
+    COLOR_GROUP_SYMBOLS = ['r', 'o', 'y', 'g',
+                           'b', 'v', 'w', 'z']
 
     def __init__(self):
-        assert len(ColorShadeStore.COLOR_GROUPS) == len(ColorShadeStore.COLOR_GROUP_SYMBOLS), "len(COLOR_GROUPS) != len(COLOR_GROUP_SYMBOLS)"
+        assert len(ColorShadeStore.COLOR_GROUPS) == \
+                len(ColorShadeStore.COLOR_GROUP_SYMBOLS), \
+                "len(COLOR_GROUPS) != len(COLOR_GROUP_SYMBOLS)"
 
     def find(self, value):
         return self._find_shade(*self._parse(value))
 
     def _find_shade(self, color, color_shade_id):
         if not color:
-            raise RuntimeError('Expected color string, got "{}".'.format(color))
+            raise RuntimeError('Expected color string, got "{}".'
+                               .format(color))
 
         color_shade = None
         color_group = ColorPalette.__dict__[color.capitalize()]
         if color_shade_id:
-            shade_clause = 'SHADE_{}'.format(color_shade_id) 
+            shade_clause = 'SHADE_{}'.format(color_shade_id)
             if shade_clause in color_group.__dict__:
                 color_shade = color_group.__dict__[shade_clause]
         else:
@@ -283,7 +308,7 @@ class ColorShadeStore:
         return True if color else False
 
     def _color_from_symbol(self, symbol):
-        return ColorShadeStore.COLOR_GROUPS[ColorShadeStore.COLOR_GROUP_SYMBOLS.index(symbol)]
+        return ColorShadeStore.COLOR_GROUPS[ColorShadeStore.COLOR_GROUP_SYMBOLS.index(symbol)]  # noqa
 
     # Valid input: red, o, y2, green3
     def _parse(self, value):
@@ -294,8 +319,13 @@ class ColorShadeStore:
         if has_digit_suffix:
             match = re.match('([a-z]+)([0-9]+)', value.lower())
             if match and len(match.groups()) == 2:
-                color = match.group(1) if match.group(1) in ColorShadeStore.COLOR_GROUPS else None
-                color = self._color_from_symbol(match.group(1)) if not color and match.group(1) in ColorShadeStore.COLOR_GROUP_SYMBOLS else color
+                color = (match.group(1)
+                         if match.group(1) in ColorShadeStore.COLOR_GROUPS
+                         else None)
+                color = (self._color_from_symbol(match.group(1))
+                         if not color and match.group(1)
+                         in ColorShadeStore.COLOR_GROUP_SYMBOLS
+                         else color)
                 color_shade_id = int(match.group(2))
             else:
                 color = None
@@ -306,5 +336,5 @@ class ColorShadeStore:
         elif value.lower() in ColorShadeStore.COLOR_GROUP_SYMBOLS:
             color = self._color_from_symbol(value.lower())
             color_shade_id = 1
-        
+
         return (color, color_shade_id)

@@ -1,7 +1,8 @@
 from rtmidi import MidiIn, MidiOut
 import unittest
 from lpminimk3.__init__ import LaunchpadMiniMk3
-from lpminimk3._utils import MidiEvent, MidiClient, MidiPort, Interface, Mode, Layout
+from lpminimk3._utils import MidiEvent, MidiClient,\
+        MidiPort, Interface, Mode, Layout
 from lpminimk3.midi_messages import SysExMessages
 
 midi_out = MidiOut()
@@ -40,6 +41,7 @@ OUT_PORTS = {
             }
     }
 
+
 class VirtualMidiPort(MidiPort):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,8 +52,10 @@ class VirtualMidiPort(MidiPort):
     def poll_for_event(self, *args, **kwargs):
         return DUMMY_MIDI_EVENT
 
+
 class VirtualMidiClient(MidiClient):
     pass
+
 
 class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
     def __init__(self, *args, **kwargs):
@@ -59,7 +63,7 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
         self.sent_message = None
         self.returned_event = None
 
-    def send_message(self, message, *args, **kwargs):
+    def send_message(self, message, *args, **kwargs):  # noqa
         self.sent_message = message
         if self.sent_message == SysExMessages.Interfaces.MIDI:
             self.returned_event = MidiEvent(SysExMessages.Interfaces.MIDI, 0)
@@ -78,12 +82,13 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
         elif self.sent_message == SysExMessages.Layouts.CUSTOM_3:
             self.returned_event = MidiEvent(SysExMessages.Layouts.CUSTOM_3, 0)
         elif self.sent_message == SysExMessages.Layouts.DAW_FADERS:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.DAW_FADERS, 0)
+            self.returned_event = MidiEvent(SysExMessages.Layouts.DAW_FADERS, 0)  # noqa
         elif self.sent_message == SysExMessages.Layouts.PROG:
             self.returned_event = MidiEvent(SysExMessages.Layouts.PROG, 0)
         elif self.sent_message == SysExMessages.DEVICE_INQUIRY:
             self.returned_event = MidiEvent(SysExMessages.Modes.PROG, 0)
-        super().send_message(message, *args, **kwargs)
+        else:
+            super().send_message(message, *args, **kwargs)
 
     def poll_for_event(self, *args, **kwargs):
         if self.sent_message == SysExMessages.Interfaces.READBACK \
@@ -93,29 +98,34 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
             return self.returned_event
         return super().poll_for_event(*args, **kwargs)
 
+
 class TestMk3(unittest.TestCase):
     def _create_virtual_launchpad(self):
         midi_client = VirtualMidiClient(CLIENT_NAME, CLIENT_ID)
         self.daw_in_port = VirtualMidiPort(IN_PORTS['daw']['port_name'],
-                IN_PORTS['daw']['port_number'], 
-                IN_PORTS['daw']['port_index'], 
-                IN_PORTS['daw']['system_port_name'],
-                direction=VirtualMidiPort.IN, midi_in=midi_in)
+                                           IN_PORTS['daw']['port_number'],
+                                           IN_PORTS['daw']['port_index'],
+                                           IN_PORTS['daw']['system_port_name'],
+                                           direction=VirtualMidiPort.IN,
+                                           midi_in=midi_in)
         self.midi_in_port = VirtualMidiPort(IN_PORTS['midi']['port_name'],
-                IN_PORTS['midi']['port_number'], 
-                IN_PORTS['midi']['port_index'], 
-                IN_PORTS['midi']['system_port_name'],
-                direction=VirtualMidiPort.IN, midi_in=midi_in)
+                                            IN_PORTS['midi']['port_number'],
+                                            IN_PORTS['midi']['port_index'],
+                                            IN_PORTS['midi']['system_port_name'],  # noqa
+                                            direction=VirtualMidiPort.IN,
+                                            midi_in=midi_in)
         self.daw_out_port = VirtualMidiPort(OUT_PORTS['daw']['port_name'],
-                OUT_PORTS['daw']['port_number'], 
-                OUT_PORTS['daw']['port_index'], 
-                OUT_PORTS['daw']['system_port_name'],
-                direction=VirtualMidiPort.OUT, midi_out=midi_out)
+                                            OUT_PORTS['daw']['port_number'],
+                                            OUT_PORTS['daw']['port_index'],
+                                            OUT_PORTS['daw']['system_port_name'],  # noqa
+                                            direction=VirtualMidiPort.OUT,
+                                            midi_out=midi_out)
         self.midi_out_port = VirtualMidiPort(OUT_PORTS['midi']['port_name'],
-                OUT_PORTS['midi']['port_number'], 
-                OUT_PORTS['midi']['port_index'], 
-                OUT_PORTS['midi']['system_port_name'],
-                direction=VirtualMidiPort.OUT, midi_out=midi_out)
+                                             OUT_PORTS['midi']['port_number'],
+                                             OUT_PORTS['midi']['port_index'],
+                                             OUT_PORTS['midi']['system_port_name'],  # noqa
+                                             direction=VirtualMidiPort.OUT,
+                                             midi_out=midi_out)
 
         midi_client.append_out_port(self.daw_out_port)
         midi_client.append_out_port(self.midi_out_port)
@@ -143,21 +153,35 @@ class TestMk3(unittest.TestCase):
 
     def test_close(self):
         self.assertFalse(self.lp.is_open(), 'Launchpad ports already open.')
+
         self.lp.open()
         self.assertTrue(self.lp.is_open(), 'Failed to open launchpad ports.')
+
         self.lp.close()
         self.assertFalse(self.lp.is_open(), 'Failed to close launchpad ports.')
 
     def test_send_message(self):
         self.lp.open()
+
         self.lp.send_message(DUMMY_MIDI_MESSAGE, interface=Interface.MIDI)
-        self.assertEqual(self.lp.midi_out_port.sent_message, DUMMY_MIDI_MESSAGE, 'MIDI message mismatch.')
-        self.lp.send_message(DUMMY_MIDI_MESSAGE, interface=Interface.DAW)
-        self.assertEqual(self.lp.daw_out_port.sent_message, DUMMY_MIDI_MESSAGE, 'MIDI message mismatch.')
+        self.assertEqual(self.lp.midi_out_port.sent_message,
+                         DUMMY_MIDI_MESSAGE,
+                         'MIDI message mismatch.')
+
+        self.lp.send_message(DUMMY_MIDI_MESSAGE,
+                             interface=Interface.DAW)
+        self.assertEqual(self.lp.daw_out_port.sent_message,
+                         DUMMY_MIDI_MESSAGE, 'MIDI message mismatch.')
+
         self.lp.send_message(DUMMY_MIDI_MESSAGE, interface='midi')
-        self.assertEqual(self.lp.midi_out_port.sent_message, DUMMY_MIDI_MESSAGE, 'MIDI message mismatch.')
+        self.assertEqual(self.lp.midi_out_port.sent_message,
+                         DUMMY_MIDI_MESSAGE,
+                         'MIDI message mismatch.')
+
         self.lp.send_message(DUMMY_MIDI_MESSAGE, interface='daw')
-        self.assertEqual(self.lp.daw_out_port.sent_message, DUMMY_MIDI_MESSAGE, 'MIDI message mismatch.')
+        self.assertEqual(self.lp.daw_out_port.sent_message,
+                         DUMMY_MIDI_MESSAGE,
+                         'MIDI message mismatch.')
         with self.assertRaises(RuntimeError):
             self.lp.send_message(DUMMY_MIDI_MESSAGE, interface=None)
         with self.assertRaises(RuntimeError):
@@ -165,41 +189,68 @@ class TestMk3(unittest.TestCase):
 
     def test_poll_for_event(self):
         self.lp.open()
-        self.assertEqual(self.lp.poll_for_event(interface=Interface.MIDI), DUMMY_MIDI_EVENT, 'MidiEvent mismatch.')
-        self.assertEqual(self.lp.poll_for_event(interface=Interface.DAW), DUMMY_MIDI_EVENT, 'MidiEvent mismatch.')
+        self.assertEqual(self.lp.poll_for_event(interface=Interface.MIDI),
+                         DUMMY_MIDI_EVENT,
+                         'MidiEvent mismatch.')
+        self.assertEqual(self.lp.poll_for_event(interface=Interface.DAW),
+                         DUMMY_MIDI_EVENT,
+                         'MidiEvent mismatch.')
         with self.assertRaises(RuntimeError):
             self.lp.poll_for_event(interface=None)
 
     def test_id(self):
         self.lp.open()
-        self.assertEqual(self.lp.id, CLIENT_ID, 'Launchpad ID mismatch.')
+        self.assertEqual(self.lp.id,
+                         CLIENT_ID,
+                         'Launchpad ID mismatch.')
 
     def test_daw_in_port(self):
         self.lp.open()
-        self.assertEqual(self.lp.daw_in_port, self.daw_in_port, 'DAW-in port mismatch.')
+        self.assertEqual(self.lp.daw_in_port,
+                         self.daw_in_port,
+                         'DAW-in port mismatch.')
 
     def test_daw_out_port(self):
         self.lp.open()
-        self.assertEqual(self.lp.daw_out_port, self.daw_out_port, 'DAW-out port mismatch.')
+        self.assertEqual(self.lp.daw_out_port,
+                         self.daw_out_port,
+                         'DAW-out port mismatch.')
 
     def test_midi_in_port(self):
         self.lp.open()
-        self.assertEqual(self.lp.midi_in_port, self.midi_in_port, 'MIDI-in port mismatch.')
+        self.assertEqual(self.lp.midi_in_port,
+                         self.midi_in_port,
+                         'MIDI-in port mismatch.')
 
     def test_midi_out_port(self):
         self.lp.open()
-        self.assertEqual(self.lp.midi_out_port, self.midi_out_port, 'MIDI-out port mismatch.')
+        self.assertEqual(self.lp.midi_out_port,
+                         self.midi_out_port,
+                         'MIDI-out port mismatch.')
 
     def test_interface(self):
         self.lp.open()
+
         self.lp.interface = Interface.DAW
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Interfaces.DAW, 'Interface mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Interfaces.DAW,
+                         'Interface mismatch.')
+
         self.lp.interface = Interface.MIDI
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Interfaces.MIDI, 'Interface mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Interfaces.MIDI,
+                         'Interface mismatch.')
+
         self.lp.interface = 'daw'
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Interfaces.DAW, 'Interface mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Interfaces.DAW,
+                         'Interface mismatch.')
+
         self.lp.interface = 'midi'
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Interfaces.MIDI, 'Interface mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Interfaces.MIDI,
+                         'Interface mismatch.')
+
         with self.assertRaises(ValueError):
             self.lp.interface = ''
         with self.assertRaises(ValueError):
@@ -207,14 +258,27 @@ class TestMk3(unittest.TestCase):
 
     def test_mode(self):
         self.lp.open()
+
         self.lp.mode = Mode.LIVE
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Modes.LIVE, 'Mode mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Modes.LIVE,
+                         'Mode mismatch.')
+
         self.lp.mode = Mode.PROG
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Modes.PROG, 'Mode mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Modes.PROG,
+                         'Mode mismatch.')
+
         self.lp.mode = 'live'
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Modes.LIVE, 'Mode mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Modes.LIVE,
+                         'Mode mismatch.')
+
         self.lp.mode = 'prog'
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Modes.PROG, 'Mode mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Modes.PROG,
+                         'Mode mismatch.')
+
         with self.assertRaises(ValueError):
             self.lp.mode = ''
         with self.assertRaises(ValueError):
@@ -222,31 +286,67 @@ class TestMk3(unittest.TestCase):
 
     def test_layout(self):
         self.lp.open()
+
         self.lp.layout = Layout.SESSION
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.SESSION, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.SESSION,
+                         'Layout mismatch.')
+
         self.lp.layout = Layout.CUSTOM_1
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.CUSTOM_1, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.CUSTOM_1,
+                         'Layout mismatch.')
+
         self.lp.layout = Layout.CUSTOM_2
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.CUSTOM_2, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.CUSTOM_2,
+                         'Layout mismatch.')
+
         self.lp.layout = Layout.CUSTOM_3
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.CUSTOM_3, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.CUSTOM_3,
+                         'Layout mismatch.')
+
         self.lp.layout = Layout.DAW_FADERS
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.DAW_FADERS, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.DAW_FADERS,
+                         'Layout mismatch.')
+
         self.lp.layout = Layout.PROG
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.PROG, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.PROG,
+                         'Layout mismatch.')
 
         self.lp.layout = 'session'
-        self.assertEqual(self.lp.interface.midi_event.message, SysExMessages.Layouts.SESSION, 'Layout mismatch.')
+        self.assertEqual(self.lp.interface.midi_event.message,
+                         SysExMessages.Layouts.SESSION,
+                         'Layout mismatch.')
+
         self.lp.layout = 'custom_1'
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.CUSTOM_1, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.CUSTOM_1,
+                         'Layout mismatch.')
+
         self.lp.layout = 'custom_2'
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.CUSTOM_2, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.CUSTOM_2,
+                         'Layout mismatch.')
+
         self.lp.layout = 'custom_3'
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.CUSTOM_3, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.CUSTOM_3,
+                         'Layout mismatch.')
+
         self.lp.layout = 'daw_faders'
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.DAW_FADERS, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.DAW_FADERS,
+                         'Layout mismatch.')
+
         self.lp.layout = 'prog'
-        self.assertEqual(self.lp.layout.midi_event.message, SysExMessages.Layouts.PROG, 'Layout mismatch.')
+        self.assertEqual(self.lp.layout.midi_event.message,
+                         SysExMessages.Layouts.PROG,
+                         'Layout mismatch.')
+
         with self.assertRaises(ValueError):
             self.lp.mode = ''
         with self.assertRaises(ValueError):
@@ -254,7 +354,10 @@ class TestMk3(unittest.TestCase):
 
     def test_device_inquiry(self):
         self.lp.open()
-        self.assertEqual(self.lp.device_inquiry().message, SysExMessages.Modes.PROG, 'Device inquiry mismatch.')
+        self.assertEqual(self.lp.device_inquiry().message,
+                         SysExMessages.Modes.PROG,
+                         'Device inquiry mismatch.')
+
 
 if __name__ == '__main__':
     unittest.main()

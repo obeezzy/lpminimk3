@@ -1,9 +1,10 @@
-from ._utils import Interface
 from .colors import ColorShade, ColorShadeStore, RgbColor
+
 
 class Animable:
     def animate(self, animation, *, timeout=0):
         pass
+
 
 class ButtonFace:
     UP = 'up'
@@ -24,6 +25,7 @@ class ButtonFace:
     SCENE_LAUNCH_7 = 'scene_launch_7'
     STOP_SOLO_MUTE = 'stop_solo_mute'
 
+
 class Led:
     OFF = 'off'
     STATIC = 'static'
@@ -43,7 +45,8 @@ class Led:
             'rgb': 0x03
     }
 
-    def __init__(self, *, launchpad, button_names, layout, x=-1, y=-1, name='', mode=STATIC):
+    def __init__(self, *, launchpad, button_names,
+                 layout, x=-1, y=-1, name='', mode=STATIC):
         self._launchpad = launchpad
         self._button_names = button_names
         name = x if isinstance(x, str) and name == '' else name
@@ -54,9 +57,10 @@ class Led:
         self._max_x = -1
         self._max_y = -1
         self._note_number = -1
-        self._initialize(name, layout) # FIXME: Order of function calls matter
+        self._initialize(name, layout)  # FIXME: Order of function calls matter
 
-    def _initialize(self, name, layout): # FIXME: Order of function calls matter
+    # FIXME: Order of function calls matter
+    def _initialize(self, name, layout):
         self._determine_bounds()
         if self._x < 0 and self._y < 0:
             self._determine_coordinates(name)
@@ -71,8 +75,9 @@ class Led:
                     self._y = column
                     found = True
                     break
-                elif name.lower() in button_name \
-                        and name.lower() in ButtonFace.STOP_SOLO_MUTE.split('_'):
+                elif (name.lower() in button_name
+                        and name.lower()
+                        in ButtonFace.STOP_SOLO_MUTE.split('_')):
                     self._x = row
                     self._y = column
                     found = True
@@ -133,11 +138,15 @@ class Led:
                 and not ColorShadeStore().contains(value)
                 and not RgbColor.is_valid(value))
                 or ((isinstance(value, tuple) or isinstance(value, list))
-                        and not RgbColor.is_valid(value))):
+                    and not RgbColor.is_valid(value))):
             raise RuntimeError('Invalid color.')
         elif RgbColor.is_valid(value):
             rgb_color = RgbColor(value)
-            message = self._colorspec_message(self._LIGHTING_TYPES['rgb'], self._note_number, rgb_color.r, rgb_color.g, rgb_color.b)
+            message = self._colorspec_message(self._LIGHTING_TYPE['rgb'],
+                                              self._note_number,
+                                              rgb_color.r,
+                                              rgb_color.g,
+                                              rgb_color.b)
             self.launchpad.send_message(message)
         else:
             color_id = ColorShadeStore().find(value).color_id \
@@ -145,15 +154,18 @@ class Led:
                     else value
             color_id = value if ColorShade.is_valid_id(value) else None
             if not color_id:
-                raise RuntimeError('Color ID values must be between 0 and 127.')
+                raise RuntimeError('Color ID values must be between 0 and 127.')  # noqa
             else:
-                self.launchpad.send_message([self._LIGHTING_MODE[self._mode], self._note_number, color_id])
+                self.launchpad.send_message([self._LIGHTING_MODE[self._mode],
+                                            self._note_number, color_id])
 
     def reset(self):
-        self.launchpad.send_message([self._LIGHTING_MODE[Led.OFF], self._note_number, 0x0])
+        self.launchpad.send_message([self._LIGHTING_MODE[Led.OFF],
+                                    self._note_number, 0x0])
 
     def _colorspec_message(self, lighting_type, led_index, *lighting_data):
-        return [0xf0, 0x00,0x20, 0x29, 0x02, 0x0d, 0x03, lighting_type, led_index] + list(lighting_data) + [0xf7]
+        return [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03,
+                lighting_type, led_index] + list(lighting_data) + [0xf7]
 
     def _is_within_range(self):
         return self._x >= 0 \
@@ -163,6 +175,7 @@ class Led:
 
     def __repr__(self):
         return 'Led(x={}, y={})'.format(self.x, self.y)
+
 
 class Panel(Animable):
     PROG = 'prog'
@@ -190,15 +203,15 @@ class Panel(Animable):
             [0x24, 0x25, 0x26, 0x27, 0x44, 0x45, 0x46, 0x47, 0x13]
     ]
     _BUTTON_NAMES = [
-            ['up', 'down', 'left', 'right', 'session', 'drums', 'keys', 'user', 'logo'],
-            ['0x0', '0x1', '0x2', '0x3', '0x4', '0x5', '0x6', '0x7', 'scene_launch_1'],
-            ['1x0', '1x1', '1x2', '1x3', '1x4', '1x5', '1x6', '1x7', 'scene_launch_2'],
-            ['2x0', '2x1', '2x2', '2x3', '2x4', '2x5', '2x6', '2x7', 'scene_launch_3'],
-            ['3x0', '3x1', '3x2', '3x3', '3x4', '3x5', '3x6', '3x7', 'scene_launch_4'],
-            ['4x0', '4x1', '4x2', '4x3', '4x4', '4x5', '4x6', '4x7', 'scene_launch_5'],
-            ['5x0', '5x1', '5x2', '5x3', '5x4', '5x5', '5x6', '5x7', 'scene_launch_6'],
-            ['6x0', '6x1', '6x2', '6x3', '6x4', '6x5', '6x6', '6x7', 'scene_launch_7'],
-            ['7x0', '7x1', '7x2', '7x3', '7x4', '7x5', '7x6', '7x7', 'stop_solo_mute']
+            ['up', 'down', 'left', 'right', 'session', 'drums', 'keys', 'user', 'logo'],  # noqa
+            ['0x0', '0x1', '0x2', '0x3', '0x4', '0x5', '0x6', '0x7', 'scene_launch_1'],  # noqa
+            ['1x0', '1x1', '1x2', '1x3', '1x4', '1x5', '1x6', '1x7', 'scene_launch_2'],  # noqa
+            ['2x0', '2x1', '2x2', '2x3', '2x4', '2x5', '2x6', '2x7', 'scene_launch_3'],  # noqa
+            ['3x0', '3x1', '3x2', '3x3', '3x4', '3x5', '3x6', '3x7', 'scene_launch_4'],  # noqa
+            ['4x0', '4x1', '4x2', '4x3', '4x4', '4x5', '4x6', '4x7', 'scene_launch_5'],  # noqa
+            ['5x0', '5x1', '5x2', '5x3', '5x4', '5x5', '5x6', '5x7', 'scene_launch_6'],  # noqa
+            ['6x0', '6x1', '6x2', '6x3', '6x4', '6x5', '6x6', '6x7', 'scene_launch_7'],  # noqa
+            ['7x0', '7x1', '7x2', '7x3', '7x4', '7x5', '7x6', '7x7', 'stop_solo_mute']   # noqa
     ]
 
     def __init__(self, launchpad):
@@ -218,11 +231,20 @@ class Panel(Animable):
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
         if layout == Panel.CUSTOM:
-            return Led(launchpad=self._launchpad, button_names=Panel._BUTTON_NAMES, layout=Panel._CUSTOM_MODE_MIDI_LAYOUT, x=x, y=y, name=name, mode=mode)
-        return Led(launchpad=self._launchpad, button_names=Panel._BUTTON_NAMES, layout=Panel._PROG_MODE_MIDI_LAYOUT, x=x, y=y, name=name, mode=mode)
+            return Led(launchpad=self._launchpad,
+                       button_names=Panel._BUTTON_NAMES,
+                       layout=Panel._CUSTOM_MODE_MIDI_LAYOUT,
+                       x=x, y=y,
+                       name=name, mode=mode)
+        return Led(launchpad=self._launchpad,
+                   button_names=Panel._BUTTON_NAMES,
+                   layout=Panel._PROG_MODE_MIDI_LAYOUT,
+                   x=x, y=y,
+                   name=name, mode=mode)
 
     def __repr__(self):
         return 'Panel({}x{})'.format(self.max_x, self.max_y)
+
 
 class Grid(Animable):
     PROG = 'prog'
@@ -275,8 +297,15 @@ class Grid(Animable):
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
         if layout == Grid.CUSTOM:
-            return Led(launchpad=self._launchpad, button_names=Grid._BUTTON_NAMES, layout=Grid._CUSTOM_MODE_MIDI_LAYOUT, x=x, y=y, name=name, mode=mode)
-        return Led(launchpad=self._launchpad, button_names=Grid._BUTTON_NAMES, layout=Grid._PROG_MODE_MIDI_LAYOUT, x=x, y=y, name=name, mode=mode)
+            return Led(launchpad=self._launchpad,
+                       button_names=Grid._BUTTON_NAMES,
+                       layout=Grid._CUSTOM_MODE_MIDI_LAYOUT,
+                       x=x, y=y,
+                       name=name, mode=mode)
+        return Led(launchpad=self._launchpad,
+                   button_names=Grid._BUTTON_NAMES,
+                   layout=Grid._PROG_MODE_MIDI_LAYOUT,
+                   x=x, y=y, name=name, mode=mode)
 
     def __repr__(self):
         return 'Grid({}x{})'.format(self.max_x, self.max_y)
