@@ -4,7 +4,7 @@ import time
 _MIDI_MESSAGE_LENGTH = 9
 
 class MidiEvent:
-    def __init__(self, message, deltatime):
+    def __init__(self, message, deltatime=0):
         self._message = message
         self._deltatime = deltatime
 
@@ -24,22 +24,23 @@ class MidiPort:
     IN = 'in'
     DEFAULT_CLIENT_NAME = 'lpminimk3'
 
-    def __init__(self, port_name, port_number, port_index, full_port_name, *, direction, midi_in=None, midi_out=None):
+    def __init__(self, port_name, port_number, port_index, system_port_name, *, direction, midi_in=None, midi_out=None, virtual=False):
         self._port_name = port_name
         self._port_number = port_number
         self._port_index = port_index
-        self._full_port_name = full_port_name
+        self._system_port_name = system_port_name
         self._midi_in = midi_in
         self._midi_out = midi_out
         self._direction = direction
+        self._virtual = virtual
         if midi_in:
             midi_in.ignore_types(sysex=False, timing=False, active_sense=True)
 
     def __eq__(self, other):
-        return self.full_port_name == other.full_port_name
+        return self.system_port_name == other.system_port_name
 
     def __repr__(self):
-        return 'MidiPort(name={}, number={}, index={})'.format(self.port_name, self.port_number, self.port_index, self.full_port_name)
+        return 'MidiPort(name={}, number={}, index={})'.format(self.port_name, self.port_number, self.port_index, self.system_port_name)
 
     def __exit__(self):
         self.close()
@@ -57,8 +58,8 @@ class MidiPort:
         return self._port_index
 
     @property
-    def full_port_name(self):
-        return self._full_port_name
+    def system_port_name(self):
+        return self._system_port_name
 
     @property
     def midi_in_handle(self):
@@ -77,10 +78,16 @@ class MidiPort:
 
     def open(self):
         if self._direction == MidiPort.OUT and not self._midi_out.is_port_open():
-            self._midi_out.open_port(self.port_index, MidiPort.OUT)
+            if self._virtual:
+                self._midi_out.open_virtual_port(self._system_port_name)
+            else:
+                self._midi_out.open_port(self.port_index, MidiPort.OUT)
             self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
         elif self._direction == MidiPort.IN and not self._midi_in.is_port_open():
-            self._midi_in.open_port(self.port_index, MidiPort.IN)
+            if self._virtual:
+                self._midi_in.open_virtual_port(self._system_port_name)
+            else:
+                self._midi_in.open_port(self.port_index, MidiPort.IN)
             self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
@@ -131,12 +138,16 @@ class Interface:
 
     def __init__(self, midi_event):
         if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
-            raise RuntimeError('Unexpected MIDI message length.')
+            raise RuntimeError('Unexpected MIDI message length; expected {}, got {}.'.format(_MIDI_MESSAGE_LENGTH, len(midi_event.message)))
         self._midi_event = midi_event
         midi_value = midi_event.message[Interface.READBACK_POSITION]
         self._interface = Interface.MIDI \
                 if midi_value == Interface.MidiWord.MIDI \
                 else Interface.DAW
+
+    @property
+    def midi_event(self):
+        return self._midi_event
 
     def __repr__(self):
         return 'Interface()' if self._interface is None else 'Interface(\'Interface.{}\')'.format(self._interface.upper())
@@ -152,12 +163,16 @@ class Mode:
 
     def __init__(self, midi_event):
         if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
-            raise RuntimeError('Unexpected MIDI message length.')
+            raise RuntimeError('Unexpected MIDI message length; expected {}, got {}.'.format(_MIDI_MESSAGE_LENGTH, len(midi_event.message)))
         self._midi_event = midi_event
         midi_value = midi_event.message[Mode.READBACK_POSITION]
         self._mode = Mode.LIVE \
                 if midi_value == Mode.MidiWord.LIVE \
                 else Mode.PROG
+
+    @property
+    def midi_event(self):
+        return self._midi_event
 
     def __repr__(self):
         return 'Mode()' if self._mode is None else 'Mode(\'Mode.{}\')'.format(self._mode.upper())
@@ -181,7 +196,7 @@ class Layout:
 
     def __init__(self, midi_event):
         if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
-            raise RuntimeError('Unexpected MIDI message length.')
+            raise RuntimeError('Unexpected MIDI message length; expected {}, got {}.'.format(_MIDI_MESSAGE_LENGTH, len(midi_event.message)))
         self._midi_event = midi_event
         midi_value = midi_event.message[Layout.READBACK_POSITION]
         if midi_value == Layout.MidiWord.SESSION:
@@ -194,8 +209,12 @@ class Layout:
             self._layout = Layout.CUSTOM_3
         elif midi_value == Layout.MidiWord.DAW_FADERS:
             self._layout = Layout.DAW_FADERS
-        elif midi_value == Layout.MidiWord.PROG:
+        else:
             self._layout = Layout.PROG
+
+    @property
+    def midi_event(self):
+        return self._midi_event
 
     def __repr__(self):
         return 'Layout()' if self._layout is None else 'Layout(\'Layout.{}\')'.format(self._layout.upper())
@@ -291,10 +310,10 @@ class MidiClient:
 
 class SystemMidiPortParser:
     @staticmethod
-    def extract_names(full_port_name):
+    def extract_names(system_port_name):
         client_name = ''
         port_name = ''
-        tokens = full_port_name.split(' ')[::-1]
+        tokens = system_port_name.split(' ')[::-1]
         tokens.pop(0) # Remove port pair e.g. '36:0'
         name_pair = ' '.join(tokens[::-1])
         if len(name_pair.split(':')) == 2:
@@ -303,7 +322,7 @@ class SystemMidiPortParser:
         return client_name, port_name
 
     @staticmethod
-    def extract_numbers(full_port_name):
-        client_number = int(full_port_name.split(' ')[::-1][0].split(':')[0])
-        port_number = int(full_port_name.split(' ')[::-1][0].split(':')[1])
+    def extract_numbers(system_port_name):
+        client_number = int(system_port_name.split(' ')[::-1][0].split(':')[0])
+        port_number = int(system_port_name.split(' ')[::-1][0].split(':')[1])
         return client_number, port_number
