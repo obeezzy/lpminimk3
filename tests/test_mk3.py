@@ -1,17 +1,20 @@
-from rtmidi import MidiIn, MidiOut
+from rtmidi import MidiIn, MidiOut, API_RTMIDI_DUMMY
 import unittest
 from lpminimk3.__init__ import LaunchpadMiniMk3
 from lpminimk3._utils import MidiEvent, MidiClient,\
         MidiPort, Interface, Mode, Layout
 from lpminimk3.midi_messages import SysExMessages
 
-midi_out = MidiOut()
-midi_in = MidiIn()
 
 CLIENT_NAME = 'Launchpad Mini MK3'
+CLIENT_ID = 36
+
+midi_out = MidiOut(API_RTMIDI_DUMMY, CLIENT_NAME)
+midi_in = MidiIn(API_RTMIDI_DUMMY, CLIENT_NAME)
+
 DUMMY_MIDI_MESSAGE = [0x90, 0x90, 0x90]
 DUMMY_MIDI_EVENT = MidiEvent(DUMMY_MIDI_MESSAGE, 0)
-CLIENT_ID = 36
+
 IN_PORTS = {
         'daw': {
             'port_name': 'Launchpad Mini MK3 MIDI 1',
