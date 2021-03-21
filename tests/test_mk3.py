@@ -1,17 +1,16 @@
-from rtmidi import MidiIn, MidiOut
+from tests.rtmidi_dummy import MidiIn, MidiOut, API_RTMIDI_DUMMY
 import unittest
 from lpminimk3.__init__ import LaunchpadMiniMk3
 from lpminimk3._utils import MidiEvent, MidiClient,\
-        MidiPort, Interface, Mode, Layout
+                             MidiPort, Interface, Mode, Layout
 from lpminimk3.midi_messages import SysExMessages
 
-midi_out = MidiOut()
-midi_in = MidiIn()
-
 CLIENT_NAME = 'Launchpad Mini MK3'
+CLIENT_ID = 36
+
 DUMMY_MIDI_MESSAGE = [0x90, 0x90, 0x90]
 DUMMY_MIDI_EVENT = MidiEvent(DUMMY_MIDI_MESSAGE, 0)
-CLIENT_ID = 36
+
 IN_PORTS = {
         'daw': {
             'port_name': 'Launchpad Mini MK3 MIDI 1',
@@ -101,7 +100,10 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
 
 class TestMk3(unittest.TestCase):
     def _create_virtual_launchpad(self):
+        midi_out = MidiOut(API_RTMIDI_DUMMY, CLIENT_NAME)
+        midi_in = MidiIn(API_RTMIDI_DUMMY, CLIENT_NAME)
         midi_client = VirtualMidiClient(CLIENT_NAME, CLIENT_ID)
+
         self.daw_in_port = VirtualMidiPort(IN_PORTS['daw']['port_name'],
                                            IN_PORTS['daw']['port_number'],
                                            IN_PORTS['daw']['port_index'],
@@ -142,23 +144,30 @@ class TestMk3(unittest.TestCase):
             self.lp.close()
 
     def test_open_midi_interface(self):
-        self.assertFalse(self.lp.is_open(), 'Launchpad ports already open.')
+        self.assertFalse(self.lp.is_open(),
+                         'Launchpad ports already open.')
         self.lp.open(interface=Interface.MIDI)
-        self.assertTrue(self.lp.is_open(), 'Failed to open launchpad ports.')
+        self.assertTrue(self.lp.is_open(),
+                        'Failed to open launchpad ports.')
 
     def test_open_daw_interface(self):
-        self.assertFalse(self.lp.is_open(), 'Launchpad ports already open.')
+        self.assertFalse(self.lp.is_open(),
+                         'Launchpad ports already open.')
         self.lp.open(interface=Interface.DAW)
-        self.assertTrue(self.lp.is_open(), 'Failed to open launchpad ports.')
+        self.assertTrue(self.lp.is_open(),
+                        'Failed to open launchpad ports.')
 
     def test_close(self):
-        self.assertFalse(self.lp.is_open(), 'Launchpad ports already open.')
+        self.assertFalse(self.lp.is_open(),
+                         'Launchpad ports already open.')
 
         self.lp.open()
-        self.assertTrue(self.lp.is_open(), 'Failed to open launchpad ports.')
+        self.assertTrue(self.lp.is_open(),
+                        'Failed to open launchpad ports.')
 
         self.lp.close()
-        self.assertFalse(self.lp.is_open(), 'Failed to close launchpad ports.')
+        self.assertFalse(self.lp.is_open(),
+                         'Failed to close launchpad ports.')
 
     def test_send_message(self):
         self.lp.open()
