@@ -308,8 +308,7 @@ class ColorShadeStore:
         return True if color else False
 
     def _color_from_symbol(self, symbol):
-        return ColorShadeStore.COLOR_GROUPS[
-                ColorShadeStore.COLOR_GROUP_SYMBOLS.index(symbol)]
+        return ColorShadeStore.COLOR_GROUPS[ColorShadeStore.COLOR_GROUP_SYMBOLS.index(symbol)]  # noqa
 
     # Valid input: red, o, y2, green3
     def _parse(self, value):
