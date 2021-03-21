@@ -1,5 +1,6 @@
 API_RTMIDI_DUMMY = 5
 
+
 class MidiIn:
     def __init__(self, api=API_RTMIDI_DUMMY, client_name=None):
         self._api = api
