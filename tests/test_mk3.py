@@ -1,4 +1,4 @@
-from rtmidi import MidiIn, MidiOut, API_RTMIDI_DUMMY
+from tests.rtmidi_dummy import MidiIn, MidiOut, API_RTMIDI_DUMMY
 import unittest
 from lpminimk3.__init__ import LaunchpadMiniMk3
 from lpminimk3._utils import MidiEvent, MidiClient,\
