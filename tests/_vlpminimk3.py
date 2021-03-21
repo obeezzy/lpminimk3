@@ -1,7 +1,7 @@
 from tests._rtmidi_dummy import MidiIn, MidiOut, API_RTMIDI_DUMMY
 from lpminimk3.__init__ import LaunchpadMiniMk3
 from lpminimk3._utils import MidiEvent, MidiClient,\
-                             MidiPort, Interface, Mode, Layout
+                             MidiPort
 from lpminimk3.midi_messages import SysExMessages
 
 CLIENT_NAME = 'Launchpad Mini MK3'
@@ -95,6 +95,7 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
                 or self.sent_message == SysExMessages.DEVICE_INQUIRY:
             return self.returned_event
         return super().poll_for_event(*args, **kwargs)
+
 
 def create_virtual_launchpad():
     midi_out = MidiOut(API_RTMIDI_DUMMY, CLIENT_NAME)

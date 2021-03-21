@@ -1,12 +1,6 @@
 import unittest
-from lpminimk3.__init__ import ButtonFace
-from tests._vlpminimk3 import VirtualLaunchpadMiniMk3,\
-                              VirtualMidiClient,\
-                              VirtualMidiPort,\
-                              DUMMY_MIDI_MESSAGE,\
-                              DUMMY_MIDI_EVENT,\
-                              CLIENT_ID,\
-                              create_virtual_launchpad
+from tests._vlpminimk3 import create_virtual_launchpad
+
 
 class TestGrid(unittest.TestCase):
     def setUp(self):
@@ -428,12 +422,13 @@ class TestGrid(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.lp.grid.led('')
         with self.assertRaises(ValueError):
-            self.lp.grid.led('s') 
+            self.lp.grid.led('s')
 
     def test_led_reset(self):
         self.lp.open()
         self.lp.grid.led('0x0').color = 1
         self.lp.grid.led('0x0').reset()
+
 
 if __name__ == '__main__':
     unittest.main()

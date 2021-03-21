@@ -1,13 +1,11 @@
 import unittest
-from lpminimk3._utils import MidiEvent, Interface, Mode, Layout
+from lpminimk3._utils import Interface, Mode, Layout
 from lpminimk3.midi_messages import SysExMessages
-from tests._vlpminimk3 import VirtualLaunchpadMiniMk3,\
-                              VirtualMidiClient,\
-                              VirtualMidiPort,\
-                              DUMMY_MIDI_MESSAGE,\
+from tests._vlpminimk3 import DUMMY_MIDI_MESSAGE,\
                               DUMMY_MIDI_EVENT,\
                               CLIENT_ID,\
                               create_virtual_launchpad
+
 
 class TestMk3(unittest.TestCase):
     def setUp(self):
