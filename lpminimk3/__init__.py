@@ -1,11 +1,9 @@
 from rtmidi import MidiOut as _MidiOut, MidiIn as _MidiIn
-from ._components import Grid, Panel
+from ._components import Grid, Panel, Led, ButtonFace  # noqa
 from ._utils import SystemMidiPortParser as _SystemMidiPortParser,\
                     MidiPort as _MidiPort, MidiClient as _MidiClient, \
                     Interface, Mode, Layout
 from .midi_messages import SysExMessages as _SysExMessages
-
-
 
 
 class LaunchpadMiniMk3:
