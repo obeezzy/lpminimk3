@@ -12,7 +12,7 @@ class ButtonFace:
     LEFT = 'left'
     RIGHT = 'right'
     SESSION = 'session'
-    DRUM = 'drum'
+    DRUMS = 'drums'
     KEYS = 'keys'
     USER = 'user'
     LOGO = 'logo'
@@ -68,8 +68,8 @@ class Led:
 
     def _determine_coordinates(self, name):
         found = False
-        for row, button_row in enumerate(self._button_names):
-            for column, button_name in enumerate(button_row):
+        for column, button_column in enumerate(self._button_names):
+            for row, button_name in enumerate(button_column):
                 if button_name == name.lower():
                     self._x = row
                     self._y = column
@@ -85,7 +85,7 @@ class Led:
             if found:
                 break
         if self._x < 0 or self._y < 0:
-            raise RuntimeError('Invalid name set.')
+            raise ValueError('Invalid name set.')
 
     def _determine_note_number(self, layout):
         if not self._is_within_range():
@@ -103,7 +103,7 @@ class Led:
     def id(self):
         if not self._is_within_range():
             return -1
-        return (self._y * (self._max_y + 1)) + self._x + 1
+        return (self._y * self._max_y) + self._x + 1
 
     @property
     def x(self):
@@ -115,7 +115,7 @@ class Led:
 
     @property
     def name(self):
-        return self._button_names[self.x][self.y] \
+        return self._button_names[self.y][self.x] \
                 if self._is_within_range() \
                 else ''
 
@@ -202,16 +202,17 @@ class Panel(Animable):
             [0x28, 0x29, 0x2a, 0x2b, 0x48, 0x49, 0x4a, 0x4b, 0x1d],
             [0x24, 0x25, 0x26, 0x27, 0x44, 0x45, 0x46, 0x47, 0x13]
     ]
+
     _BUTTON_NAMES = [
             ['up', 'down', 'left', 'right', 'session', 'drums', 'keys', 'user', 'logo'],  # noqa
-            ['0x0', '0x1', '0x2', '0x3', '0x4', '0x5', '0x6', '0x7', 'scene_launch_1'],  # noqa
-            ['1x0', '1x1', '1x2', '1x3', '1x4', '1x5', '1x6', '1x7', 'scene_launch_2'],  # noqa
-            ['2x0', '2x1', '2x2', '2x3', '2x4', '2x5', '2x6', '2x7', 'scene_launch_3'],  # noqa
-            ['3x0', '3x1', '3x2', '3x3', '3x4', '3x5', '3x6', '3x7', 'scene_launch_4'],  # noqa
-            ['4x0', '4x1', '4x2', '4x3', '4x4', '4x5', '4x6', '4x7', 'scene_launch_5'],  # noqa
-            ['5x0', '5x1', '5x2', '5x3', '5x4', '5x5', '5x6', '5x7', 'scene_launch_6'],  # noqa
-            ['6x0', '6x1', '6x2', '6x3', '6x4', '6x5', '6x6', '6x7', 'scene_launch_7'],  # noqa
-            ['7x0', '7x1', '7x2', '7x3', '7x4', '7x5', '7x6', '7x7', 'stop_solo_mute']   # noqa
+            ['0x0', '1x0', '2x0', '3x0', '4x0', '5x0', '6x0', '7x0', 'scene_launch_1'],  # noqa
+            ['0x1', '1x1', '2x1', '3x1', '4x1', '5x1', '6x1', '7x1', 'scene_launch_2'],  # noqa
+            ['0x2', '1x2', '2x2', '3x2', '4x2', '5x2', '6x2', '7x2', 'scene_launch_3'],  # noqa
+            ['0x3', '1x3', '2x3', '3x3', '4x3', '5x3', '6x3', '7x3', 'scene_launch_4'],  # noqa
+            ['0x4', '1x4', '2x4', '3x4', '4x4', '5x4', '6x4', '7x4', 'scene_launch_5'],  # noqa
+            ['0x5', '1x5', '2x5', '3x5', '4x5', '5x5', '6x5', '7x5', 'scene_launch_6'],  # noqa
+            ['0x6', '1x6', '2x6', '3x6', '4x6', '5x6', '6x6', '7x6', 'scene_launch_7'],  # noqa
+            ['0x7', '1x7', '2x7', '3x7', '4x7', '5x7', '6x7', '7x7', 'stop_solo_mute']   # noqa
     ]
 
     def __init__(self, launchpad):
