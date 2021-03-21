@@ -6,10 +6,11 @@ from ._utils import SystemMidiPortParser as _SystemMidiPortParser,\
 from .midi_messages import SysExMessages as _SysExMessages
 
 try:
-    _midi_out = _MidiOut()
-    _out_ports = _midi_out.get_ports()
-    _midi_in = _MidiIn()
-    _in_ports = _midi_in.get_ports()
+    #_midi_out = _MidiOut()
+    #_out_ports = _midi_out.get_ports()
+    #_midi_in = _MidiIn()
+    #_in_ports = _midi_in.get_ports()
+    pass
 except:
     print('Test mode activated.')
 
