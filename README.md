@@ -9,13 +9,14 @@ Python API for the [Launchpad Mini MK3](https://novationmusic.com/en/launch/laun
 * Access to all (or most) of the Launchpad Mini MK3 MIDI features
 
 ## Todo
-- [ ] Add unit tests.
+- [x] Add unit tests.
+- [x] Add CI.
 - [ ] Add documentation.
 - [ ] Add examples.
 - [ ] Add details to this README.
 - [ ] Add logging of MIDI messages.
 - [ ] Add linter.
-- [ ] Add CI/CD.
+- [ ] Add CD.
 - [ ] Deploy as package on PYPI.
 
 ## Future features
