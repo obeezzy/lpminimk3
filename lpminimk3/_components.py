@@ -1,7 +1,7 @@
 from ._utils import Interface
 from .colors import ColorShade, ColorShadeStore, RgbColor
 
-class Animable(object):
+class Animable:
     def animate(self, animation, *, timeout=0):
         pass
 
