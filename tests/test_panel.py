@@ -1,5 +1,5 @@
 import unittest
-from lpminimk3.__init__ import ButtonFace
+from lpminimk3.__init__ import ButtonFace, Panel
 from tests._vlpminimk3 import create_virtual_launchpad
 
 
@@ -27,6 +27,11 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.max_y,
                          9,
                          'Max Y mismatch.')
+
+    def test_led_reset(self):
+        self.lp.open()
+        self.lp.panel.led('up').color = 1
+        self.lp.panel.led('up').reset()
 
     def test_led_id_by_xy(self):
         self.lp.open()
@@ -625,10 +630,173 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(79).name, '7x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(80).name, ButtonFace.STOP_SOLO_MUTE, 'Name mismatch.')  # noqa
 
-    def test_led_reset(self):
+    def test_led_midi_value_prog_layout(self):
         self.lp.open()
-        self.lp.panel.led('up').color = 1
-        self.lp.panel.led('up').reset()
+        self.assertEqual(self.lp.panel.led(0, 0).midi_value, 0x5b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 0).midi_value, 0x5c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 0).midi_value, 0x5d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 0).midi_value, 0x5e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 0).midi_value, 0x5f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 0).midi_value, 0x60, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 0).midi_value, 0x61, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 0).midi_value, 0x62, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 0).midi_value, 0x63, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 1).midi_value, 0x51, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 1).midi_value, 0x52, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 1).midi_value, 0x53, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 1).midi_value, 0x54, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 1).midi_value, 0x55, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 1).midi_value, 0x56, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 1).midi_value, 0x57, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 1).midi_value, 0x58, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 1).midi_value, 0x59, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 2).midi_value, 0x47, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 2).midi_value, 0x48, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 2).midi_value, 0x49, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 2).midi_value, 0x4a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 2).midi_value, 0x4b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 2).midi_value, 0x4c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 2).midi_value, 0x4d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 2).midi_value, 0x4e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 2).midi_value, 0x4f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 3).midi_value, 0x3d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 3).midi_value, 0x3e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 3).midi_value, 0x3f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 3).midi_value, 0x40, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 3).midi_value, 0x41, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 3).midi_value, 0x42, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 3).midi_value, 0x43, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 3).midi_value, 0x44, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 3).midi_value, 0x45, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 4).midi_value, 0x33, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 4).midi_value, 0x34, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 4).midi_value, 0x35, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 4).midi_value, 0x36, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 4).midi_value, 0x37, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 4).midi_value, 0x38, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 4).midi_value, 0x39, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 4).midi_value, 0x3a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 4).midi_value, 0x3b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 5).midi_value, 0x29, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 5).midi_value, 0x2a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 5).midi_value, 0x2b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 5).midi_value, 0x2c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 5).midi_value, 0x2d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 5).midi_value, 0x2e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 5).midi_value, 0x2f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 5).midi_value, 0x30, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 5).midi_value, 0x31, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 6).midi_value, 0x1f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 6).midi_value, 0x20, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 6).midi_value, 0x21, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 6).midi_value, 0x22, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 6).midi_value, 0x23, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 6).midi_value, 0x24, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 6).midi_value, 0x25, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 6).midi_value, 0x26, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 6).midi_value, 0x27, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 7).midi_value, 0x15, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 7).midi_value, 0x16, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 7).midi_value, 0x17, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 7).midi_value, 0x18, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 7).midi_value, 0x19, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 7).midi_value, 0x1a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 7).midi_value, 0x1b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 7).midi_value, 0x1c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 7).midi_value, 0x1d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 8).midi_value, 0x0b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 8).midi_value, 0x0c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 8).midi_value, 0x0d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 8).midi_value, 0x0e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 8).midi_value, 0x0f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 8).midi_value, 0x10, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 8).midi_value, 0x11, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 8).midi_value, 0x12, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 8).midi_value, 0x13, 'MIDI value mismatch.')  # noqa
+
+    def test_led_midi_value_custom_layout(self):
+        self.lp.open()
+        self.assertEqual(self.lp.panel.led(0, 0, layout=Panel.CUSTOM).midi_value, 0x5b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 0, layout=Panel.CUSTOM).midi_value, 0x5c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 0, layout=Panel.CUSTOM).midi_value, 0x5d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 0, layout=Panel.CUSTOM).midi_value, 0x5e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 0, layout=Panel.CUSTOM).midi_value, 0x5f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 0, layout=Panel.CUSTOM).midi_value, 0x60, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 0, layout=Panel.CUSTOM).midi_value, 0x61, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 0, layout=Panel.CUSTOM).midi_value, 0x62, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 0, layout=Panel.CUSTOM).midi_value, 0x63, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 1, layout=Panel.CUSTOM).midi_value, 0x40, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 1, layout=Panel.CUSTOM).midi_value, 0x41, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 1, layout=Panel.CUSTOM).midi_value, 0x42, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 1, layout=Panel.CUSTOM).midi_value, 0x43, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 1, layout=Panel.CUSTOM).midi_value, 0x60, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 1, layout=Panel.CUSTOM).midi_value, 0x61, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 1, layout=Panel.CUSTOM).midi_value, 0x62, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 1, layout=Panel.CUSTOM).midi_value, 0x63, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 1, layout=Panel.CUSTOM).midi_value, 0x59, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 2, layout=Panel.CUSTOM).midi_value, 0x3c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 2, layout=Panel.CUSTOM).midi_value, 0x3d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 2, layout=Panel.CUSTOM).midi_value, 0x3e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 2, layout=Panel.CUSTOM).midi_value, 0x3f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 2, layout=Panel.CUSTOM).midi_value, 0x5c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 2, layout=Panel.CUSTOM).midi_value, 0x5d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 2, layout=Panel.CUSTOM).midi_value, 0x5e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 2, layout=Panel.CUSTOM).midi_value, 0x5f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 2, layout=Panel.CUSTOM).midi_value, 0x4f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 3, layout=Panel.CUSTOM).midi_value, 0x38, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 3, layout=Panel.CUSTOM).midi_value, 0x39, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 3, layout=Panel.CUSTOM).midi_value, 0x3a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 3, layout=Panel.CUSTOM).midi_value, 0x3b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 3, layout=Panel.CUSTOM).midi_value, 0x58, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 3, layout=Panel.CUSTOM).midi_value, 0x59, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 3, layout=Panel.CUSTOM).midi_value, 0x5a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 3, layout=Panel.CUSTOM).midi_value, 0x5b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 3, layout=Panel.CUSTOM).midi_value, 0x45, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 4, layout=Panel.CUSTOM).midi_value, 0x34, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 4, layout=Panel.CUSTOM).midi_value, 0x35, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 4, layout=Panel.CUSTOM).midi_value, 0x36, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 4, layout=Panel.CUSTOM).midi_value, 0x37, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 4, layout=Panel.CUSTOM).midi_value, 0x54, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 4, layout=Panel.CUSTOM).midi_value, 0x55, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 4, layout=Panel.CUSTOM).midi_value, 0x56, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 4, layout=Panel.CUSTOM).midi_value, 0x57, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 4, layout=Panel.CUSTOM).midi_value, 0x3b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 5, layout=Panel.CUSTOM).midi_value, 0x30, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 5, layout=Panel.CUSTOM).midi_value, 0x31, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 5, layout=Panel.CUSTOM).midi_value, 0x32, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 5, layout=Panel.CUSTOM).midi_value, 0x33, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 5, layout=Panel.CUSTOM).midi_value, 0x50, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 5, layout=Panel.CUSTOM).midi_value, 0x51, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 5, layout=Panel.CUSTOM).midi_value, 0x52, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 5, layout=Panel.CUSTOM).midi_value, 0x53, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 5, layout=Panel.CUSTOM).midi_value, 0x31, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 6, layout=Panel.CUSTOM).midi_value, 0x2c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 6, layout=Panel.CUSTOM).midi_value, 0x2d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 6, layout=Panel.CUSTOM).midi_value, 0x2e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 6, layout=Panel.CUSTOM).midi_value, 0x2f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 6, layout=Panel.CUSTOM).midi_value, 0x4c, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 6, layout=Panel.CUSTOM).midi_value, 0x4d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 6, layout=Panel.CUSTOM).midi_value, 0x4e, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 6, layout=Panel.CUSTOM).midi_value, 0x4f, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 6, layout=Panel.CUSTOM).midi_value, 0x27, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 7, layout=Panel.CUSTOM).midi_value, 0x28, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 7, layout=Panel.CUSTOM).midi_value, 0x29, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 7, layout=Panel.CUSTOM).midi_value, 0x2a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 7, layout=Panel.CUSTOM).midi_value, 0x2b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 7, layout=Panel.CUSTOM).midi_value, 0x48, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 7, layout=Panel.CUSTOM).midi_value, 0x49, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 7, layout=Panel.CUSTOM).midi_value, 0x4a, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 7, layout=Panel.CUSTOM).midi_value, 0x4b, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 7, layout=Panel.CUSTOM).midi_value, 0x1d, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(0, 8, layout=Panel.CUSTOM).midi_value, 0x24, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1, 8, layout=Panel.CUSTOM).midi_value, 0x25, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2, 8, layout=Panel.CUSTOM).midi_value, 0x26, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3, 8, layout=Panel.CUSTOM).midi_value, 0x27, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4, 8, layout=Panel.CUSTOM).midi_value, 0x44, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5, 8, layout=Panel.CUSTOM).midi_value, 0x45, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6, 8, layout=Panel.CUSTOM).midi_value, 0x46, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7, 8, layout=Panel.CUSTOM).midi_value, 0x47, 'MIDI value mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8, 8, layout=Panel.CUSTOM).midi_value, 0x13, 'MIDI value mismatch.')  # noqa
 
 
 if __name__ == '__main__':
