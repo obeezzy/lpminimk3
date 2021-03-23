@@ -364,6 +364,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(8, 8).name, ButtonFace.STOP_SOLO_MUTE, 'Name mismatch.')  # noqa
 
     def test_led_color_by_xy(self):
+        self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(2, 0).color, None, 'Color mismatch.')  # noqa

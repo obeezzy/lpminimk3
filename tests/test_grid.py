@@ -27,7 +27,7 @@ class TestGrid(unittest.TestCase):
                          8,
                          'Max Y mismatch.')
 
-    def test_led_prog_layout(self):
+    def test_led_id_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).id, 2, 'ID mismatch.')  # noqa
@@ -94,6 +94,8 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).id, 63, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).id, 64, 'ID mismatch.')  # noqa
 
+    def test_led_x_by_xy(self):
+        self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).x, 0, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).x, 1, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(2, 0).x, 2, 'X mismatch.')  # noqa
@@ -159,6 +161,8 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).x, 6, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).x, 7, 'X mismatch.')  # noqa
 
+    def test_led_y_by_xy(self):
+        self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).y, 0, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).y, 0, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(2, 0).y, 0, 'Y mismatch.')  # noqa
@@ -224,6 +228,8 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).y, 7, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).y, 7, 'Y mismatch.')  # noqa
 
+    def test_led_name_by_name(self):
+        self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).name, '0x0', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).name, '1x0', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(2, 0).name, '2x0', 'Name mismatch.')  # noqa
@@ -289,6 +295,8 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).name, '6x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).name, '7x7', 'Name mismatch.')  # noqa
 
+    def test_led_color_by_xy(self):
+        self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(2, 0).color, None, 'Color mismatch.')  # noqa
@@ -354,6 +362,8 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).color, None, 'Color mismatch.')  # noqa
 
+    def test_led_name_by_id(self):
+        self.lp.open()
         self.assertEqual(self.lp.grid.led('0x0').id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led('1x0').id, 2, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led('2x0').id, 3, 'ID mismatch.')  # noqa
@@ -423,6 +433,73 @@ class TestGrid(unittest.TestCase):
             self.lp.grid.led('')
         with self.assertRaises(ValueError):
             self.lp.grid.led('s')
+
+    def test_led_id_by_name(self):
+        self.lp.open()
+        self.assertEqual(self.lp.grid.led(0).name, '0x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(1).name, '1x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(2).name, '2x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(3).name, '3x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(4).name, '4x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(5).name, '5x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(6).name, '6x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(7).name, '7x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(8).name, '0x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(9).name, '1x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(10).name, '2x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(11).name, '3x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(12).name, '4x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(13).name, '5x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(14).name, '6x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(15).name, '7x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(16).name, '0x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(17).name, '1x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(18).name, '2x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(19).name, '3x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(20).name, '4x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(21).name, '5x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(22).name, '6x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(23).name, '7x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(24).name, '0x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(25).name, '1x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(26).name, '2x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(27).name, '3x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(28).name, '4x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(29).name, '5x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(30).name, '6x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(31).name, '7x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(32).name, '0x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(33).name, '1x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(34).name, '2x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(35).name, '3x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(36).name, '4x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(37).name, '5x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(38).name, '6x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(39).name, '7x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(40).name, '0x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(41).name, '1x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(42).name, '2x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(43).name, '3x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(44).name, '4x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(45).name, '5x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(46).name, '6x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(47).name, '7x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(48).name, '0x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(49).name, '1x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(50).name, '2x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(51).name, '3x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(52).name, '4x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(53).name, '5x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(54).name, '6x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(55).name, '7x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(56).name, '0x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(57).name, '1x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(58).name, '2x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(59).name, '3x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(60).name, '4x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(61).name, '5x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(62).name, '6x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.grid.led(63).name, '7x7', 'Name mismatch.')  # noqa
 
     def test_led_reset(self):
         self.lp.open()
