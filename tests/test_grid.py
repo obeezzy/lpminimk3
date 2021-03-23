@@ -28,6 +28,16 @@ class TestGrid(unittest.TestCase):
                          8,
                          'Max Y mismatch.')
 
+    def test_led_set(self):
+        self.lp.open()
+        for color_index in range(128):
+            self.lp.panel.led('0x0').color = color_index
+
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('0x0').color = -1
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('0x0').color = 128
+
     def test_led_reset(self):
         self.lp.open()
         self.lp.grid.led('0x0').color = 1
