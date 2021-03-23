@@ -49,55 +49,80 @@ class Led:
                  layout, x=-1, y=-1, name='', mode=STATIC):
         self._launchpad = launchpad
         self._button_names = button_names
-        name = x if isinstance(x, str) and name == '' else name
+        self._x = self._y = -1
+
+        name = (x if isinstance(x, str)
+                and name == '' else name)
+        if isinstance(x, str) and name == '':
+            raise ValueError('Invalid name')
+
         x = -1 if isinstance(x, str) else x
+        x, y = (self._determine_coordinates_from_name(name,
+                                                      button_names)
+                if x < 0 and y < 0 and len(name) > 0
+                else (x, y))
+        led_id = x if x >= 0 and y < 0 else None
+        max_x, max_y = self._determine_bounds(button_names)
+        x, y = (self._determine_coordinates_from_id(led_id, max_x, max_y)
+                if led_id is not None else (x, y))
+        midi_value = self._determine_midi_value(layout, x, y, max_x, max_y)
+
         self._x = x
         self._y = y
         self._mode = mode
-        self._max_x = -1
-        self._max_y = -1
-        self._note_number = -1
-        self._initialize(name, layout)  # FIXME: Order of function calls matter
+        self._max_x = max_x
+        self._max_y = max_y
+        self._midi_value = midi_value
+        self._button_names = button_names
 
-    # FIXME: Order of function calls matter
-    def _initialize(self, name, layout):
-        self._determine_bounds()
-        if self._x < 0 and self._y < 0:
-            self._determine_coordinates(name)
-        self._determine_note_number(layout)
+    def _determine_coordinates_from_id(self, led_id, max_x, max_y):
+        x = int(led_id % max_x)
+        y = int(led_id / max_y)
+        return x, y
 
-    def _determine_coordinates(self, name):
+    def _determine_coordinates_from_name(self, name, button_names):
         found = False
-        for column, button_column in enumerate(self._button_names):
+        x = y = -1
+        for column, button_column in enumerate(button_names):
             for row, button_name in enumerate(button_column):
                 if button_name == name.lower():
-                    self._x = row
-                    self._y = column
+                    x = row
+                    y = column
                     found = True
                     break
                 elif (name.lower() in button_name
                         and name.lower()
                         in ButtonFace.STOP_SOLO_MUTE.split('_')):
-                    self._x = row
-                    self._y = column
+                    x = row
+                    y = column
                     found = True
                     break
             if found:
                 break
-        if self._x < 0 or self._y < 0:
+        if x < 0 or y < 0:
             raise ValueError('Invalid name set.')
 
-    def _determine_note_number(self, layout):
-        if not self._is_within_range():
-            raise RuntimeError('LED out of range.')
-        self._note_number = layout[self._x][self._y]
+        return x, y
 
-    def _determine_bounds(self):
-        if len(self._button_names) > 0:
-            self._max_x = len(self._button_names[0])
-            self._max_y = len(self._button_names)
+    def _determine_midi_value(self, layout, x, y, max_x, max_y):
+        within_range = (x >= 0
+                        and y >= 0
+                        and x <= max_x
+                        and y <= max_y)
+        if not within_range:
+            raise RuntimeError('Led(x,y) out of range: '
+                               'value({},{}), '
+                               'range((0,{}),(0,{}))'
+                               .format(x, y, max_x, max_y))
+        return layout[x][y]
+
+    def _determine_bounds(self, button_names):
+        if len(button_names) > 0:
+            max_x = len(button_names[0])
+            max_y = len(button_names)
+            return max_x, max_y
         else:
-            raise RuntimeError('No button names passed in.')
+            raise RuntimeError('Empty button name list.')
 
     @property
     def id(self):
@@ -143,7 +168,7 @@ class Led:
         elif RgbColor.is_valid(value):
             rgb_color = RgbColor(value)
             message = self._colorspec_message(self._LIGHTING_TYPE['rgb'],
-                                              self._note_number,
+                                              self._midi_value,
                                               rgb_color.r,
                                               rgb_color.g,
                                               rgb_color.b)
@@ -157,11 +182,11 @@ class Led:
                 raise RuntimeError('Color ID values must be between 0 and 127.')  # noqa
             else:
                 self.launchpad.send_message([self._LIGHTING_MODE[self._mode],
-                                            self._note_number, color_id])
+                                            self._midi_value, color_id])
 
     def reset(self):
         self.launchpad.send_message([self._LIGHTING_MODE[Led.OFF],
-                                    self._note_number, 0x0])
+                                    self._midi_value, 0x0])
 
     def _colorspec_message(self, lighting_type, led_index, *lighting_data):
         return [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03,

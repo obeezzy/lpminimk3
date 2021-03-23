@@ -28,7 +28,7 @@ class TestPanel(unittest.TestCase):
                          9,
                          'Max Y mismatch.')
 
-    def test_led_prog_layout(self):
+    def test_led_id_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).id, 2, 'ID mismatch.')  # noqa
@@ -112,6 +112,8 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).id, 80, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).id, 81, 'ID mismatch.')  # noqa
 
+    def test_led_x_by_xy(self):
+        self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).x, 0, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).x, 1, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(2, 0).x, 2, 'X mismatch.')  # noqa
@@ -194,6 +196,8 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).x, 7, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).x, 8, 'X mismatch.')  # noqa
 
+    def test_led_y_by_xy(self):
+        self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).y, 0, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).y, 0, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(2, 0).y, 0, 'Y mismatch.')  # noqa
@@ -276,6 +280,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).y, 8, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).y, 8, 'Y mismatch.')  # noqa
 
+    def test_led_name_by_button_face(self):
         self.assertEqual(self.lp.panel.led(0, 0).name, ButtonFace.UP, 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).name, ButtonFace.DOWN, 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(2, 0).name, ButtonFace.LEFT, 'Name mismatch.')  # noqa
@@ -358,6 +363,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).name, '7x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).name, ButtonFace.STOP_SOLO_MUTE, 'Name mismatch.')  # noqa
 
+    def test_led_color_by_xy(self):
         self.assertEqual(self.lp.panel.led(0, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(2, 0).color, None, 'Color mismatch.')  # noqa
@@ -440,6 +446,8 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).color, None, 'Color mismatch.')  # noqa
 
+    def test_led_id_by_button_name(self):
+        self.lp.open()
         self.assertEqual(self.lp.panel.led('up').id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led('down').id, 2, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led('left').id, 3, 'ID mismatch.')  # noqa
@@ -530,6 +538,90 @@ class TestPanel(unittest.TestCase):
             self.lp.panel.led('')
         with self.assertRaises(ValueError):
             self.lp.panel.led('s')
+
+    def test_led_name_by_id(self):
+        self.lp.open()
+        self.assertEqual(self.lp.panel.led(0).name, ButtonFace.UP, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(1).name, ButtonFace.DOWN, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(2).name, ButtonFace.LEFT, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(3).name, ButtonFace.RIGHT, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(4).name, ButtonFace.SESSION, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(5).name, ButtonFace.DRUMS, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(6).name, ButtonFace.KEYS, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(7).name, ButtonFace.USER, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(8).name, ButtonFace.LOGO, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(9).name, '0x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(10).name, '1x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(11).name, '2x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(12).name, '3x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(13).name, '4x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(14).name, '5x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(15).name, '6x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(16).name, '7x0', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(17).name, ButtonFace.SCENE_LAUNCH_1, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(18).name, '0x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(19).name, '1x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(20).name, '2x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(21).name, '3x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(22).name, '4x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(23).name, '5x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(24).name, '6x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(25).name, '7x1', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(26).name, ButtonFace.SCENE_LAUNCH_2, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(27).name, '0x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(28).name, '1x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(29).name, '2x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(30).name, '3x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(31).name, '4x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(32).name, '5x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(33).name, '6x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(34).name, '7x2', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(35).name, ButtonFace.SCENE_LAUNCH_3, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(36).name, '0x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(37).name, '1x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(38).name, '2x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(39).name, '3x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(40).name, '4x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(41).name, '5x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(42).name, '6x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(43).name, '7x3', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(44).name, ButtonFace.SCENE_LAUNCH_4, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(45).name, '0x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(46).name, '1x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(47).name, '2x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(48).name, '3x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(49).name, '4x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(50).name, '5x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(51).name, '6x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(52).name, '7x4', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(53).name, ButtonFace.SCENE_LAUNCH_5, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(54).name, '0x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(55).name, '1x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(56).name, '2x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(57).name, '3x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(58).name, '4x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(59).name, '5x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(60).name, '6x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(61).name, '7x5', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(62).name, ButtonFace.SCENE_LAUNCH_6, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(63).name, '0x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(64).name, '1x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(65).name, '2x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(66).name, '3x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(67).name, '4x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(68).name, '5x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(69).name, '6x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(70).name, '7x6', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(71).name, ButtonFace.SCENE_LAUNCH_7, 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(72).name, '0x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(73).name, '1x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(74).name, '2x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(75).name, '3x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(76).name, '4x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(77).name, '5x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(78).name, '6x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(79).name, '7x7', 'Name mismatch.')  # noqa
+        self.assertEqual(self.lp.panel.led(80).name, ButtonFace.STOP_SOLO_MUTE, 'Name mismatch.')  # noqa
 
     def test_led_reset(self):
         self.lp.open()
