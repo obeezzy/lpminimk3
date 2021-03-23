@@ -183,7 +183,7 @@ class Led:
                     else value
             color_id = value if ColorShade.is_valid_id(value) else None
             if not color_id:
-                raise RuntimeError('Color ID values must be between 0 and 127.')  # noqa
+                raise ValueError('Color ID values must be between 0 and 127.')  # noqa
             else:
                 self.launchpad.send_message([self._LIGHTING_MODE[self._mode],
                                             self._midi_value, color_id])
