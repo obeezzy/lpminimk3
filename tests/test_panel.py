@@ -281,6 +281,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(8, 8).y, 8, 'Y mismatch.')  # noqa
 
     def test_led_name_by_button_face(self):
+        self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).name, ButtonFace.UP, 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).name, ButtonFace.DOWN, 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(2, 0).name, ButtonFace.LEFT, 'Name mismatch.')  # noqa
