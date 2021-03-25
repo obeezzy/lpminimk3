@@ -1,6 +1,7 @@
 import unittest
 from lpminimk3.__init__ import ButtonFace, Panel
-from tests._vlpminimk3 import create_virtual_launchpad
+from tests._vlpminimk3 import VirtualMidiEvent,\
+                              create_virtual_launchpad
 
 
 class TestPanel(unittest.TestCase):
@@ -28,7 +29,15 @@ class TestPanel(unittest.TestCase):
                          9,
                          'Max Y mismatch.')
 
-    def test_led_set(self):
+
+class TestLed(unittest.TestCase):
+    def setUp(self):
+        self.lp = create_virtual_launchpad()
+
+    def tearDown(self):
+        self.lp.close()
+
+    def test_set(self):
         self.lp.open()
         for color_index in range(128):
             self.lp.panel.led('up').color = color_index
@@ -38,12 +47,12 @@ class TestPanel(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = 128
 
-    def test_led_reset(self):
+    def test_reset(self):
         self.lp.open()
         self.lp.panel.led('up').color = 1
         self.lp.panel.led('up').reset()
 
-    def test_led_id_by_xy(self):
+    def test_id_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).id, 2, 'ID mismatch.')  # noqa
@@ -127,7 +136,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).id, 80, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).id, 81, 'ID mismatch.')  # noqa
 
-    def test_led_x_by_xy(self):
+    def test_x_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).x, 0, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).x, 1, 'X mismatch.')  # noqa
@@ -211,7 +220,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).x, 7, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).x, 8, 'X mismatch.')  # noqa
 
-    def test_led_y_by_xy(self):
+    def test_y_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).y, 0, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).y, 0, 'Y mismatch.')  # noqa
@@ -295,7 +304,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).y, 8, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).y, 8, 'Y mismatch.')  # noqa
 
-    def test_led_name_by_button_face(self):
+    def test_name_by_button_face(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).name, ButtonFace.UP, 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).name, ButtonFace.DOWN, 'Name mismatch.')  # noqa
@@ -379,7 +388,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).name, '7x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).name, ButtonFace.STOP_SOLO_MUTE, 'Name mismatch.')  # noqa
 
-    def test_led_color_by_xy(self):
+    def test_color_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).color, None, 'Color mismatch.')  # noqa
@@ -463,7 +472,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).color, None, 'Color mismatch.')  # noqa
 
-    def test_led_id_by_button_name(self):
+    def test_id_by_button_name(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led('up').id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led('down').id, 2, 'ID mismatch.')  # noqa
@@ -556,7 +565,7 @@ class TestPanel(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.lp.panel.led('s')
 
-    def test_led_name_by_id(self):
+    def test_name_by_id(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0).name, ButtonFace.UP, 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1).name, ButtonFace.DOWN, 'Name mismatch.')  # noqa
@@ -640,7 +649,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(79).name, '7x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(80).name, ButtonFace.STOP_SOLO_MUTE, 'Name mismatch.')  # noqa
 
-    def test_led_midi_value_prog_layout(self):
+    def test_midi_value_prog_layout(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).midi_value, 0x5b, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0).midi_value, 0x5c, 'MIDI value mismatch.')  # noqa
@@ -724,7 +733,7 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(7, 8).midi_value, 0x12, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8).midi_value, 0x13, 'MIDI value mismatch.')  # noqa
 
-    def test_led_midi_value_custom_layout(self):
+    def test_midi_value_custom_layout(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0, layout=Panel.CUSTOM).midi_value, 0x5b, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(1, 0, layout=Panel.CUSTOM).midi_value, 0x5c, 'MIDI value mismatch.')  # noqa
@@ -807,6 +816,783 @@ class TestPanel(unittest.TestCase):
         self.assertEqual(self.lp.panel.led(6, 8, layout=Panel.CUSTOM).midi_value, 0x46, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(7, 8, layout=Panel.CUSTOM).midi_value, 0x47, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.panel.led(8, 8, layout=Panel.CUSTOM).midi_value, 0x13, 'MIDI value mismatch.')  # noqa
+
+
+class TestButtonGroup(unittest.TestCase):
+    def setUp(self):
+        self.lp = create_virtual_launchpad()
+
+    def tearDown(self):
+        self.lp.close()
+
+    def test_names_by_name(self):
+        self.lp.open()
+        self.assertCountEqual(['up'],
+                              self.lp.panel.buttons('up').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['down'],
+                              self.lp.panel.buttons('down').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['left'],
+                              self.lp.panel.buttons('left').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['right'],
+                              self.lp.panel.buttons('right').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['session'],
+                              self.lp.panel.buttons('session').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['drums'],
+                              self.lp.panel.buttons('drums').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['keys'],
+                              self.lp.panel.buttons('keys').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['user'],
+                              self.lp.panel.buttons('user').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['logo'],
+                              self.lp.panel.buttons('logo').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x0'],
+                              self.lp.panel.buttons('0x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x0'],
+                              self.lp.panel.buttons('1x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x0'],
+                              self.lp.panel.buttons('2x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x0'],
+                              self.lp.panel.buttons('3x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x0'],
+                              self.lp.panel.buttons('4x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x0'],
+                              self.lp.panel.buttons('5x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x0'],
+                              self.lp.panel.buttons('6x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x0'],
+                              self.lp.panel.buttons('7x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_1'],
+                              self.lp.panel.buttons('scene_launch_1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x1'],
+                              self.lp.panel.buttons('0x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x1'],
+                              self.lp.panel.buttons('1x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x1'],
+                              self.lp.panel.buttons('2x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x1'],
+                              self.lp.panel.buttons('3x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x1'],
+                              self.lp.panel.buttons('4x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x1'],
+                              self.lp.panel.buttons('5x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x1'],
+                              self.lp.panel.buttons('6x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x1'],
+                              self.lp.panel.buttons('7x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_2'],
+                              self.lp.panel.buttons('scene_launch_2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x2'],
+                              self.lp.panel.buttons('0x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x2'],
+                              self.lp.panel.buttons('1x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x2'],
+                              self.lp.panel.buttons('2x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x2'],
+                              self.lp.panel.buttons('3x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x2'],
+                              self.lp.panel.buttons('4x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x2'],
+                              self.lp.panel.buttons('5x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x2'],
+                              self.lp.panel.buttons('6x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x2'],
+                              self.lp.panel.buttons('7x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_3'],
+                              self.lp.panel.buttons('scene_launch_3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x3'],
+                              self.lp.panel.buttons('0x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x3'],
+                              self.lp.panel.buttons('1x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x3'],
+                              self.lp.panel.buttons('2x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x3'],
+                              self.lp.panel.buttons('3x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x3'],
+                              self.lp.panel.buttons('4x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x3'],
+                              self.lp.panel.buttons('5x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x3'],
+                              self.lp.panel.buttons('6x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x3'],
+                              self.lp.panel.buttons('7x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_4'],
+                              self.lp.panel.buttons('scene_launch_4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x4'],
+                              self.lp.panel.buttons('0x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x4'],
+                              self.lp.panel.buttons('1x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x4'],
+                              self.lp.panel.buttons('2x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x4'],
+                              self.lp.panel.buttons('3x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x4'],
+                              self.lp.panel.buttons('4x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x4'],
+                              self.lp.panel.buttons('5x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x4'],
+                              self.lp.panel.buttons('6x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x4'],
+                              self.lp.panel.buttons('7x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_5'],
+                              self.lp.panel.buttons('scene_launch_5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x5'],
+                              self.lp.panel.buttons('0x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x5'],
+                              self.lp.panel.buttons('1x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x5'],
+                              self.lp.panel.buttons('2x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x5'],
+                              self.lp.panel.buttons('3x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x5'],
+                              self.lp.panel.buttons('4x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x5'],
+                              self.lp.panel.buttons('5x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x5'],
+                              self.lp.panel.buttons('6x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x5'],
+                              self.lp.panel.buttons('7x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_6'],
+                              self.lp.panel.buttons('scene_launch_6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x6'],
+                              self.lp.panel.buttons('0x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x6'],
+                              self.lp.panel.buttons('1x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x6'],
+                              self.lp.panel.buttons('2x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x6'],
+                              self.lp.panel.buttons('3x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x6'],
+                              self.lp.panel.buttons('4x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x6'],
+                              self.lp.panel.buttons('5x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x6'],
+                              self.lp.panel.buttons('6x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x6'],
+                              self.lp.panel.buttons('7x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_7'],
+                              self.lp.panel.buttons('scene_launch_7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x7'],
+                              self.lp.panel.buttons('0x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x7'],
+                              self.lp.panel.buttons('1x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x7'],
+                              self.lp.panel.buttons('2x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x7'],
+                              self.lp.panel.buttons('3x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x7'],
+                              self.lp.panel.buttons('4x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x7'],
+                              self.lp.panel.buttons('5x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x7'],
+                              self.lp.panel.buttons('6x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x7'],
+                              self.lp.panel.buttons('7x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['stop_solo_mute'],
+                              self.lp.panel.buttons('stop_solo_mute').names,
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['up', '7x7', 'stop_solo_mute'],
+                              self.lp.panel.buttons('up', '7x7', 'stop_solo_mute').names,  # noqa
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['up', 'down', 'left', 'right', 'session', 'drums', 'keys', 'user', 'logo',  # noqa
+                               '0x0', '1x0', '2x0', '3x0', '4x0', '5x0', '6x0', '7x0', 'scene_launch_1',  # noqa
+                               '0x1', '1x1', '2x1', '3x1', '4x1', '5x1', '6x1', '7x1', 'scene_launch_2',  # noqa
+                               '0x2', '1x2', '2x2', '3x2', '4x2', '5x2', '6x2', '7x2', 'scene_launch_3',  # noqa
+                               '0x3', '1x3', '2x3', '3x3', '4x3', '5x3', '6x3', '7x3', 'scene_launch_4',  # noqa
+                               '0x4', '1x4', '2x4', '3x4', '4x4', '5x4', '6x4', '7x4', 'scene_launch_5',  # noqa
+                               '0x5', '1x5', '2x5', '3x5', '4x5', '5x5', '6x5', '7x5', 'scene_launch_6',  # noqa
+                               '0x6', '1x6', '2x6', '3x6', '4x6', '5x6', '6x6', '7x6', 'scene_launch_7',  # noqa
+                               '0x7', '1x7', '2x7', '3x7', '4x7', '5x7', '6x7', '7x7', 'stop_solo_mute'],  # noqa
+                              self.lp.panel.buttons().names,
+                              'Button name mismatch.')
+
+    def test_names_by_id(self):
+        self.lp.open()
+        self.assertCountEqual(['up'],
+                              self.lp.panel.buttons(0).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['down'],
+                              self.lp.panel.buttons(1).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['left'],
+                              self.lp.panel.buttons(2).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['right'],
+                              self.lp.panel.buttons(3).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['session'],
+                              self.lp.panel.buttons(4).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['drums'],
+                              self.lp.panel.buttons(5).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['keys'],
+                              self.lp.panel.buttons(6).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['user'],
+                              self.lp.panel.buttons(7).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['logo'],
+                              self.lp.panel.buttons(8).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x0'],
+                              self.lp.panel.buttons(9).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x0'],
+                              self.lp.panel.buttons(10).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x0'],
+                              self.lp.panel.buttons(11).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x0'],
+                              self.lp.panel.buttons(12).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x0'],
+                              self.lp.panel.buttons(13).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x0'],
+                              self.lp.panel.buttons(14).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x0'],
+                              self.lp.panel.buttons(15).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x0'],
+                              self.lp.panel.buttons(16).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_1'],
+                              self.lp.panel.buttons(17).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x1'],
+                              self.lp.panel.buttons(18).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x1'],
+                              self.lp.panel.buttons(19).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x1'],
+                              self.lp.panel.buttons(20).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x1'],
+                              self.lp.panel.buttons(21).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x1'],
+                              self.lp.panel.buttons(22).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x1'],
+                              self.lp.panel.buttons(23).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x1'],
+                              self.lp.panel.buttons(24).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x1'],
+                              self.lp.panel.buttons(25).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_2'],
+                              self.lp.panel.buttons(26).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x2'],
+                              self.lp.panel.buttons(27).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x2'],
+                              self.lp.panel.buttons(28).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x2'],
+                              self.lp.panel.buttons(29).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x2'],
+                              self.lp.panel.buttons(30).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x2'],
+                              self.lp.panel.buttons(31).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x2'],
+                              self.lp.panel.buttons(32).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x2'],
+                              self.lp.panel.buttons(33).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x2'],
+                              self.lp.panel.buttons(34).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_3'],
+                              self.lp.panel.buttons(35).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x3'],
+                              self.lp.panel.buttons(36).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x3'],
+                              self.lp.panel.buttons(37).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x3'],
+                              self.lp.panel.buttons(38).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x3'],
+                              self.lp.panel.buttons(39).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x3'],
+                              self.lp.panel.buttons(40).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x3'],
+                              self.lp.panel.buttons(41).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x3'],
+                              self.lp.panel.buttons(42).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x3'],
+                              self.lp.panel.buttons(43).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_4'],
+                              self.lp.panel.buttons(44).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x4'],
+                              self.lp.panel.buttons(45).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x4'],
+                              self.lp.panel.buttons(46).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x4'],
+                              self.lp.panel.buttons(47).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x4'],
+                              self.lp.panel.buttons(48).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x4'],
+                              self.lp.panel.buttons(49).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x4'],
+                              self.lp.panel.buttons(50).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x4'],
+                              self.lp.panel.buttons(51).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x4'],
+                              self.lp.panel.buttons(52).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_5'],
+                              self.lp.panel.buttons(53).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x5'],
+                              self.lp.panel.buttons(54).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x5'],
+                              self.lp.panel.buttons(55).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x5'],
+                              self.lp.panel.buttons(56).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x5'],
+                              self.lp.panel.buttons(57).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x5'],
+                              self.lp.panel.buttons(58).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x5'],
+                              self.lp.panel.buttons(59).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x5'],
+                              self.lp.panel.buttons(60).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x5'],
+                              self.lp.panel.buttons(61).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_6'],
+                              self.lp.panel.buttons(62).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x6'],
+                              self.lp.panel.buttons(63).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x6'],
+                              self.lp.panel.buttons(64).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x6'],
+                              self.lp.panel.buttons(65).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x6'],
+                              self.lp.panel.buttons(66).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x6'],
+                              self.lp.panel.buttons(67).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x6'],
+                              self.lp.panel.buttons(68).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x6'],
+                              self.lp.panel.buttons(69).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x6'],
+                              self.lp.panel.buttons(70).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_7'],
+                              self.lp.panel.buttons(71).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x7'],
+                              self.lp.panel.buttons(72).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x7'],
+                              self.lp.panel.buttons(73).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x7'],
+                              self.lp.panel.buttons(74).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x7'],
+                              self.lp.panel.buttons(75).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x7'],
+                              self.lp.panel.buttons(76).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x7'],
+                              self.lp.panel.buttons(77).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x7'],
+                              self.lp.panel.buttons(78).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x7'],
+                              self.lp.panel.buttons(79).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['stop_solo_mute'],
+                              self.lp.panel.buttons(80).names,
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['up', '7x7', 'stop_solo_mute'],
+                              self.lp.panel.buttons(0, 79, 80).names,
+                              'Button name mismatch.')
+
+    def test_names_by_xy(self):
+        self.lp.open()
+        self.assertCountEqual(['up'],
+                              self.lp.panel.buttons((0, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['down'],
+                              self.lp.panel.buttons((1, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['left'],
+                              self.lp.panel.buttons((2, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['right'],
+                              self.lp.panel.buttons((3, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['session'],
+                              self.lp.panel.buttons((4, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['drums'],
+                              self.lp.panel.buttons((5, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['keys'],
+                              self.lp.panel.buttons((6, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['user'],
+                              self.lp.panel.buttons((7, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['logo'],
+                              self.lp.panel.buttons((8, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x0'],
+                              self.lp.panel.buttons((0, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x0'],
+                              self.lp.panel.buttons((1, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x0'],
+                              self.lp.panel.buttons((2, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x0'],
+                              self.lp.panel.buttons((3, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x0'],
+                              self.lp.panel.buttons((4, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x0'],
+                              self.lp.panel.buttons((5, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x0'],
+                              self.lp.panel.buttons((6, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x0'],
+                              self.lp.panel.buttons((7, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_1'],
+                              self.lp.panel.buttons((8, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x1'],
+                              self.lp.panel.buttons((0, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x1'],
+                              self.lp.panel.buttons((1, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x1'],
+                              self.lp.panel.buttons((2, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x1'],
+                              self.lp.panel.buttons((3, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x1'],
+                              self.lp.panel.buttons((4, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x1'],
+                              self.lp.panel.buttons((5, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x1'],
+                              self.lp.panel.buttons((6, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x1'],
+                              self.lp.panel.buttons((7, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_2'],
+                              self.lp.panel.buttons((8, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x2'],
+                              self.lp.panel.buttons((0, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x2'],
+                              self.lp.panel.buttons((1, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x2'],
+                              self.lp.panel.buttons((2, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x2'],
+                              self.lp.panel.buttons((3, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x2'],
+                              self.lp.panel.buttons((4, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x2'],
+                              self.lp.panel.buttons((5, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x2'],
+                              self.lp.panel.buttons((6, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x2'],
+                              self.lp.panel.buttons((7, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_3'],
+                              self.lp.panel.buttons((8, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x3'],
+                              self.lp.panel.buttons((0, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x3'],
+                              self.lp.panel.buttons((1, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x3'],
+                              self.lp.panel.buttons((2, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x3'],
+                              self.lp.panel.buttons((3, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x3'],
+                              self.lp.panel.buttons((4, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x3'],
+                              self.lp.panel.buttons((5, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x3'],
+                              self.lp.panel.buttons((6, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x3'],
+                              self.lp.panel.buttons((7, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_4'],
+                              self.lp.panel.buttons((8, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x4'],
+                              self.lp.panel.buttons((0, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x4'],
+                              self.lp.panel.buttons((1, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x4'],
+                              self.lp.panel.buttons((2, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x4'],
+                              self.lp.panel.buttons((3, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x4'],
+                              self.lp.panel.buttons((4, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x4'],
+                              self.lp.panel.buttons((5, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x4'],
+                              self.lp.panel.buttons((6, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x4'],
+                              self.lp.panel.buttons((7, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_5'],
+                              self.lp.panel.buttons((8, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x5'],
+                              self.lp.panel.buttons((0, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x5'],
+                              self.lp.panel.buttons((1, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x5'],
+                              self.lp.panel.buttons((2, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x5'],
+                              self.lp.panel.buttons((3, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x5'],
+                              self.lp.panel.buttons((4, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x5'],
+                              self.lp.panel.buttons((5, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x5'],
+                              self.lp.panel.buttons((6, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x5'],
+                              self.lp.panel.buttons((7, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_6'],
+                              self.lp.panel.buttons((8, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x6'],
+                              self.lp.panel.buttons((0, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x6'],
+                              self.lp.panel.buttons((1, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x6'],
+                              self.lp.panel.buttons((2, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x6'],
+                              self.lp.panel.buttons((3, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x6'],
+                              self.lp.panel.buttons((4, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x6'],
+                              self.lp.panel.buttons((5, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x6'],
+                              self.lp.panel.buttons((6, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x6'],
+                              self.lp.panel.buttons((7, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['scene_launch_7'],
+                              self.lp.panel.buttons((8, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x7'],
+                              self.lp.panel.buttons((0, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x7'],
+                              self.lp.panel.buttons((1, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x7'],
+                              self.lp.panel.buttons((2, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x7'],
+                              self.lp.panel.buttons((3, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x7'],
+                              self.lp.panel.buttons((4, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x7'],
+                              self.lp.panel.buttons((5, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x7'],
+                              self.lp.panel.buttons((6, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x7'],
+                              self.lp.panel.buttons((7, 8)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['stop_solo_mute'],
+                              self.lp.panel.buttons((8, 8)).names,
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['up', '7x7', 'stop_solo_mute'],
+                              self.lp.panel.buttons((0, 0), (7, 8), (8, 8)).names,  # noqa
+                              'Button name mismatch.')
+
+    def test_prog_layout_poll_event(self):
+        self.lp.open()
+        self.lp.will_return(midi_event=VirtualMidiEvent('note_on',button='up'))  # noqa
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event().message,
+                         VirtualMidiEvent('note_on', button='up').message,
+                         'MIDI message mismatch.')
 
 
 if __name__ == '__main__':

@@ -49,6 +49,7 @@ class MidiIn:
 
 class MidiOut:
     def __init__(self, api=API_RTMIDI_DUMMY, client_name=None):
+        self._api = api
         self._client_name = client_name
         self._port_number = -1
         self._port_name = ''
