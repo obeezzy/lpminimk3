@@ -10,6 +10,21 @@ CLIENT_ID = 36
 DUMMY_MIDI_MESSAGE = [0x90, 0x90, 0x90]
 DUMMY_MIDI_EVENT = MidiEvent(DUMMY_MIDI_MESSAGE, 0)
 
+
+class VirtualMidiEvent(MidiEvent):
+    def __init__(self, event, button):
+        self._button = button
+        self._event = event
+        super().__init__(message=[], deltatime=0)
+
+    @property
+    def message(self):
+        if (self._button == 'up'
+                and self._event == 'note_on'):
+            return []
+        return None
+
+
 IN_PORTS = {
         'daw': {
             'port_name': 'Launchpad Mini MK3 MIDI 1',
@@ -59,42 +74,61 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.sent_message = None
-        self.returned_event = None
+        self._event_from_message = None
+        self._event_from_button = None
+
+    @property
+    def returned_event(self):
+        return (self._event_from_message
+                if self._event_from_message
+                else self._event_from_button)
 
     def send_message(self, message, *args, **kwargs):  # noqa
         self.sent_message = message
         if self.sent_message == SysExMessages.Interfaces.MIDI:
-            self.returned_event = MidiEvent(SysExMessages.Interfaces.MIDI, 0)
+            self._event_from_message  = MidiEvent(SysExMessages.Interfaces.MIDI, 0)  # noqa
         elif self.sent_message == SysExMessages.Interfaces.DAW:
-            self.returned_event = MidiEvent(SysExMessages.Interfaces.DAW, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Interfaces.DAW, 0)  # noqa
         elif self.sent_message == SysExMessages.Modes.LIVE:
-            self.returned_event = MidiEvent(SysExMessages.Modes.LIVE, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Modes.LIVE, 0)
         elif self.sent_message == SysExMessages.Modes.PROG:
-            self.returned_event = MidiEvent(SysExMessages.Modes.PROG, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Modes.PROG, 0)
         elif self.sent_message == SysExMessages.Layouts.SESSION:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.SESSION, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Layouts.SESSION, 0)  # noqa
         elif self.sent_message == SysExMessages.Layouts.CUSTOM_1:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.CUSTOM_1, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Layouts.CUSTOM_1, 0)  # noqa
         elif self.sent_message == SysExMessages.Layouts.CUSTOM_2:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.CUSTOM_2, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Layouts.CUSTOM_2, 0)  # noqa
         elif self.sent_message == SysExMessages.Layouts.CUSTOM_3:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.CUSTOM_3, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Layouts.CUSTOM_3, 0)  # noqa
         elif self.sent_message == SysExMessages.Layouts.DAW_FADERS:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.DAW_FADERS, 0)  # noqa
+            self._event_from_message = MidiEvent(SysExMessages.Layouts.DAW_FADERS, 0)  # noqa
         elif self.sent_message == SysExMessages.Layouts.PROG:
-            self.returned_event = MidiEvent(SysExMessages.Layouts.PROG, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Layouts.PROG, 0)
         elif self.sent_message == SysExMessages.DEVICE_INQUIRY:
-            self.returned_event = MidiEvent(SysExMessages.Modes.PROG, 0)
+            self._event_from_message = MidiEvent(SysExMessages.Modes.PROG, 0)
         else:
             super().send_message(message, *args, **kwargs)
 
+    def will_return(self, *args, **kwargs):
+        if 'midi_event' in kwargs:
+            self.sent_message = None
+            self._event_from_message = None
+            self._event_from_button = kwargs['midi_event']
+
     def poll_for_event(self, *args, **kwargs):
-        if self.sent_message == SysExMessages.Interfaces.READBACK \
-                or self.sent_message == SysExMessages.Modes.READBACK \
-                or self.sent_message == SysExMessages.Layouts.READBACK \
-                or self.sent_message == SysExMessages.DEVICE_INQUIRY:
-            return self.returned_event
+        if (self.sent_message == SysExMessages.Interfaces.READBACK
+                or self.sent_message == SysExMessages.Modes.READBACK
+                or self.sent_message == SysExMessages.Layouts.READBACK
+                or self.sent_message == SysExMessages.DEVICE_INQUIRY):
+            return self._event_from_message
+        elif self._event_from_button:
+            return self._event_from_button
         return super().poll_for_event(*args, **kwargs)
+
+    def clear_event_queue(self, *args, **kwargs):
+        self._event_from_message = None
+        self._event_from_button = None
 
 
 def create_virtual_launchpad():

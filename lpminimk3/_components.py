@@ -6,6 +6,132 @@ class Animable:
         pass
 
 
+class LayoutCoordinate:
+    def __init__(self, launchpad, layout, button_names, *,
+                 name='',
+                 coordinate_id=-1,
+                 x=-1, y=-1):
+        x, y = (self._determine_coordinate_from_name(name,
+                                                     button_names)
+                if x < 0 and y < 0 and len(name) > 0
+                else (x, y))
+        max_x, max_y = self._determine_bounds(button_names)
+
+        x, y = (self._determine_coordinate_from_id(coordinate_id,
+                                                   bounds=(max_x, max_y))
+                if coordinate_id >= 0 and x < 0 and y < 0
+                else (x, y))
+        name = self._determine_name_from_coordinate(x, y,
+                                                    button_names,
+                                                    bounds=(max_x, max_y))
+        midi_value = self._determine_midi_value(x, y,
+                                                layout,
+                                                bounds=(max_x, max_y))
+        self._x = x
+        self._y = y
+        self._id = coordinate_id
+        self._max_x = max_x
+        self._max_y = max_y
+        self._name = name
+        self._midi_value = midi_value
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def midi_value(self):
+        return self._midi_value
+
+    @property
+    def max_x(self):
+        return self._max_x
+
+    @property
+    def max_y(self):
+        return self._max_y
+
+    def _determine_coordinate_from_id(self, led_id, bounds):
+        max_x, max_y = bounds
+        x = int(led_id % max_x)
+        y = int(led_id / max_y)
+        return x, y
+
+    def _determine_coordinate_from_name(self, name, button_names):
+        found = False
+        x = y = -1
+        for column, button_column in enumerate(button_names):
+            for row, button_name in enumerate(button_column):
+                if button_name == name.lower():
+                    x = row
+                    y = column
+                    found = True
+                    break
+                elif (name.lower() in button_name
+                        and name.lower()
+                        in ButtonFace.STOP_SOLO_MUTE.split('_')):
+                    x = row
+                    y = column
+                    found = True
+                    break
+            if found:
+                break
+        if x < 0 or y < 0:
+            raise ValueError('Invalid name set.')
+
+        return x, y
+
+    def _determine_midi_value(self, x, y, layout, bounds):
+        max_x, max_y = bounds
+        within_range = (x >= 0
+                        and y >= 0
+                        and x < max_x
+                        and y < max_y)
+        if not within_range:
+            raise ValueError('Led(x,y) out of range: '
+                             'value({},{}), '
+                             'range((0,{}),(0,{}))'
+                             .format(x, y, max_x, max_y))
+        return layout[y][x]
+
+    def _determine_name_from_coordinate(self, x, y, button_names, bounds):
+        max_x, max_y = bounds
+        within_range = (x >= 0
+                        and y >= 0
+                        and x < max_x
+                        and y < max_y)
+        if not within_range:
+            raise ValueError('Led(x,y) out of range: '
+                             'value({},{}), '
+                             'range((0,{}),(0,{}))'
+                             .format(x, y, max_x, max_y))
+        return button_names[y][x]
+
+    def _determine_bounds(self, button_names):
+        if len(button_names) > 0:
+            max_x = len(button_names[0])
+            max_y = len(button_names)
+            return max_x, max_y
+        else:
+            raise RuntimeError('Empty button name list.')
+
+    def __repr__(self):
+        return ('LayoutCoordinate(name={}, x={}, y={}, id={})'
+                .format(self.name, self.x, self.y, self.id))
+
+
 class ButtonFace:
     UP = 'up'
     DOWN = 'down'
@@ -24,6 +150,114 @@ class ButtonFace:
     SCENE_LAUNCH_6 = 'scene_launch_6'
     SCENE_LAUNCH_7 = 'scene_launch_7'
     STOP_SOLO_MUTE = 'stop_solo_mute'
+
+
+class Button:
+    def __init__(self, launchpad,
+                 layout,
+                 button_names, *,
+                 x=-1, y=-1,
+                 name='',
+                 button_id=-1):
+        coordinate = LayoutCoordinate(launchpad=launchpad,
+                                      layout=layout,
+                                      button_names=button_names,
+                                      name=name,
+                                      coordinate_id=button_id,
+                                      x=x, y=y)
+        self._name = coordinate.name
+        self._x = coordinate.x
+        self._y = coordinate.y
+        self._button_id = coordinate.id
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def id(self):
+        return self._button_id
+
+    def __repr__(self):
+        return ('Button(name=\'{}\', x={}, y={}, id={})'
+                .format(self.name, self.x, self.y, self.id))
+
+
+class ButtonGroup:
+    def __init__(self, launchpad,
+                 layout,
+                 button_names,
+                 args):
+        self._launchpad = launchpad
+        self._layout = layout
+        self._button_names = button_names
+        self._buttons = self._create_buttons(launchpad,
+                                             layout,
+                                             button_names,
+                                             args)
+
+    @property
+    def launchpad(self):
+        return self._launchpad
+
+    @property
+    def names(self):
+        return [button.name for button in self._buttons]
+
+    def poll_for_event(self, *, interface='midi', timeout=None):
+        return self._launchpad.poll_for_event(interface=interface,
+                                              timeout=timeout)
+
+    def clear_event_queue(self, *, interface='midi'):
+        self._launchpad.clear_event_queue()
+
+    # FIXME: Too complex
+    def _create_buttons(self, launchpad, layout, button_names, args):  # noqa
+        buttons = []
+        for arg in args:
+            found = False
+            for column, button_name_column in enumerate(button_names):
+                if found:
+                    break
+                for row, button_name in enumerate(button_name_column):
+                    if found:
+                        break
+                    elif isinstance(arg, str):
+                        if arg.lower() == button_name:
+                            buttons.append(Button(launchpad,
+                                                  layout,
+                                                  button_names,
+                                                  name=arg))
+                            found = True
+                    elif isinstance(arg, (tuple, list)):
+                        if arg[0] == row and arg[1] == column:
+                            buttons.append(Button(launchpad,
+                                                  layout,
+                                                  button_names,
+                                                  x=row, y=column))
+                            found = True
+                    elif isinstance(arg, int):
+                        buttons.append(Button(launchpad,
+                                              layout,
+                                              button_names,
+                                              button_id=arg))
+                        found = True
+                    else:
+                        raise ValueError('Invalid button "{}".'
+                                         .format(str(arg)))
+        return buttons
+
+    def __repr__(self):
+        names = list(map(lambda name: "'{}'".format(name), self.names))
+        return 'ButtonGroup({})'.format(', '.join(names))
 
 
 class Led:
@@ -49,80 +283,30 @@ class Led:
                  layout, x=-1, y=-1, name='', mode=STATIC):
         self._launchpad = launchpad
         self._button_names = button_names
+        self._mode = mode
         self._x = self._y = -1
 
         name = (x if isinstance(x, str)
                 and name == '' else name)
         if isinstance(x, str) and name == '':
             raise ValueError('Invalid name')
-
         x = -1 if isinstance(x, str) else x
-        x, y = (self._determine_coordinates_from_name(name,
-                                                      button_names)
-                if x < 0 and y < 0 and len(name) > 0
-                else (x, y))
-        led_id = x if x >= 0 and y < 0 else None
-        max_x, max_y = self._determine_bounds(button_names)
-        x, y = (self._determine_coordinates_from_id(led_id, max_x, max_y)
-                if led_id is not None else (x, y))
-        midi_value = self._determine_midi_value(layout, x, y, max_x, max_y)
 
-        self._x = x
-        self._y = y
-        self._mode = mode
-        self._max_x = max_x
-        self._max_y = max_y
-        self._midi_value = midi_value
-        self._button_names = button_names
+        led_id = x if x >= 0 and y < 0 else -1
+        x = -1 if isinstance(x, int) and led_id >= 0 else x
 
-    def _determine_coordinates_from_id(self, led_id, max_x, max_y):
-        x = int(led_id % max_x)
-        y = int(led_id / max_y)
-        return x, y
+        coordinate = LayoutCoordinate(launchpad=launchpad,
+                                      layout=layout,
+                                      button_names=button_names,
+                                      name=name,
+                                      coordinate_id=led_id,
+                                      x=x, y=y)
 
-    def _determine_coordinates_from_name(self, name, button_names):
-        found = False
-        x = y = -1
-        for column, button_column in enumerate(button_names):
-            for row, button_name in enumerate(button_column):
-                if button_name == name.lower():
-                    x = row
-                    y = column
-                    found = True
-                    break
-                elif (name.lower() in button_name
-                        and name.lower()
-                        in ButtonFace.STOP_SOLO_MUTE.split('_')):
-                    x = row
-                    y = column
-                    found = True
-                    break
-            if found:
-                break
-        if x < 0 or y < 0:
-            raise ValueError('Invalid name set.')
-
-        return x, y
-
-    def _determine_midi_value(self, layout, x, y, max_x, max_y):
-        within_range = (x >= 0
-                        and y >= 0
-                        and x <= max_x
-                        and y <= max_y)
-        if not within_range:
-            raise RuntimeError('Led(x,y) out of range: '
-                               'value({},{}), '
-                               'range((0,{}),(0,{}))'
-                               .format(x, y, max_x, max_y))
-        return layout[y][x]
-
-    def _determine_bounds(self, button_names):
-        if len(button_names) > 0:
-            max_x = len(button_names[0])
-            max_y = len(button_names)
-            return max_x, max_y
-        else:
-            raise RuntimeError('Empty button name list.')
+        self._x = coordinate.x
+        self._y = coordinate.y
+        self._max_x = coordinate.max_x
+        self._max_y = coordinate.max_y
+        self._midi_value = coordinate.midi_value
 
     @property
     def id(self):
@@ -140,9 +324,9 @@ class Led:
 
     @property
     def name(self):
-        return self._button_names[self.y][self.x] \
-                if self._is_within_range() \
-                else ''
+        return (self._button_names[self.y][self.x]
+                if self._is_within_range()
+                else '')
 
     @property
     def midi_value(self):
@@ -168,21 +352,21 @@ class Led:
                 and not RgbColor.is_valid(value))
                 or ((isinstance(value, tuple) or isinstance(value, list))
                     and not RgbColor.is_valid(value))):
-            raise RuntimeError('Invalid color.')
+            raise ValueError('Invalid color.')
         elif RgbColor.is_valid(value):
             rgb_color = RgbColor(value)
-            message = self._colorspec_message(self._LIGHTING_TYPE['rgb'],
-                                              self._midi_value,
-                                              rgb_color.r,
-                                              rgb_color.g,
-                                              rgb_color.b)
-            self.launchpad.send_message(message)
+            colorspec = self._colorspec_message(self._LIGHTING_TYPE['rgb'],
+                                                self._midi_value,
+                                                rgb_color.r,
+                                                rgb_color.g,
+                                                rgb_color.b)
+            self.launchpad.send_message(colorspec)
         else:
             color_id = ColorShadeStore().find(value).color_id \
                     if not isinstance(value, int) \
                     else value
-            color_id = value if ColorShade.is_valid_id(value) else None
-            if not color_id:
+            color_id = value if ColorShade.is_valid_id(value) else -1
+            if color_id < 0:
                 raise ValueError('Color ID values must be between 0 and 127.')  # noqa
             else:
                 self.launchpad.send_message([self._LIGHTING_MODE[self._mode],
@@ -199,8 +383,8 @@ class Led:
     def _is_within_range(self):
         return self._x >= 0 \
                 and self._y >= 0 \
-                and self._x <= self._max_x \
-                and self._y <= self._max_y
+                and self._x < self._max_x \
+                and self._y < self._max_y
 
     def __repr__(self):
         return 'Led(x={}, y={})'.format(self.x, self.y)
@@ -272,6 +456,22 @@ class Panel(Animable):
                    x=x, y=y,
                    name=name, mode=mode)
 
+    def buttons(self, *args, layout=PROG):
+        args = (args
+                if len(args) > 0
+                else [button_name
+                      for button_row in Panel._BUTTON_NAMES
+                      for button_name in button_row])
+        if layout == Panel.CUSTOM:
+            return ButtonGroup(launchpad=self._launchpad,
+                               layout=Panel._CUSTOM_MODE_MIDI_LAYOUT,
+                               button_names=Panel._BUTTON_NAMES,
+                               args=list(args))
+        return ButtonGroup(launchpad=self._launchpad,
+                           layout=Panel._PROG_MODE_MIDI_LAYOUT,
+                           button_names=Panel._BUTTON_NAMES,
+                           args=list(args))
+
     def __repr__(self):
         return 'Panel({}x{})'.format(self.max_x, self.max_y)
 
@@ -336,6 +536,22 @@ class Grid(Animable):
                    button_names=Grid._BUTTON_NAMES,
                    layout=Grid._PROG_MODE_MIDI_LAYOUT,
                    x=x, y=y, name=name, mode=mode)
+
+    def buttons(self, *args, layout=PROG):
+        args = (args
+                if len(args) > 0
+                else [button_name
+                      for button_row in Grid._BUTTON_NAMES
+                      for button_name in button_row])
+        if layout == Grid.CUSTOM:
+            return ButtonGroup(launchpad=self._launchpad,
+                               layout=Grid._CUSTOM_MODE_MIDI_LAYOUT,
+                               button_names=Grid._BUTTON_NAMES,
+                               args=list(args))
+        return ButtonGroup(launchpad=self._launchpad,
+                           layout=Grid._PROG_MODE_MIDI_LAYOUT,
+                           button_names=Grid._BUTTON_NAMES,
+                           args=list(args))
 
     def __repr__(self):
         return 'Grid({}x{})'.format(self.max_x, self.max_y)

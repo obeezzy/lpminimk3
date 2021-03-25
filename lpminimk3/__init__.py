@@ -45,6 +45,17 @@ class LaunchpadMiniMk3:
         else:
             raise RuntimeError('Port closed.')
 
+    def clear_event_queue(self, *, interface=Interface.MIDI):
+        if self.is_open():
+            if interface == Interface.DAW:
+                return self.daw_in_port.clear_event_queue()
+            elif interface == Interface.MIDI:
+                return self.midi_in_port.clear_event_queue()
+            else:
+                raise RuntimeError('No interface set.')
+        else:
+            raise RuntimeError('Port closed.')
+
     @property
     def id(self):
         return self._midi_client.client_number
