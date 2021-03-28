@@ -1,6 +1,7 @@
 import unittest
 from lpminimk3.__init__ import Grid
-from tests._vlpminimk3 import create_virtual_launchpad
+from tests._vlpminimk3 import VirtualMidiEvent,\
+                              create_virtual_launchpad
 
 
 class TestGrid(unittest.TestCase):
@@ -28,22 +29,30 @@ class TestGrid(unittest.TestCase):
                          8,
                          'Max Y mismatch.')
 
-    def test_led_set(self):
+
+class TestLed(unittest.TestCase):
+    def setUp(self):
+        self.lp = create_virtual_launchpad()
+
+    def tearDown(self):
+        self.lp.close()
+
+    def test_set(self):
         self.lp.open()
         for color_index in range(128):
-            self.lp.panel.led('0x0').color = color_index
+            self.lp.grid.led('0x0').color = color_index
 
         with self.assertRaises(ValueError):
-            self.lp.panel.led('0x0').color = -1
+            self.lp.grid.led('0x0').color = -1
         with self.assertRaises(ValueError):
-            self.lp.panel.led('0x0').color = 128
+            self.lp.grid.led('0x0').color = 128
 
-    def test_led_reset(self):
+    def test_reset(self):
         self.lp.open()
         self.lp.grid.led('0x0').color = 1
         self.lp.grid.led('0x0').reset()
 
-    def test_led_id_by_xy(self):
+    def test_id_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).id, 2, 'ID mismatch.')  # noqa
@@ -110,7 +119,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).id, 63, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).id, 64, 'ID mismatch.')  # noqa
 
-    def test_led_x_by_xy(self):
+    def test_x_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).x, 0, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).x, 1, 'X mismatch.')  # noqa
@@ -177,7 +186,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).x, 6, 'X mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).x, 7, 'X mismatch.')  # noqa
 
-    def test_led_y_by_xy(self):
+    def test_y_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).y, 0, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).y, 0, 'Y mismatch.')  # noqa
@@ -244,7 +253,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).y, 7, 'Y mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).y, 7, 'Y mismatch.')  # noqa
 
-    def test_led_name_by_name(self):
+    def test_name_by_name(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).name, '0x0', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).name, '1x0', 'Name mismatch.')  # noqa
@@ -311,7 +320,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).name, '6x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).name, '7x7', 'Name mismatch.')  # noqa
 
-    def test_led_color_by_xy(self):
+    def test_color_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).color, None, 'Color mismatch.')  # noqa
@@ -378,7 +387,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).color, None, 'Color mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).color, None, 'Color mismatch.')  # noqa
 
-    def test_led_name_by_id(self):
+    def test_name_by_id(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led('0x0').id, 1, 'ID mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led('1x0').id, 2, 'ID mismatch.')  # noqa
@@ -450,7 +459,7 @@ class TestGrid(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.lp.grid.led('s')
 
-    def test_led_id_by_name(self):
+    def test_id_by_name(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0).name, '0x0', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1).name, '1x0', 'Name mismatch.')  # noqa
@@ -517,7 +526,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(62).name, '6x7', 'Name mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(63).name, '7x7', 'Name mismatch.')  # noqa
 
-    def test_led_midi_value_prog_layout(self):
+    def test_midi_value_prog_layout(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).midi_value, 0x51, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0).midi_value, 0x52, 'MIDI value mismatch.')  # noqa
@@ -584,7 +593,7 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(6, 7).midi_value, 0x11, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7).midi_value, 0x12, 'MIDI value mismatch.')  # noqa
 
-    def test_led_midi_value_custom_layout(self):
+    def test_midi_value_custom_layout(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0, layout=Grid.CUSTOM).midi_value, 0x40, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(1, 0, layout=Grid.CUSTOM).midi_value, 0x41, 'MIDI value mismatch.')  # noqa
@@ -650,6 +659,623 @@ class TestGrid(unittest.TestCase):
         self.assertEqual(self.lp.grid.led(5, 7, layout=Grid.CUSTOM).midi_value, 0x45, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(6, 7, layout=Grid.CUSTOM).midi_value, 0x46, 'MIDI value mismatch.')  # noqa
         self.assertEqual(self.lp.grid.led(7, 7, layout=Grid.CUSTOM).midi_value, 0x47, 'MIDI value mismatch.')  # noqa
+
+
+class TestButtonGroup(unittest.TestCase):
+    def setUp(self):
+        self.lp = create_virtual_launchpad()
+
+    def tearDown(self):
+        self.lp.close()
+
+    def test_names_by_name(self):
+        self.lp.open()
+        self.assertCountEqual(['0x0'],
+                              self.lp.grid.buttons('0x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x0'],
+                              self.lp.grid.buttons('1x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x0'],
+                              self.lp.grid.buttons('2x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x0'],
+                              self.lp.grid.buttons('3x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x0'],
+                              self.lp.grid.buttons('4x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x0'],
+                              self.lp.grid.buttons('5x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x0'],
+                              self.lp.grid.buttons('6x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x0'],
+                              self.lp.grid.buttons('7x0').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x1'],
+                              self.lp.grid.buttons('0x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x1'],
+                              self.lp.grid.buttons('1x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x1'],
+                              self.lp.grid.buttons('2x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x1'],
+                              self.lp.grid.buttons('3x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x1'],
+                              self.lp.grid.buttons('4x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x1'],
+                              self.lp.grid.buttons('5x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x1'],
+                              self.lp.grid.buttons('6x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x1'],
+                              self.lp.grid.buttons('7x1').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x2'],
+                              self.lp.grid.buttons('0x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x2'],
+                              self.lp.grid.buttons('1x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x2'],
+                              self.lp.grid.buttons('2x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x2'],
+                              self.lp.grid.buttons('3x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x2'],
+                              self.lp.grid.buttons('4x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x2'],
+                              self.lp.grid.buttons('5x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x2'],
+                              self.lp.grid.buttons('6x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x2'],
+                              self.lp.grid.buttons('7x2').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x3'],
+                              self.lp.grid.buttons('0x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x3'],
+                              self.lp.grid.buttons('1x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x3'],
+                              self.lp.grid.buttons('2x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x3'],
+                              self.lp.grid.buttons('3x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x3'],
+                              self.lp.grid.buttons('4x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x3'],
+                              self.lp.grid.buttons('5x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x3'],
+                              self.lp.grid.buttons('6x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x3'],
+                              self.lp.grid.buttons('7x3').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x4'],
+                              self.lp.grid.buttons('0x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x4'],
+                              self.lp.grid.buttons('1x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x4'],
+                              self.lp.grid.buttons('2x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x4'],
+                              self.lp.grid.buttons('3x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x4'],
+                              self.lp.grid.buttons('4x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x4'],
+                              self.lp.grid.buttons('5x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x4'],
+                              self.lp.grid.buttons('6x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x4'],
+                              self.lp.grid.buttons('7x4').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x5'],
+                              self.lp.grid.buttons('0x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x5'],
+                              self.lp.grid.buttons('1x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x5'],
+                              self.lp.grid.buttons('2x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x5'],
+                              self.lp.grid.buttons('3x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x5'],
+                              self.lp.grid.buttons('4x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x5'],
+                              self.lp.grid.buttons('5x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x5'],
+                              self.lp.grid.buttons('6x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x5'],
+                              self.lp.grid.buttons('7x5').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x6'],
+                              self.lp.grid.buttons('0x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x6'],
+                              self.lp.grid.buttons('1x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x6'],
+                              self.lp.grid.buttons('2x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x6'],
+                              self.lp.grid.buttons('3x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x6'],
+                              self.lp.grid.buttons('4x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x6'],
+                              self.lp.grid.buttons('5x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x6'],
+                              self.lp.grid.buttons('6x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x6'],
+                              self.lp.grid.buttons('7x6').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x7'],
+                              self.lp.grid.buttons('0x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x7'],
+                              self.lp.grid.buttons('1x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x7'],
+                              self.lp.grid.buttons('2x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x7'],
+                              self.lp.grid.buttons('3x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x7'],
+                              self.lp.grid.buttons('4x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x7'],
+                              self.lp.grid.buttons('5x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x7'],
+                              self.lp.grid.buttons('6x7').names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x7'],
+                              self.lp.grid.buttons('7x7').names,
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['0x0', '5x5', '7x7'],
+                              self.lp.grid.buttons('0x0', '5x5', '7x7').names,  # noqa
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['0x0', '1x0', '2x0', '3x0', '4x0', '5x0', '6x0', '7x0', # noqa
+                               '0x1', '1x1', '2x1', '3x1', '4x1', '5x1', '6x1', '7x1', # noqa
+                               '0x2', '1x2', '2x2', '3x2', '4x2', '5x2', '6x2', '7x2', # noqa
+                               '0x3', '1x3', '2x3', '3x3', '4x3', '5x3', '6x3', '7x3', # noqa
+                               '0x4', '1x4', '2x4', '3x4', '4x4', '5x4', '6x4', '7x4', # noqa
+                               '0x5', '1x5', '2x5', '3x5', '4x5', '5x5', '6x5', '7x5', # noqa
+                               '0x6', '1x6', '2x6', '3x6', '4x6', '5x6', '6x6', '7x6', # noqa
+                               '0x7', '1x7', '2x7', '3x7', '4x7', '5x7', '6x7', '7x7'], # noqa
+                              self.lp.grid.buttons().names,
+                              'Button name mismatch.')
+
+    def test_names_by_id(self):
+        self.lp.open()
+        self.assertCountEqual(['0x0'],
+                              self.lp.grid.buttons(0).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x0'],
+                              self.lp.grid.buttons(1).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x0'],
+                              self.lp.grid.buttons(2).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x0'],
+                              self.lp.grid.buttons(3).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x0'],
+                              self.lp.grid.buttons(4).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x0'],
+                              self.lp.grid.buttons(5).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x0'],
+                              self.lp.grid.buttons(6).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x0'],
+                              self.lp.grid.buttons(7).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x1'],
+                              self.lp.grid.buttons(8).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x1'],
+                              self.lp.grid.buttons(9).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x1'],
+                              self.lp.grid.buttons(10).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x1'],
+                              self.lp.grid.buttons(11).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x1'],
+                              self.lp.grid.buttons(12).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x1'],
+                              self.lp.grid.buttons(13).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x1'],
+                              self.lp.grid.buttons(14).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x1'],
+                              self.lp.grid.buttons(15).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x2'],
+                              self.lp.grid.buttons(16).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x2'],
+                              self.lp.grid.buttons(17).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x2'],
+                              self.lp.grid.buttons(18).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x2'],
+                              self.lp.grid.buttons(19).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x2'],
+                              self.lp.grid.buttons(20).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x2'],
+                              self.lp.grid.buttons(21).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x2'],
+                              self.lp.grid.buttons(22).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x2'],
+                              self.lp.grid.buttons(23).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x3'],
+                              self.lp.grid.buttons(24).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x3'],
+                              self.lp.grid.buttons(25).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x3'],
+                              self.lp.grid.buttons(26).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x3'],
+                              self.lp.grid.buttons(27).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x3'],
+                              self.lp.grid.buttons(28).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x3'],
+                              self.lp.grid.buttons(29).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x3'],
+                              self.lp.grid.buttons(30).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x3'],
+                              self.lp.grid.buttons(31).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x4'],
+                              self.lp.grid.buttons(32).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x4'],
+                              self.lp.grid.buttons(33).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x4'],
+                              self.lp.grid.buttons(34).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x4'],
+                              self.lp.grid.buttons(35).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x4'],
+                              self.lp.grid.buttons(36).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x4'],
+                              self.lp.grid.buttons(37).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x4'],
+                              self.lp.grid.buttons(38).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x4'],
+                              self.lp.grid.buttons(39).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x5'],
+                              self.lp.grid.buttons(40).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x5'],
+                              self.lp.grid.buttons(41).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x5'],
+                              self.lp.grid.buttons(42).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x5'],
+                              self.lp.grid.buttons(43).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x5'],
+                              self.lp.grid.buttons(44).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x5'],
+                              self.lp.grid.buttons(45).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x5'],
+                              self.lp.grid.buttons(46).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x5'],
+                              self.lp.grid.buttons(47).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x6'],
+                              self.lp.grid.buttons(48).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x6'],
+                              self.lp.grid.buttons(49).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x6'],
+                              self.lp.grid.buttons(50).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x6'],
+                              self.lp.grid.buttons(51).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x6'],
+                              self.lp.grid.buttons(52).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x6'],
+                              self.lp.grid.buttons(53).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x6'],
+                              self.lp.grid.buttons(54).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x6'],
+                              self.lp.grid.buttons(55).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x7'],
+                              self.lp.grid.buttons(56).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x7'],
+                              self.lp.grid.buttons(57).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x7'],
+                              self.lp.grid.buttons(58).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x7'],
+                              self.lp.grid.buttons(59).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x7'],
+                              self.lp.grid.buttons(60).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x7'],
+                              self.lp.grid.buttons(61).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x7'],
+                              self.lp.grid.buttons(62).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x7'],
+                              self.lp.grid.buttons(63).names,
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['0x0'],
+                              self.lp.grid.buttons((0, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x0'],
+                              self.lp.grid.buttons((1, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x0'],
+                              self.lp.grid.buttons((2, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x0'],
+                              self.lp.grid.buttons((3, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x0'],
+                              self.lp.grid.buttons((4, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x0'],
+                              self.lp.grid.buttons((5, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x0'],
+                              self.lp.grid.buttons((6, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x0'],
+                              self.lp.grid.buttons((7, 0)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x1'],
+                              self.lp.grid.buttons((0, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x1'],
+                              self.lp.grid.buttons((1, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x1'],
+                              self.lp.grid.buttons((2, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x1'],
+                              self.lp.grid.buttons((3, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x1'],
+                              self.lp.grid.buttons((4, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x1'],
+                              self.lp.grid.buttons((5, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x1'],
+                              self.lp.grid.buttons((6, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x1'],
+                              self.lp.grid.buttons((7, 1)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x2'],
+                              self.lp.grid.buttons((0, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x2'],
+                              self.lp.grid.buttons((1, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x2'],
+                              self.lp.grid.buttons((2, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x2'],
+                              self.lp.grid.buttons((3, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x2'],
+                              self.lp.grid.buttons((4, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x2'],
+                              self.lp.grid.buttons((5, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x2'],
+                              self.lp.grid.buttons((6, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x2'],
+                              self.lp.grid.buttons((7, 2)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x3'],
+                              self.lp.grid.buttons((0, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x3'],
+                              self.lp.grid.buttons((1, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x3'],
+                              self.lp.grid.buttons((2, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x3'],
+                              self.lp.grid.buttons((3, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x3'],
+                              self.lp.grid.buttons((4, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x3'],
+                              self.lp.grid.buttons((5, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x3'],
+                              self.lp.grid.buttons((6, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x3'],
+                              self.lp.grid.buttons((7, 3)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x4'],
+                              self.lp.grid.buttons((0, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x4'],
+                              self.lp.grid.buttons((1, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x4'],
+                              self.lp.grid.buttons((2, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x4'],
+                              self.lp.grid.buttons((3, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x4'],
+                              self.lp.grid.buttons((4, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x4'],
+                              self.lp.grid.buttons((5, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x4'],
+                              self.lp.grid.buttons((6, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x4'],
+                              self.lp.grid.buttons((7, 4)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x5'],
+                              self.lp.grid.buttons((0, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x5'],
+                              self.lp.grid.buttons((1, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x5'],
+                              self.lp.grid.buttons((2, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x5'],
+                              self.lp.grid.buttons((3, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x5'],
+                              self.lp.grid.buttons((4, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x5'],
+                              self.lp.grid.buttons((5, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x5'],
+                              self.lp.grid.buttons((6, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x5'],
+                              self.lp.grid.buttons((7, 5)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x6'],
+                              self.lp.grid.buttons((0, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x6'],
+                              self.lp.grid.buttons((1, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x6'],
+                              self.lp.grid.buttons((2, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x6'],
+                              self.lp.grid.buttons((3, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x6'],
+                              self.lp.grid.buttons((4, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x6'],
+                              self.lp.grid.buttons((5, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x6'],
+                              self.lp.grid.buttons((6, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x6'],
+                              self.lp.grid.buttons((7, 6)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x7'],
+                              self.lp.grid.buttons((0, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['1x7'],
+                              self.lp.grid.buttons((1, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['2x7'],
+                              self.lp.grid.buttons((2, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['3x7'],
+                              self.lp.grid.buttons((3, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['4x7'],
+                              self.lp.grid.buttons((4, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['5x7'],
+                              self.lp.grid.buttons((5, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['6x7'],
+                              self.lp.grid.buttons((6, 7)).names,
+                              'Button name mismatch.')
+        self.assertCountEqual(['7x7'],
+                              self.lp.grid.buttons((7, 7)).names,
+                              'Button name mismatch.')
+
+        self.assertCountEqual(['0x0', '5x5', '7x7'],
+                              self.lp.grid.buttons((0, 0), (5, 5), (7, 7)).names,  # noqa
+                              'Button name mismatch.')
+
+    def test_prog_layout_poll_event(self):
+        self.lp.open()
+        self.lp.will_return(midi_event=VirtualMidiEvent('note_on', button='0x0'))  # noqa
+        self.assertEqual(self.lp.grid.buttons('0x0').poll_for_event().message,
+                         VirtualMidiEvent('note_on', button='0x0').message,
+                         'MIDI message mismatch.')
 
 
 if __name__ == '__main__':

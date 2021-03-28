@@ -1589,7 +1589,7 @@ class TestButtonGroup(unittest.TestCase):
 
     def test_prog_layout_poll_event(self):
         self.lp.open()
-        self.lp.will_return(midi_event=VirtualMidiEvent('note_on',button='up'))  # noqa
+        self.lp.will_return(midi_event=VirtualMidiEvent('note_on', button='up'))  # noqa
         self.assertEqual(self.lp.panel.buttons('up').poll_for_event().message,
                          VirtualMidiEvent('note_on', button='up').message,
                          'MIDI message mismatch.')
