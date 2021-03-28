@@ -1,3 +1,7 @@
+"""
+Software representation of physical components for Launchpad Mini MK3.
+"""
+
 from .colors import ColorShade, ColorShadeStore, RgbColor
 
 
@@ -6,7 +10,7 @@ class Animable:
         pass
 
 
-class LayoutCoordinate:
+class _LayoutCoordinate:
     def __init__(self, launchpad, layout, button_names, *,
                  name='',
                  coordinate_id=-1,
@@ -133,6 +137,10 @@ class LayoutCoordinate:
 
 
 class ButtonFace:
+    """
+    A button face represents the marking placed on the top
+    of a launchpad button.
+    """
     UP = 'up'
     DOWN = 'down'
     LEFT = 'left'
@@ -152,19 +160,19 @@ class ButtonFace:
     STOP_SOLO_MUTE = 'stop_solo_mute'
 
 
-class Button:
+class _Button:
     def __init__(self, launchpad,
                  layout,
                  button_names, *,
                  x=-1, y=-1,
                  name='',
                  button_id=-1):
-        coordinate = LayoutCoordinate(launchpad=launchpad,
-                                      layout=layout,
-                                      button_names=button_names,
-                                      name=name,
-                                      coordinate_id=button_id,
-                                      x=x, y=y)
+        coordinate = _LayoutCoordinate(launchpad=launchpad,
+                                       layout=layout,
+                                       button_names=button_names,
+                                       name=name,
+                                       coordinate_id=button_id,
+                                       x=x, y=y)
         self._name = coordinate.name
         self._x = coordinate.x
         self._y = coordinate.y
@@ -192,6 +200,12 @@ class Button:
 
 
 class ButtonGroup:
+    """
+    A ButtonGroup simply represents a collection of buttons.
+
+    Calling useful methods like `ButtonGroup.poll_for_event()`
+    can be used to wait for MIDI events from any of the buttons.
+    """
     def __init__(self, launchpad,
                  layout,
                  button_names,
@@ -206,17 +220,35 @@ class ButtonGroup:
 
     @property
     def launchpad(self):
+        """
+        Launchpad reference.
+        """
         return self._launchpad
 
     @property
     def names(self):
+        """
+        Names of buttons in group.
+        """
         return [button.name for button in self._buttons]
 
     def poll_for_event(self, *, interface='midi', timeout=None):
+        """
+        Polls for MIDI events of buttons specified
+        in this group. If `timeout` <= 0, this function will
+        wait indefinitely until a :class:`MidiEvent` is
+        received.
+
+        Returns:
+            MidiEvent: MIDI event (or None).
+        """
         return self._launchpad.poll_for_event(interface=interface,
                                               timeout=timeout)
 
     def clear_event_queue(self, *, interface='midi'):
+        """
+        Clears event queue.
+        """
         self._launchpad.clear_event_queue()
 
     # FIXME: Too complex
@@ -232,23 +264,23 @@ class ButtonGroup:
                         break
                     elif isinstance(arg, str):
                         if arg.lower() == button_name:
-                            buttons.append(Button(launchpad,
-                                                  layout,
-                                                  button_names,
-                                                  name=arg))
+                            buttons.append(_Button(launchpad,
+                                                   layout,
+                                                   button_names,
+                                                   name=arg))
                             found = True
                     elif isinstance(arg, (tuple, list)):
                         if arg[0] == row and arg[1] == column:
-                            buttons.append(Button(launchpad,
-                                                  layout,
-                                                  button_names,
-                                                  x=row, y=column))
+                            buttons.append(_Button(launchpad,
+                                                   layout,
+                                                   button_names,
+                                                   x=row, y=column))
                             found = True
                     elif isinstance(arg, int):
-                        buttons.append(Button(launchpad,
-                                              layout,
-                                              button_names,
-                                              button_id=arg))
+                        buttons.append(_Button(launchpad,
+                                               layout,
+                                               button_names,
+                                               button_id=arg))
                         found = True
                     else:
                         raise ValueError('Invalid button "{}".'
@@ -261,6 +293,21 @@ class ButtonGroup:
 
 
 class Led:
+    """
+    LED on the launchpad.
+
+    Args:
+        launchpad (LaunchpadMiniMk3): Launchpad reference.
+        button_names (list): Button names for layout.
+        layout (Layout): Layout of buttons.
+
+    Keyword Args:
+        x (int): X index.
+        y (int): Y index.
+        name (str): Name of LED.
+        mode (str): Lighting mode.
+    """
+
     OFF = 'off'
     STATIC = 'static'
     FLASH = 'flash'
@@ -295,12 +342,12 @@ class Led:
         led_id = x if x >= 0 and y < 0 else -1
         x = -1 if isinstance(x, int) and led_id >= 0 else x
 
-        coordinate = LayoutCoordinate(launchpad=launchpad,
-                                      layout=layout,
-                                      button_names=button_names,
-                                      name=name,
-                                      coordinate_id=led_id,
-                                      x=x, y=y)
+        coordinate = _LayoutCoordinate(launchpad=launchpad,
+                                       layout=layout,
+                                       button_names=button_names,
+                                       name=name,
+                                       coordinate_id=led_id,
+                                       x=x, y=y)
 
         self._x = coordinate.x
         self._y = coordinate.y
@@ -310,38 +357,55 @@ class Led:
 
     @property
     def id(self):
+        """ID of LED."""
         if not self._is_within_range():
             return -1
         return (self._y * self._max_y) + self._x + 1
 
     @property
     def x(self):
+        """X position of LED."""
         return self._x
 
     @property
     def y(self):
+        """Y position of LED."""
         return self._y
 
     @property
     def name(self):
+        """Name of LED."""
         return (self._button_names[self.y][self.x]
                 if self._is_within_range()
                 else '')
 
     @property
     def midi_value(self):
+        """Midi value of LED."""
         return self._midi_value
 
     @property
     def launchpad(self):
+        """Launchpad reference."""
         return self._launchpad
 
     @property
     def color(self):
+        """Color. Retrieving the set color is not supported."""
         return None
 
     @color.setter
     def color(self, value):
+        """
+        Sets the color of the LED to `value`.
+
+        Args:
+            value (ColorShade or str or int): Color value.
+
+        Raises:
+            ValueError: When invalid value is used.
+            TypeError: When invalid type is used.
+        """
         if not value or value == '':
             self.reset()
         elif not isinstance(value, ColorShade) and not isinstance(value, str) \
@@ -373,6 +437,7 @@ class Led:
                                             self._midi_value, color_id])
 
     def reset(self):
+        """Sets color to OFF."""
         self.launchpad.send_message([self._LIGHTING_MODE[Led.OFF],
                                     self._midi_value, 0x0])
 
@@ -391,6 +456,12 @@ class Led:
 
 
 class Panel(Animable):
+    """
+    Panel of launchpad.
+
+    Args:
+        launchpad (LaunchpadMiniMk3): Launchpad reference.
+    """
     PROG = 'prog'
     CUSTOM = 'custom'
     _PROG_MODE_MIDI_LAYOUT = [
@@ -433,17 +504,32 @@ class Panel(Animable):
 
     @property
     def launchpad(self):
+        """Launchpad reference."""
         return self._launchpad
 
     @property
     def max_x(self):
+        """Max X."""
         return len(Panel._BUTTON_NAMES[0])
 
     @property
     def max_y(self):
+        """Max Y."""
         return len(Panel._BUTTON_NAMES)
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
+        """
+        Returns an LED.
+
+        Args:
+            x (int): X position of LED.
+            y (int): Y position of LED.
+
+        Keyword Args:
+            name (str): Name of LED.
+            layout (Layout): Layout of buttons.
+            mode (str): Lighting mode.
+        """
         if layout == Panel.CUSTOM:
             return Led(launchpad=self._launchpad,
                        button_names=Panel._BUTTON_NAMES,
@@ -457,6 +543,16 @@ class Panel(Animable):
                    name=name, mode=mode)
 
     def buttons(self, *args, layout=PROG):
+        """
+        Returns a :class:`ButtonGroup`.
+
+        Args:
+            args (list): Button names, button IDs
+                or button XY-pairs
+
+        Keyword Args:
+            layout (Layout): Layout of buttons.
+        """
         args = (args
                 if len(args) > 0
                 else [button_name
@@ -477,6 +573,12 @@ class Panel(Animable):
 
 
 class Grid(Animable):
+    """
+    Grid of launchpad.
+
+    Args:
+        launchpad (LaunchpadMiniMk3): Launchpad reference.
+    """
     PROG = 'prog'
     CUSTOM = 'custom'
     _PROG_MODE_MIDI_LAYOUT = [
@@ -526,6 +628,18 @@ class Grid(Animable):
         return len(Grid._BUTTON_NAMES)
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
+        """
+        Returns an LED.
+
+        Args:
+            x (int): X position of LED.
+            y (int): Y position of LED.
+
+        Keyword Args:
+            name (str): Name of LED.
+            layout (Layout): Layout of buttons.
+            mode (str): Lighting mode.
+        """
         if layout == Grid.CUSTOM:
             return Led(launchpad=self._launchpad,
                        button_names=Grid._BUTTON_NAMES,
@@ -538,6 +652,16 @@ class Grid(Animable):
                    x=x, y=y, name=name, mode=mode)
 
     def buttons(self, *args, layout=PROG):
+        """
+        Returns a :class:`ButtonGroup`.
+
+        Args:
+            args (list): Button names, button IDs
+                or button XY-pairs
+
+        Keyword Args:
+            layout (Layout): Layout of buttons.
+        """
         args = (args
                 if len(args) > 0
                 else [button_name

@@ -62,9 +62,9 @@ class TestMk3(unittest.TestCase):
         self.assertEqual(self.lp.daw_out_port.sent_message,
                          DUMMY_MIDI_MESSAGE,
                          'MIDI message mismatch.')
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             self.lp.send_message(DUMMY_MIDI_MESSAGE, interface=None)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             self.lp.send_message(DUMMY_MIDI_MESSAGE, interface='')
 
     def test_poll_for_event(self):
@@ -75,7 +75,7 @@ class TestMk3(unittest.TestCase):
         self.assertEqual(self.lp.poll_for_event(interface=Interface.DAW),
                          DUMMY_MIDI_EVENT,
                          'MidiEvent mismatch.')
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             self.lp.poll_for_event(interface=None)
 
     def test_id(self):
