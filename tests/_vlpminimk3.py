@@ -1,3 +1,7 @@
+"""
+Virtual software representation of the Launchpad Mini MK3.
+"""
+
 from tests._rtmidi_dummy import MidiIn, MidiOut, API_RTMIDI_DUMMY
 from lpminimk3.__init__ import LaunchpadMiniMk3
 from lpminimk3._utils import MidiEvent, MidiClient,\

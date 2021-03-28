@@ -1,3 +1,7 @@
+"""
+A dummy representation of RT MIDI.
+"""
+
 API_RTMIDI_DUMMY = 5
 
 

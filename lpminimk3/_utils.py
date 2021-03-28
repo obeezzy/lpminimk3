@@ -1,3 +1,7 @@
+"""
+Utility classes for Launchpad Mini MK3.
+"""
+
 import enum
 import time
 
@@ -315,19 +319,14 @@ class MidiClient:
     def is_open(self):
         return all(port.is_open() for port in self.ports)
 
-    def open(self, interface=Interface.MIDI, *, mode='rw'):
+    def open(self, interface=Interface.MIDI):
         self.close()
         if interface == Interface.DAW:
-            if 'r' in mode:
-                self.daw_in_port.open()
-            if 'w' in mode:
-                self.daw_out_port.open()
+            self.daw_in_port.open()
+            self.daw_out_port.open()
         elif interface == Interface.MIDI:
             self.midi_in_port.open()
-            if 'r' in mode.lower():
-                self.midi_in_port.open()
-            if 'w' in mode.lower():
-                self.midi_out_port.open()
+            self.midi_out_port.open()
         else:
             raise ValueError('Must be a valid Interface.')
 

@@ -1,7 +1,12 @@
+"""
+Colors for the Launchpad Mini MK3.
+"""
+
 import re
 
 
 class RgbColor:
+    """An RGB color."""
     _MIN_HEX_LENGTH = 4
     _MAX_HEX_LENGTH = 7
     _MIN_COLOR_VALUE = 0
@@ -21,6 +26,10 @@ class RgbColor:
 
     @staticmethod
     def is_valid(value):
+        """
+        Returns `True` if `value` is a valid (r,g,b) or hex value,
+        otherwise returns `False`.
+        """
         if isinstance(value, str):
             match = re.match('^#(?:[0-9a-fA-F]{3}){1,2}$', value)
             return True if match else False
@@ -35,18 +44,22 @@ class RgbColor:
 
     @property
     def value(self):
+        """RGB value, as string."""
         return self._value
 
     @property
     def r(self):
+        """Red value, in hexadecimal."""
         return self._r
 
     @property
     def g(self):
+        """Green value, in hexadecimal."""
         return self._g
 
     @property
     def b(self):
+        """Blue value, in hexadecimal."""
         return self._b
 
     def _parse(self, value):
@@ -66,6 +79,10 @@ class RgbColor:
 
 
 class ColorShade:
+    """
+    This class represents one of the colors in the color palette of the
+    launchpad. There are 128 valid color shades, ranging from ID 0 to 127.
+    """
     MIN_COLOR_ID = 0
     MAX_COLOR_ID = 127
     HEX_VALUES = [
@@ -107,6 +124,10 @@ class ColorShade:
 
     @staticmethod
     def is_valid_id(value):
+        """
+        Returns `True` if `value` is a valid color ID,
+        otherwise returns `False`.
+        """
         return (True
                 if value >= ColorShade.MIN_COLOR_ID
                 and value <= ColorShade.MAX_COLOR_ID
@@ -114,14 +135,17 @@ class ColorShade:
 
     @property
     def hex(self):
+        """Hex color code."""
         return ColorShade.HEX_VALUES[self._color_id]
 
     @property
     def color_id(self):
+        """Unique color ID."""
         return self._color_id
 
     @property
     def color_group(self):
+        """Color group."""
         return self._color_group
 
     def __repr__(self):
@@ -130,6 +154,9 @@ class ColorShade:
 
 
 class ColorPalette:
+    """
+    Color palette of launchpad.
+    """
     class Red:
         SHADE_1 = ColorShade(0x05, 'red')
         SHADE_2 = ColorShade(0x06, 'red')
@@ -274,6 +301,10 @@ class ColorPalette:
 
 
 class ColorShadeStore:
+    """
+    This class represents a collection of all color shades
+    available to launchpad.
+    """
     COLOR_GROUPS = ['red', 'orange', 'yellow', 'green',
                     'blue', 'violet', 'white', 'gray']
     COLOR_GROUP_SYMBOLS = ['r', 'o', 'y', 'g',
@@ -285,6 +316,10 @@ class ColorShadeStore:
                 "len(COLOR_GROUPS) != len(COLOR_GROUP_SYMBOLS)"
 
     def find(self, value):
+        """
+        Searches for color shade `value` and returns the
+        `ColorShade` if found, otherwise returns `None`.
+        """
         return self._find_shade(*self._parse(value))
 
     def _find_shade(self, color, color_shade_id):
@@ -304,6 +339,10 @@ class ColorShadeStore:
         return color_shade
 
     def contains(self, value):
+        """
+        Searches for color shade `value` and returns `True` if
+        the color shade exists, otherwise returns `False`.
+        """
         color, _ = self._parse(value)
         return True if color else False
 

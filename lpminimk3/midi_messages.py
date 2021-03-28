@@ -1,3 +1,8 @@
+"""
+Common MIDI messages for the Launchpad Mini MK3.
+"""
+
+
 class SysExMessages:
     DEVICE_INQUIRY = [0xf0, 0x7e, 0xe7, 0xf0, 0x06, 0x01, 0xf7]
 
