@@ -42,7 +42,7 @@ for led_id in range(81):
     lp.panel.led(led_id).reset()  # Turn off LED
 
 ```
-View example file [here.](examples/flash.py)
+View example file [here](examples/flash.py).
 
 ### In shell
 ```bash
