@@ -11,7 +11,7 @@ The goals of this project are as follows:
 
 ## Installation
 To install the most stable version of this package, run:
-```
+```bash
 $ pip install lpminimk3
 ```
 
@@ -20,7 +20,7 @@ $ pip install lpminimk3
 Make sure your Launchpad is connected to your computer.
 
 ### In script
-```
+```python
 """Displays a random array of colors for 5 seconds."""
 
 import lpminimk3
@@ -42,25 +42,24 @@ for led_id in range(81):
     lp.panel.led(led_id).reset()  # Turn off LED
 
 ```
+View example file [here.](examples/flash.py)
 
 ### In shell
-```
+```bash
 $ python
 >>> import lpminimk3
 >>> lp = lpminimk3.find_launchpads()[0]
 >>> lp.open()
->>> lp.device_inquiry()
+>>> lp.device_inquiry()  # Query device
 MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 >>>
->>> lp.mode = 'prog'
->>> lp.grid.led('0x0').color = 10
+>>> lp.mode = 'prog'  # Switch to programmer mode
+>>> lp.grid.led('0x0').color = 10  # Set color to yellow
 ```
-
-More examples to come.
 
 
 ## Release History
-* 0.1.0
+* [0.1.0](releases/tag/v0.1.0)
     * First release ever (Still a work in progress)
 
 
