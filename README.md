@@ -23,12 +23,11 @@ Make sure your Launchpad is connected to your computer.
 ```python
 """Displays a random array of colors for 5 seconds."""
 
-import lpminimk3
-from lpminimk3 import Mode
+from lpminimk3 import Mode, find_launchpads
 import random
 import time
 
-lp = lpminimk3.find_launchpads()[0]  # Get the first available launchpad
+lp = find_launchpads()[0]  # Get the first available launchpad
 lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
@@ -55,11 +54,15 @@ MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 >>>
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led('0x0').color = 10  # Set color to yellow
+>>> lp.grid.led(1,0).color = 10  # Set color of next LED to yellow
+>>> lp.panel.led('logo').color = 1  # Set logo LED color to white
 ```
 
 
 ## Release History
-* [0.1.0](releases/tag/v0.1.0)
+* [0.1.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.1)
+    * Cleanup README
+* [0.1.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.0)
     * First release ever (Still a work in progress)
 
 

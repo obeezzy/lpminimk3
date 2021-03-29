@@ -1,11 +1,10 @@
 """Displays a random array of colors for 5 seconds."""
 
-import lpminimk3
-from lpminimk3 import Mode
+from lpminimk3 import Mode, find_launchpads
 import random
 import time
 
-lp = lpminimk3.find_launchpads()[0]  # Get the first available launchpad
+lp = find_launchpads()[0]  # Get the first available launchpad
 lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
