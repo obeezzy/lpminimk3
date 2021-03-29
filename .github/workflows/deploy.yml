@@ -3,9 +3,9 @@
 
 name: CD
 
-  #on:
-  #release:
-  #types: [created]
+on:
+  release:
+    types: [created]
 
 jobs:
   deploy:
