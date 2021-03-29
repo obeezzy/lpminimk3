@@ -1,7 +1,7 @@
 [![CI](https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml/badge.svg)](https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml)
 
 # lpminimk3
-Python API for the [Launchpad Mini MK3](https://novationmusic.com/en/launch/launchpad-mini) with an object-oriented approach.
+Python API for the [Novation Launchpad Mini MK3](https://novationmusic.com/en/launch/launchpad-mini) with an object-oriented approach.
 
 ## Goals
 * Simple, object-oriented, intuitive design
@@ -12,11 +12,10 @@ Python API for the [Launchpad Mini MK3](https://novationmusic.com/en/launch/laun
 - [x] Add unit tests.
 - [x] Add CI.
 - [x] Add documentation.
+- [ ] Add CD.
 - [ ] Add details to this README.
 - [ ] Add examples.
 - [ ] Add logging of MIDI messages.
-- [ ] Add CD.
-- [ ] Deploy as package on PYPI.
 
 ## Future features
 - [ ] Add DAW interface implementation.
