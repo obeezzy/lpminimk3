@@ -63,21 +63,20 @@ class TestLed(unittest.TestCase):
         self.lp.grid.led('0x0').color = ColorPalette.Blue.SHADE_1
         self.lp.grid.led('0x0').color = ColorPalette.Violet.SHADE_1
         self.lp.grid.led('0x0').color = ColorPalette.White.SHADE_1
-        self.lp.grid.led('0x0').color = ColorPalette.Gray.SHADE_1
         self.lp.grid.led('0x0').color = 'r'
         self.lp.grid.led('0x0').color = 'o'
         self.lp.grid.led('0x0').color = 'y'
         self.lp.grid.led('0x0').color = 'g'
         self.lp.grid.led('0x0').color = 'b'
         self.lp.grid.led('0x0').color = 'v'
-        self.lp.grid.led('0x0').color = 'z'
+        self.lp.grid.led('0x0').color = 'w'
         self.lp.grid.led('0x0').color = 'r1'
         self.lp.grid.led('0x0').color = 'o1'
         self.lp.grid.led('0x0').color = 'y1'
         self.lp.grid.led('0x0').color = 'g1'
         self.lp.grid.led('0x0').color = 'b1'
         self.lp.grid.led('0x0').color = 'v1'
-        self.lp.grid.led('0x0').color = 'z1'
+        self.lp.grid.led('0x0').color = 'w1'
         self.lp.grid.led('0x0').color = 'red'
         self.lp.grid.led('0x0').color = 'orange'
         self.lp.grid.led('0x0').color = 'yellow'
@@ -85,14 +84,12 @@ class TestLed(unittest.TestCase):
         self.lp.grid.led('0x0').color = 'blue'
         self.lp.grid.led('0x0').color = 'violet'
         self.lp.grid.led('0x0').color = 'white'
-        self.lp.grid.led('0x0').color = 'gray'
         self.lp.grid.led('0x0').color = 'red1'
         self.lp.grid.led('0x0').color = 'orange1'
         self.lp.grid.led('0x0').color = 'yellow1'
         self.lp.grid.led('0x0').color = 'green1'
         self.lp.grid.led('0x0').color = 'blue1'
         self.lp.grid.led('0x0').color = 'violet1'
-        self.lp.grid.led('0x0').color = 'gray1'
         self.lp.grid.led('0x0').color = 'red0'
         self.lp.grid.led('0x0').color = 'orange0'
         self.lp.grid.led('0x0').color = 'yellow0'
@@ -100,7 +97,6 @@ class TestLed(unittest.TestCase):
         self.lp.grid.led('0x0').color = 'blue0'
         self.lp.grid.led('0x0').color = 'violet0'
         self.lp.grid.led('0x0').color = 'white0'
-        self.lp.grid.led('0x0').color = 'gray0'
 
         with self.assertRaises(ValueError):
             self.lp.grid.led('0x0').color = '1r'
@@ -111,9 +107,9 @@ class TestLed(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.lp.grid.led('0x0').color = (0, 0)
         with self.assertRaises(ValueError):
-            self.lp.grid.led('0x0').color = 'gray-0'
+            self.lp.grid.led('0x0').color = 'blue-0'
         with self.assertRaises(ValueError):
-            self.lp.grid.led('0x0').color = 'gray-1'
+            self.lp.grid.led('0x0').color = 'yellow-1'
 
     def test_reset(self):
         self.lp.open()

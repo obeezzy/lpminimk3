@@ -49,17 +49,17 @@ class RgbColor:
 
     @property
     def r(self):
-        """Red value, in hexadecimal."""
+        """Red value"""
         return self._r
 
     @property
     def g(self):
-        """Green value, in hexadecimal."""
+        """Green value"""
         return self._g
 
     @property
     def b(self):
-        """Blue value, in hexadecimal."""
+        """Blue value"""
         return self._b
 
     def _parse(self, value):
@@ -159,103 +159,107 @@ class ColorPalette:
     Color palette of launchpad.
     """
     class Red:
-        SHADE_1 = ColorShade(0x05, 'red')
-        SHADE_2 = ColorShade(0x06, 'red')
-        SHADE_3 = ColorShade(0x07, 'red')
-        SHADE_4 = ColorShade(0x0b, 'red')
+        SHADE_1 = ColorShade(0x04, 'red')
+        SHADE_2 = ColorShade(0x05, 'red')
+        SHADE_3 = ColorShade(0x06, 'red')
+        SHADE_4 = ColorShade(0x07, 'red')
         SHADE_5 = ColorShade(0x48, 'red')
-        SHADE_6 = ColorShade(0x53, 'red')
-        SHADE_7 = ColorShade(0x6a, 'red')
-        SHADE_8 = ColorShade(0x6b, 'red')
-        SHADE_9 = ColorShade(0x78, 'red')
-        SHADE_10 = ColorShade(0x79, 'red')
-        SHADE_11 = ColorShade(0x7f, 'red')
+        SHADE_6 = ColorShade(0x6a, 'red')
+        SHADE_7 = ColorShade(0x6b, 'red')
+        SHADE_8 = ColorShade(0x78, 'red')
+        SHADE_9 = ColorShade(0x79, 'red')
 
     class Orange:
-        SHADE_1 = ColorShade(0x0a, 'orange')
-        SHADE_2 = ColorShade(0x09, 'orange')
-        SHADE_3 = ColorShade(0x3c, 'orange')
-        SHADE_4 = ColorShade(0x54, 'orange')
-        SHADE_5 = ColorShade(0x60, 'orange')
-        SHADE_6 = ColorShade(0x6c, 'orange')
-        SHADE_7 = ColorShade(0x7e, 'orange')
+        SHADE_1 = ColorShade(0x09, 'orange')
+        SHADE_2 = ColorShade(0x0a, 'orange')
+        SHADE_3 = ColorShade(0x0b, 'orange')
+        SHADE_4 = ColorShade(0x3c, 'orange')
+        SHADE_5 = ColorShade(0x53, 'orange')
+        SHADE_6 = ColorShade(0x54, 'orange')
+        SHADE_7 = ColorShade(0x60, 'orange')
+        SHADE_8 = ColorShade(0x6c, 'orange')
+        SHADE_9 = ColorShade(0x7e, 'orange')
+        SHADE_10 = ColorShade(0x7f, 'orange')
 
     class Yellow:
         SHADE_1 = ColorShade(0x08, 'yellow')
         SHADE_2 = ColorShade(0x0c, 'yellow')
-        SHADE_3 = ColorShade(0x0d, 'yellow')
-        SHADE_4 = ColorShade(0x0e, 'yellow')
-        SHADE_5 = ColorShade(0x0f, 'yellow')
-        SHADE_6 = ColorShade(0x3d, 'yellow')
-        SHADE_7 = ColorShade(0x3e, 'yellow')
-        SHADE_8 = ColorShade(0x49, 'yellow')
-        SHADE_9 = ColorShade(0x49, 'yellow')
-        SHADE_10 = ColorShade(0x4a, 'yellow')
-        SHADE_11 = ColorShade(0x55, 'yellow')
-        SHADE_12 = ColorShade(0x61, 'yellow')
-        SHADE_13 = ColorShade(0x62, 'yellow')
-        SHADE_14 = ColorShade(0x63, 'yellow')
-        SHADE_15 = ColorShade(0x64, 'yellow')
-        SHADE_16 = ColorShade(0x69, 'yellow')
-        SHADE_17 = ColorShade(0x6d, 'yellow')
-        SHADE_18 = ColorShade(0x71, 'yellow')
-        SHADE_19 = ColorShade(0x7c, 'yellow')
-        SHADE_20 = ColorShade(0x7d, 'yellow')
+        SHADE_3 = ColorShade(0x3d, 'yellow')
+        SHADE_4 = ColorShade(0x3e, 'yellow')
+        SHADE_5 = ColorShade(0x49, 'yellow')
+        SHADE_6 = ColorShade(0x4a, 'yellow')
+        SHADE_7 = ColorShade(0x61, 'yellow')
+        SHADE_8 = ColorShade(0x63, 'yellow')
+        SHADE_9 = ColorShade(0x64, 'yellow')
+        SHADE_10 = ColorShade(0x69, 'yellow')
+        SHADE_11 = ColorShade(0x6d, 'yellow')
+        SHADE_12 = ColorShade(0x71, 'yellow')
+        SHADE_13 = ColorShade(0x7c, 'yellow')
+        SHADE_14 = ColorShade(0x7d, 'yellow')
 
     class Blue:
-        SHADE_1 = ColorShade(0x1d, 'blue')
-        SHADE_2 = ColorShade(0x20, 'blue')
-        SHADE_3 = ColorShade(0x21, 'blue')
-        SHADE_4 = ColorShade(0x22, 'blue')
-        SHADE_5 = ColorShade(0x24, 'blue')
-        SHADE_6 = ColorShade(0x25, 'blue')
-        SHADE_7 = ColorShade(0x26, 'blue')
-        SHADE_8 = ColorShade(0x27, 'blue')
-        SHADE_9 = ColorShade(0x28, 'blue')
-        SHADE_10 = ColorShade(0x29, 'blue')
-        SHADE_11 = ColorShade(0x2a, 'blue')
-        SHADE_12 = ColorShade(0x2b, 'blue')
-        SHADE_13 = ColorShade(0x41, 'blue')
-        SHADE_14 = ColorShade(0x4d, 'blue')
-        SHADE_15 = ColorShade(0x4e, 'blue')
-        SHADE_16 = ColorShade(0x4f, 'blue')
-        SHADE_17 = ColorShade(0x5a, 'blue')
-        SHADE_18 = ColorShade(0x5b, 'blue')
-        SHADE_19 = ColorShade(0x68, 'blue')
+        SHADE_1 = ColorShade(0x24, 'blue')
+        SHADE_2 = ColorShade(0x25, 'blue')
+        SHADE_3 = ColorShade(0x26, 'blue')
+        SHADE_4 = ColorShade(0x27, 'blue')
+        SHADE_5 = ColorShade(0x28, 'blue')
+        SHADE_6 = ColorShade(0x29, 'blue')
+        SHADE_7 = ColorShade(0x2a, 'blue')
+        SHADE_8 = ColorShade(0x2b, 'blue')
+        SHADE_9 = ColorShade(0x41, 'blue')
+        SHADE_10 = ColorShade(0x42, 'blue')
+        SHADE_11 = ColorShade(0x4e, 'blue')
+        SHADE_12 = ColorShade(0x4f, 'blue')
+        SHADE_13 = ColorShade(0x5a, 'blue')
+        SHADE_14 = ColorShade(0x5b, 'blue')
+        SHADE_15 = ColorShade(0x5c, 'blue')
+        SHADE_16 = ColorShade(0x67, 'blue')
+        SHADE_17 = ColorShade(0x68, 'blue')
 
     class Green:
-        SHADE_1 = ColorShade(0x10, 'green')
-        SHADE_2 = ColorShade(0x11, 'green')
-        SHADE_3 = ColorShade(0x12, 'green')
-        SHADE_4 = ColorShade(0x13, 'green')
-        SHADE_5 = ColorShade(0x14, 'green')
-        SHADE_6 = ColorShade(0x15, 'green')
-        SHADE_7 = ColorShade(0x16, 'green')
-        SHADE_8 = ColorShade(0x17, 'green')
-        SHADE_9 = ColorShade(0x18, 'green')
-        SHADE_10 = ColorShade(0x19, 'green')
-        SHADE_11 = ColorShade(0x1a, 'green')
-        SHADE_12 = ColorShade(0x1b, 'green')
-        SHADE_13 = ColorShade(0x1c, 'green')
-        SHADE_14 = ColorShade(0x1e, 'green')
-        SHADE_15 = ColorShade(0x1f, 'green')
-        SHADE_16 = ColorShade(0x23, 'green')
-        SHADE_17 = ColorShade(0x3f, 'green')
-        SHADE_18 = ColorShade(0x40, 'green')
-        SHADE_19 = ColorShade(0x41, 'green')
-        SHADE_20 = ColorShade(0x44, 'green')
-        SHADE_21 = ColorShade(0x4c, 'green')
-        SHADE_22 = ColorShade(0x56, 'green')
-        SHADE_23 = ColorShade(0x57, 'green')
-        SHADE_24 = ColorShade(0x58, 'green')
-        SHADE_25 = ColorShade(0x59, 'green')
-        SHADE_26 = ColorShade(0x65, 'green')
-        SHADE_27 = ColorShade(0x66, 'green')
-        SHADE_28 = ColorShade(0x6e, 'green')
-        SHADE_29 = ColorShade(0x6f, 'green')
-        SHADE_30 = ColorShade(0x72, 'green')
-        SHADE_31 = ColorShade(0x7a, 'green')
-        SHADE_32 = ColorShade(0x7b, 'green')
+        SHADE_1 = ColorShade(0x0d, 'green')
+        SHADE_2 = ColorShade(0x0e, 'green')
+        SHADE_3 = ColorShade(0x0f, 'green')
+        SHADE_4 = ColorShade(0x10, 'green')
+        SHADE_5 = ColorShade(0x11, 'green')
+        SHADE_6 = ColorShade(0x12, 'green')
+        SHADE_7 = ColorShade(0x13, 'green')
+        SHADE_8 = ColorShade(0x14, 'green')
+        SHADE_9 = ColorShade(0x15, 'green')
+        SHADE_10 = ColorShade(0x16, 'green')
+        SHADE_11 = ColorShade(0x17, 'green')
+        SHADE_12 = ColorShade(0x18, 'green')
+        SHADE_13 = ColorShade(0x19, 'green')
+        SHADE_14 = ColorShade(0x1a, 'green')
+        SHADE_15 = ColorShade(0x1b, 'green')
+        SHADE_16 = ColorShade(0x1c, 'green')
+        SHADE_17 = ColorShade(0x1d, 'green')
+        SHADE_18 = ColorShade(0x1e, 'green')
+        SHADE_19 = ColorShade(0x1f, 'green')
+        SHADE_20 = ColorShade(0x20, 'green')
+        SHADE_21 = ColorShade(0x21, 'green')
+        SHADE_22 = ColorShade(0x22, 'green')
+        SHADE_23 = ColorShade(0x23, 'green')
+        SHADE_24 = ColorShade(0x3f, 'green')
+        SHADE_25 = ColorShade(0x40, 'green')
+        SHADE_26 = ColorShade(0x41, 'green')
+        SHADE_27 = ColorShade(0x44, 'green')
+        SHADE_28 = ColorShade(0x4b, 'green')
+        SHADE_29 = ColorShade(0x4c, 'green')
+        SHADE_30 = ColorShade(0x4d, 'green')
+        SHADE_31 = ColorShade(0x55, 'green')
+        SHADE_32 = ColorShade(0x56, 'green')
+        SHADE_33 = ColorShade(0x57, 'green')
+        SHADE_34 = ColorShade(0x58, 'green')
+        SHADE_35 = ColorShade(0x59, 'green')
+        SHADE_36 = ColorShade(0x62, 'green')
+        SHADE_37 = ColorShade(0x65, 'green')
+        SHADE_38 = ColorShade(0x66, 'green')
+        SHADE_39 = ColorShade(0x6e, 'green')
+        SHADE_40 = ColorShade(0x6f, 'green')
+        SHADE_41 = ColorShade(0x72, 'green')
+        SHADE_42 = ColorShade(0x7a, 'green')
+        SHADE_43 = ColorShade(0x7b, 'green')
 
     class Violet:
         SHADE_1 = ColorShade(0x2c, 'violet')
@@ -284,21 +288,17 @@ class ColorPalette:
         SHADE_24 = ColorShade(0x5d, 'violet')
         SHADE_25 = ColorShade(0x5e, 'violet')
         SHADE_26 = ColorShade(0x5f, 'violet')
-        SHADE_27 = ColorShade(0x67, 'violet')
-        SHADE_28 = ColorShade(0x70, 'violet')
-        SHADE_29 = ColorShade(0x73, 'violet')
-        SHADE_30 = ColorShade(0x74, 'violet')
+        SHADE_27 = ColorShade(0x70, 'violet')
+        SHADE_28 = ColorShade(0x73, 'violet')
+        SHADE_29 = ColorShade(0x74, 'violet')
 
     class White:
-        SHADE_1 = ColorShade(0x04, 'white')
-        SHADE_2 = ColorShade(0x77, 'white')
-
-    class Gray:
-        SHADE_1 = ColorShade(0x01, 'gray')
-        SHADE_2 = ColorShade(0x02, 'gray')
-        SHADE_3 = ColorShade(0x03, 'gray')
-        SHADE_4 = ColorShade(0x75, 'gray')
-        SHADE_5 = ColorShade(0x76, 'gray')
+        SHADE_1 = ColorShade(0x01, 'white')
+        SHADE_2 = ColorShade(0x02, 'white')
+        SHADE_3 = ColorShade(0x03, 'white')
+        SHADE_4 = ColorShade(0x75, 'white')
+        SHADE_5 = ColorShade(0x76, 'white')
+        SHADE_6 = ColorShade(0x77, 'white')
 
 
 class ColorShadeStore:
@@ -307,9 +307,9 @@ class ColorShadeStore:
     available to launchpad.
     """
     COLOR_GROUPS = ['red', 'orange', 'yellow', 'green',
-                    'blue', 'violet', 'white', 'gray']
+                    'blue', 'violet', 'white']
     COLOR_GROUP_SYMBOLS = ['r', 'o', 'y', 'g',
-                           'b', 'v', 'w', 'z']
+                           'b', 'v', 'w']
 
     def __iter__(self):
         for color_group in ColorShadeStore.COLOR_GROUPS:

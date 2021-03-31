@@ -63,21 +63,20 @@ class TestLed(unittest.TestCase):
         self.lp.panel.led('up').color = ColorPalette.Blue.SHADE_1
         self.lp.panel.led('up').color = ColorPalette.Violet.SHADE_1
         self.lp.panel.led('up').color = ColorPalette.White.SHADE_1
-        self.lp.panel.led('up').color = ColorPalette.Gray.SHADE_1
         self.lp.panel.led('up').color = 'r'
         self.lp.panel.led('up').color = 'o'
         self.lp.panel.led('up').color = 'y'
         self.lp.panel.led('up').color = 'g'
         self.lp.panel.led('up').color = 'b'
         self.lp.panel.led('up').color = 'v'
-        self.lp.panel.led('up').color = 'z'
+        self.lp.panel.led('up').color = 'w'
         self.lp.panel.led('up').color = 'r1'
         self.lp.panel.led('up').color = 'o1'
         self.lp.panel.led('up').color = 'y1'
         self.lp.panel.led('up').color = 'g1'
         self.lp.panel.led('up').color = 'b1'
         self.lp.panel.led('up').color = 'v1'
-        self.lp.panel.led('up').color = 'z1'
+        self.lp.panel.led('up').color = 'w1'
         self.lp.panel.led('up').color = 'red'
         self.lp.panel.led('up').color = 'orange'
         self.lp.panel.led('up').color = 'yellow'
@@ -85,14 +84,12 @@ class TestLed(unittest.TestCase):
         self.lp.panel.led('up').color = 'blue'
         self.lp.panel.led('up').color = 'violet'
         self.lp.panel.led('up').color = 'white'
-        self.lp.panel.led('up').color = 'gray'
         self.lp.panel.led('up').color = 'red1'
         self.lp.panel.led('up').color = 'orange1'
         self.lp.panel.led('up').color = 'yellow1'
         self.lp.panel.led('up').color = 'green1'
         self.lp.panel.led('up').color = 'blue1'
         self.lp.panel.led('up').color = 'violet1'
-        self.lp.panel.led('up').color = 'gray1'
         self.lp.panel.led('up').color = 'red0'
         self.lp.panel.led('up').color = 'orange0'
         self.lp.panel.led('up').color = 'yellow0'
@@ -100,7 +97,6 @@ class TestLed(unittest.TestCase):
         self.lp.panel.led('up').color = 'blue0'
         self.lp.panel.led('up').color = 'violet0'
         self.lp.panel.led('up').color = 'white0'
-        self.lp.panel.led('up').color = 'gray0'
 
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = '1r'
@@ -111,9 +107,9 @@ class TestLed(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.lp.panel.led('up').color = (0, 0)
         with self.assertRaises(ValueError):
-            self.lp.panel.led('up').color = 'gray-0'
+            self.lp.panel.led('up').color = 'blue-0'
         with self.assertRaises(ValueError):
-            self.lp.panel.led('up').color = 'gray-1'
+            self.lp.panel.led('up').color = 'yellow-1'
 
     def test_reset(self):
         self.lp.open()
