@@ -52,6 +52,12 @@ class TestLed(unittest.TestCase):
         self.lp.grid.led('0x0').color = 1
         self.lp.grid.led('0x0').reset()
 
+    def test_led_range(self):
+        self.lp.open()
+        for led in self.lp.grid.led_range():
+            for color_index in range(128):
+                led.color = color_index
+
     def test_id_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.led(0, 0).id, 1, 'ID mismatch.')  # noqa

@@ -508,6 +508,11 @@ class Panel(Animable):
         return self._launchpad
 
     @property
+    def max_id(self):
+        """Max ID."""
+        return self.max_x * self.max_y
+
+    @property
     def max_x(self):
         """Max X."""
         return len(Panel._BUTTON_NAMES[0])
@@ -541,6 +546,20 @@ class Panel(Animable):
                    layout=Panel._PROG_MODE_MIDI_LAYOUT,
                    x=x, y=y,
                    name=name, mode=mode)
+
+    def led_range(self, *, layout=PROG, mode=Led.STATIC):
+        """
+        Returns an immutable sequence of LEDs.
+
+        Keyword Args:
+            layout (Layout): Layout of buttons.
+            mode (str): Lighting mode.
+
+        Yields:
+            Led: Sequence of LEDs
+        """
+        for led_id in range(self.max_id):
+            yield self.led(led_id, layout=layout, mode=mode)
 
     def buttons(self, *args, layout=PROG):
         """
@@ -620,6 +639,11 @@ class Grid(Animable):
         return self._launchpad
 
     @property
+    def max_id(self):
+        """Max ID."""
+        return self.max_x * self.max_y
+
+    @property
     def max_x(self):
         return len(Grid._BUTTON_NAMES[0])
 
@@ -650,6 +674,20 @@ class Grid(Animable):
                    button_names=Grid._BUTTON_NAMES,
                    layout=Grid._PROG_MODE_MIDI_LAYOUT,
                    x=x, y=y, name=name, mode=mode)
+
+    def led_range(self, *, layout=PROG, mode=Led.STATIC):
+        """
+        Returns an immutable sequence of LEDs.
+
+        Keyword Args:
+            layout (Layout): Layout of buttons.
+            mode (str): Lighting mode.
+
+        Yields:
+            Led: Sequence of LEDs
+        """
+        for led_id in range(self.max_id):
+            yield self.led(led_id, layout=layout, mode=mode)
 
     def buttons(self, *args, layout=PROG):
         """
