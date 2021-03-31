@@ -129,7 +129,8 @@ class ColorShade:
         otherwise returns `False`.
         """
         return (True
-                if value >= ColorShade.MIN_COLOR_ID
+                if isinstance(value, int)
+                and value >= ColorShade.MIN_COLOR_ID
                 and value <= ColorShade.MAX_COLOR_ID
                 else False)
 
@@ -310,10 +311,12 @@ class ColorShadeStore:
     COLOR_GROUP_SYMBOLS = ['r', 'o', 'y', 'g',
                            'b', 'v', 'w', 'z']
 
-    def __init__(self):
-        assert len(ColorShadeStore.COLOR_GROUPS) == \
-                len(ColorShadeStore.COLOR_GROUP_SYMBOLS), \
-                "len(COLOR_GROUPS) != len(COLOR_GROUP_SYMBOLS)"
+    def __iter__(self):
+        for color_group in ColorShadeStore.COLOR_GROUPS:
+            color_shades_in_group = ColorPalette.__dict__[color_group.capitalize()].__dict__  # noqa
+            for _, color_shade in color_shades_in_group.items():
+                if isinstance(color_shade, ColorShade):
+                    yield color_shade
 
     def find(self, value):
         """
@@ -322,21 +325,33 @@ class ColorShadeStore:
         """
         return self._find_shade(*self._parse(value))
 
-    def _find_shade(self, color, color_shade_id):
+    def _find_shade(self, color, color_shade_id=1):
         if not color:
-            raise RuntimeError('Expected color string, got "{}".'
-                               .format(color))
+            return None
 
         color_shade = None
-        color_group = ColorPalette.__dict__[color.capitalize()]
+        color_shades_in_group = ColorPalette.__dict__[color.capitalize()].__dict__  # noqa
         if color_shade_id:
             shade_clause = 'SHADE_{}'.format(color_shade_id)
-            if shade_clause in color_group.__dict__:
-                color_shade = color_group.__dict__[shade_clause]
+            if shade_clause in color_shades_in_group:
+                color_shade = color_shades_in_group[shade_clause]
         else:
-            color_shade = color_group.__dict__.items()[-1]
+            color_shade = color_shades_in_group['SHADE_1']
 
         return color_shade
+
+    def _find_shade_id(self, color_shade):
+        if not isinstance(color_shade, ColorShade):
+            raise RuntimeError('Expected ColorShade, got "{}".'
+                               .format(color_shade))
+        color_shades_in_group = ColorPalette.__dict__[color_shade.color_group.capitalize()].__dict__  # noqa
+        color_shade_id = 1
+        for shade_name in color_shades_in_group:
+            match = re.match('SHADE_([0-9]+)', shade_name)
+            if match:
+                color_shade_id = int(match.group(1))
+
+        return color_shade_id
 
     def contains(self, value):
         """
@@ -354,26 +369,30 @@ class ColorShadeStore:
         color = None
         color_shade_id = None
 
-        has_digit_suffix = re.search('[0-9]+', value)
-        if has_digit_suffix:
-            match = re.match('([a-z]+)([0-9]+)', value.lower())
-            if match and len(match.groups()) == 2:
-                color = (match.group(1)
-                         if match.group(1) in ColorShadeStore.COLOR_GROUPS
-                         else None)
-                color = (self._color_from_symbol(match.group(1))
-                         if not color and match.group(1)
-                         in ColorShadeStore.COLOR_GROUP_SYMBOLS
-                         else color)
-                color_shade_id = int(match.group(2))
-            else:
-                color = None
-                color_shade_id = None
-        elif value.lower() in ColorShadeStore.COLOR_GROUPS:
-            color = value.lower()
-            color_shade_id = 1
-        elif value.lower() in ColorShadeStore.COLOR_GROUP_SYMBOLS:
-            color = self._color_from_symbol(value.lower())
-            color_shade_id = 1
+        if isinstance(value, str):
+            has_digit_suffix = re.search('[0-9]+', value)
+            if has_digit_suffix:
+                match = re.match('([a-z]+)([0-9]+)', value.lower())
+                if match and len(match.groups()) == 2:
+                    color = (match.group(1)
+                             if match.group(1) in ColorShadeStore.COLOR_GROUPS
+                             else None)
+                    color = (self._color_from_symbol(match.group(1))
+                             if not color and match.group(1)
+                             in ColorShadeStore.COLOR_GROUP_SYMBOLS
+                             else color)
+                    color_shade_id = int(match.group(2))
+                else:
+                    color = None
+                    color_shade_id = None
+            elif value.lower() in ColorShadeStore.COLOR_GROUPS:
+                color = value.lower()
+                color_shade_id = 1
+            elif value.lower() in ColorShadeStore.COLOR_GROUP_SYMBOLS:
+                color = self._color_from_symbol(value.lower())
+                color_shade_id = 1
+        elif isinstance(value, ColorShade):
+            color = value.color_group
+            color_shade_id = self._find_shade_id(value)
 
         return (color, color_shade_id)

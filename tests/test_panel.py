@@ -1,5 +1,7 @@
 import unittest
 from lpminimk3.__init__ import ButtonFace, Panel
+from lpminimk3.colors import ColorPalette,\
+                             ColorShadeStore
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
 
@@ -37,7 +39,7 @@ class TestLed(unittest.TestCase):
     def tearDown(self):
         self.lp.close()
 
-    def test_set(self):
+    def test_set_by_index(self):
         self.lp.open()
         for color_index in range(128):
             self.lp.panel.led('up').color = color_index
@@ -46,6 +48,72 @@ class TestLed(unittest.TestCase):
             self.lp.panel.led('up').color = -1
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = 128
+
+    def test_set_by_shade(self):
+        self.lp.open()
+
+        self.assertEqual(len(ColorShadeStore.COLOR_GROUPS),
+                         len(ColorShadeStore.COLOR_GROUP_SYMBOLS),
+                         'Color group to color group symbol mismatch.')
+
+        self.lp.panel.led('up').color = ColorPalette.Red.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.Orange.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.Yellow.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.Green.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.Blue.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.Violet.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.White.SHADE_1
+        self.lp.panel.led('up').color = ColorPalette.Gray.SHADE_1
+        self.lp.panel.led('up').color = 'r'
+        self.lp.panel.led('up').color = 'o'
+        self.lp.panel.led('up').color = 'y'
+        self.lp.panel.led('up').color = 'g'
+        self.lp.panel.led('up').color = 'b'
+        self.lp.panel.led('up').color = 'v'
+        self.lp.panel.led('up').color = 'z'
+        self.lp.panel.led('up').color = 'r1'
+        self.lp.panel.led('up').color = 'o1'
+        self.lp.panel.led('up').color = 'y1'
+        self.lp.panel.led('up').color = 'g1'
+        self.lp.panel.led('up').color = 'b1'
+        self.lp.panel.led('up').color = 'v1'
+        self.lp.panel.led('up').color = 'z1'
+        self.lp.panel.led('up').color = 'red'
+        self.lp.panel.led('up').color = 'orange'
+        self.lp.panel.led('up').color = 'yellow'
+        self.lp.panel.led('up').color = 'green'
+        self.lp.panel.led('up').color = 'blue'
+        self.lp.panel.led('up').color = 'violet'
+        self.lp.panel.led('up').color = 'white'
+        self.lp.panel.led('up').color = 'gray'
+        self.lp.panel.led('up').color = 'red1'
+        self.lp.panel.led('up').color = 'orange1'
+        self.lp.panel.led('up').color = 'yellow1'
+        self.lp.panel.led('up').color = 'green1'
+        self.lp.panel.led('up').color = 'blue1'
+        self.lp.panel.led('up').color = 'violet1'
+        self.lp.panel.led('up').color = 'gray1'
+        self.lp.panel.led('up').color = 'red0'
+        self.lp.panel.led('up').color = 'orange0'
+        self.lp.panel.led('up').color = 'yellow0'
+        self.lp.panel.led('up').color = 'green0'
+        self.lp.panel.led('up').color = 'blue0'
+        self.lp.panel.led('up').color = 'violet0'
+        self.lp.panel.led('up').color = 'white0'
+        self.lp.panel.led('up').color = 'gray0'
+
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('up').color = '1r'
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('up').color = 're'
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('up').color = 'gree3'
+        with self.assertRaises(TypeError):
+            self.lp.panel.led('up').color = (0, 0)
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('up').color = 'gray-0'
+        with self.assertRaises(ValueError):
+            self.lp.panel.led('up').color = 'gray-1'
 
     def test_reset(self):
         self.lp.open()
