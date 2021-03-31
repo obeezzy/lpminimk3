@@ -60,6 +60,8 @@ MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 
 
 ## Release History
+* [0.1.2](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.2)
+    * Properly bump up version
 * [0.1.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.1)
     * Cleanup README
 * [0.1.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.0)
