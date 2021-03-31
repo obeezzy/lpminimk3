@@ -54,7 +54,7 @@ MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 >>>
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
->>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set color of next LED to shade of red from the color palette
+>>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
 >>> lp.panel.led('logo').color = 'violet'  # Set logo LED color to violet
 >>> lp.panel.led('drums').color = 'green2'  # Set 'Drums' LED color to second shade of green
 >>> lp.panel.led('stop').color = 'z1'  # Set 'Stop/Solo/Mute' LED color to first shade of gray
