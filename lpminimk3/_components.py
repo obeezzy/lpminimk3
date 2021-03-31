@@ -426,12 +426,16 @@ class Led:
                                                 rgb_color.b)
             self.launchpad.send_message(colorspec)
         else:
-            color_id = ColorShadeStore().find(value).color_id \
-                    if not isinstance(value, int) \
-                    else value
             color_id = value if ColorShade.is_valid_id(value) else -1
             if color_id < 0:
-                raise ValueError('Color ID values must be between 0 and 127.')  # noqa
+                color_shade = ColorShadeStore().find(value)
+                color_id = (color_shade.color_id
+                            if color_shade
+                            else color_id)
+            if color_id < 0:
+                raise ValueError(f'Color ID values must be between '
+                                 f'{ColorShade.MIN_COLOR_ID} and '
+                                 f'{ColorShade.MAX_COLOR_ID}.')
             else:
                 self.launchpad.send_message([self._LIGHTING_MODE[self._mode],
                                             self._midi_value, color_id])

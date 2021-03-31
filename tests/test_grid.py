@@ -1,5 +1,7 @@
 import unittest
 from lpminimk3.__init__ import Grid
+from lpminimk3.colors import ColorPalette,\
+                             ColorShadeStore
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
 
@@ -37,7 +39,7 @@ class TestLed(unittest.TestCase):
     def tearDown(self):
         self.lp.close()
 
-    def test_set(self):
+    def test_set_by_index(self):
         self.lp.open()
         for color_index in range(128):
             self.lp.grid.led('0x0').color = color_index
@@ -46,6 +48,72 @@ class TestLed(unittest.TestCase):
             self.lp.grid.led('0x0').color = -1
         with self.assertRaises(ValueError):
             self.lp.grid.led('0x0').color = 128
+
+    def test_set_by_shade(self):
+        self.lp.open()
+
+        self.assertEqual(len(ColorShadeStore.COLOR_GROUPS),
+                         len(ColorShadeStore.COLOR_GROUP_SYMBOLS),
+                         'Color group to color group symbol mismatch.')
+
+        self.lp.grid.led('0x0').color = ColorPalette.Red.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.Orange.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.Yellow.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.Green.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.Blue.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.Violet.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.White.SHADE_1
+        self.lp.grid.led('0x0').color = ColorPalette.Gray.SHADE_1
+        self.lp.grid.led('0x0').color = 'r'
+        self.lp.grid.led('0x0').color = 'o'
+        self.lp.grid.led('0x0').color = 'y'
+        self.lp.grid.led('0x0').color = 'g'
+        self.lp.grid.led('0x0').color = 'b'
+        self.lp.grid.led('0x0').color = 'v'
+        self.lp.grid.led('0x0').color = 'z'
+        self.lp.grid.led('0x0').color = 'r1'
+        self.lp.grid.led('0x0').color = 'o1'
+        self.lp.grid.led('0x0').color = 'y1'
+        self.lp.grid.led('0x0').color = 'g1'
+        self.lp.grid.led('0x0').color = 'b1'
+        self.lp.grid.led('0x0').color = 'v1'
+        self.lp.grid.led('0x0').color = 'z1'
+        self.lp.grid.led('0x0').color = 'red'
+        self.lp.grid.led('0x0').color = 'orange'
+        self.lp.grid.led('0x0').color = 'yellow'
+        self.lp.grid.led('0x0').color = 'green'
+        self.lp.grid.led('0x0').color = 'blue'
+        self.lp.grid.led('0x0').color = 'violet'
+        self.lp.grid.led('0x0').color = 'white'
+        self.lp.grid.led('0x0').color = 'gray'
+        self.lp.grid.led('0x0').color = 'red1'
+        self.lp.grid.led('0x0').color = 'orange1'
+        self.lp.grid.led('0x0').color = 'yellow1'
+        self.lp.grid.led('0x0').color = 'green1'
+        self.lp.grid.led('0x0').color = 'blue1'
+        self.lp.grid.led('0x0').color = 'violet1'
+        self.lp.grid.led('0x0').color = 'gray1'
+        self.lp.grid.led('0x0').color = 'red0'
+        self.lp.grid.led('0x0').color = 'orange0'
+        self.lp.grid.led('0x0').color = 'yellow0'
+        self.lp.grid.led('0x0').color = 'green0'
+        self.lp.grid.led('0x0').color = 'blue0'
+        self.lp.grid.led('0x0').color = 'violet0'
+        self.lp.grid.led('0x0').color = 'white0'
+        self.lp.grid.led('0x0').color = 'gray0'
+
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = '1r'
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = 're'
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = 'gree3'
+        with self.assertRaises(TypeError):
+            self.lp.grid.led('0x0').color = (0, 0)
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = 'gray-0'
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = 'gray-1'
 
     def test_reset(self):
         self.lp.open()
