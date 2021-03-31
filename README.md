@@ -32,16 +32,16 @@ lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
 
-for led_id in range(81):  # Loop through all 81 LEDs
-    lp.panel.led(led_id).color = random.randint(1, 127)  # Set LED to a random color
+for led in lp.panel.led_range():  # Loop through all LEDs
+    led.color = random.randint(1, 127)  # Set LED to a random color
 
 time.sleep(5)  # Keep LEDs on for a while
 
-for led_id in range(81):
-    lp.panel.led(led_id).reset()  # Turn off LED
+for led in lp.panel.led_range():
+    led.reset()  # Turn off LED
 
 ```
-View example file [here](examples/flash.py).
+View example file [here](https://github.com/obeezzy/lpminimk3/examples/flash.py).
 
 ### In shell
 ```bash
