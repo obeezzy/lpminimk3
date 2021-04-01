@@ -1,5 +1,5 @@
 """
-Common MIDI messages for the Launchpad Mini MK3.
+MIDI messages for the Launchpad Mini MK3.
 """
 
 
@@ -24,3 +24,12 @@ class SysExMessages:
         LIVE = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x0e, 0x00, 0xf7]
         PROG = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x0e, 0x01, 0xf7]
         READBACK = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x0e, 0xf7]
+
+    @staticmethod
+    def colorspec_message(lighting_type, led_index, *lighting_data):
+        return [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03,
+                lighting_type, led_index] + list(lighting_data) + [0xf7]
+
+    @staticmethod
+    def lighting_message(lighting_mode, midi_value, color_id):
+        return [lighting_mode, midi_value, color_id]

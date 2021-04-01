@@ -3,7 +3,7 @@ from logging import FileHandler
 import os
 import sys
 
-LOG_FILE = os.environ.get('LOG_FILE')
+LOGFILE = os.environ.get('LOGFILE')
 FORMATTER = logging.Formatter('[%(levelname)s] %(name)s (%(asctime)s): %(message)s',  # noqa
                               '%m-%d-%Y %I:%M:%S')
 LOG_LEVELS = {
@@ -22,10 +22,10 @@ def get_console_handler():
 
 
 def get_file_handler():
-    if LOG_FILE:
-        if not os.path.exits(os.path.dirname(LOG_FILE)):
-            os.makedirs(os.path.dirname(LOG_FILE))
-        fileHandler = FileHandler(LOG_FILE)
+    if LOGFILE:
+        if not os.path.exits(os.path.dirname(LOGFILE)):
+            os.makedirs(os.path.dirname(LOGFILE))
+        fileHandler = FileHandler(LOGFILE)
         fileHandler.setFormatter(FORMATTER)
         return fileHandler
     return None
