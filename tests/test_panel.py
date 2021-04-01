@@ -1677,19 +1677,35 @@ class TestButtonGroup(unittest.TestCase):
         self.assertEqual(self.lp.panel.buttons('up').poll_for_event().message,
                          VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
                          'MIDI message mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event().button.name,  # noqa
+                         'up',
+                         'Button name mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event().event_type,  # noqa
+                         ButtonEvent.RELEASE,
+                         'Event type mismatch.')
 
+    def test_prog_layout_poll_event_with_input_string(self):
+        self.lp.open()
+        self.lp.will_return(midi_event=VirtualMidiEvent([0xb0, 0x5b, 0x0]))  # noqa
         self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='press').message,  # noqa
                          VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
                          'MIDI message mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='press').button.name,  # noqa
+                         'up',
+                         'Button name mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='press').event_type,  # noqa
+                         ButtonEvent.PRESS,
+                         'Event type mismatch.')
+
         self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='release').message,  # noqa
                          VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
                          'MIDI message mismatch.')
-        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.PRESS).message,  # noqa
-                         VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
-                         'MIDI message mismatch.')
-        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.RELEASE).message,  # noqa
-                         VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
-                         'MIDI message mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='release').button.name,  # noqa
+                         'up',
+                         'Button name mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='release').event_type,  # noqa
+                         ButtonEvent.RELEASE,
+                         'Event type mismatch.')
 
         with self.assertRaises(ValueError):
             self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='pr').message,  # noqa
@@ -1699,6 +1715,29 @@ class TestButtonGroup(unittest.TestCase):
             self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type='rel').message,  # noqa
                              VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
                              'MIDI message mismatch.')
+
+    def test_prog_layout_poll_event_with_button_event_constants(self):
+        self.lp.open()
+        self.lp.will_return(midi_event=VirtualMidiEvent([0xb0, 0x5b, 0x0]))  # noqa
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.PRESS).message,  # noqa
+                         VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
+                         'MIDI message mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.PRESS).button.name,  # noqa
+                         'up',
+                         'Button name mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.PRESS).event_type,  # noqa
+                         ButtonEvent.PRESS,
+                         'Event type mismatch.')
+
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.RELEASE).message,  # noqa
+                         VirtualMidiEvent([0xb0, 0x5b, 0x0]).message,
+                         'MIDI message mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.RELEASE).button.name,  # noqa
+                         'up',
+                         'Button name mismatch.')
+        self.assertEqual(self.lp.panel.buttons('up').poll_for_event(event_type=ButtonEvent.RELEASE).event_type,  # noqa
+                         ButtonEvent.RELEASE,
+                         'Event type mismatch.')
 
 
 if __name__ == '__main__':

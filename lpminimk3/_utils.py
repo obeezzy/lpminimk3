@@ -30,6 +30,44 @@ class MidiEvent:
                 .format(self.message, self.deltatime))
 
 
+class ButtonEvent:
+    PRESS = 'press'
+    RELEASE = 'release'
+
+    def __init__(self, midi_event, buttons, event_type):
+        self._midi_event = midi_event
+        self._event_type = event_type
+        self._button = self._determine_button(buttons)
+
+    @property
+    def message(self):
+        return self._midi_event.message
+
+    @property
+    def deltatime(self):
+        return self._midi_client.deltatime
+
+    @property
+    def button(self):
+        return self._button
+
+    @property
+    def event_type(self):
+        return self._event_type
+
+    def _determine_button(self, buttons):
+        found_buttons = (list(filter(lambda b: b.midi_value == self._midi_event.message[1], buttons))  # noqa
+                         if self._midi_event and self._midi_event.message and len(self._midi_event.message) == 3  # noqa
+                         else None)
+        return (found_buttons[0]
+                if found_buttons and len(found_buttons)
+                else None)
+
+    def __repr__(self):
+        return ('ButtonEvent(button={}, deltatime={})'
+                .format(self.message, self.deltatime))
+
+
 class MidiPort:
     OUT = 'out'
     IN = 'in'
