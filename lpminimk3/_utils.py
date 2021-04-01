@@ -4,6 +4,9 @@ Utility classes for Launchpad Mini MK3.
 
 import enum
 import time
+from . import _logging
+
+logger = _logging.getLogger(__name__)
 
 _MIDI_MESSAGE_LENGTH = 9
 
@@ -117,8 +120,10 @@ class MidiPort:
     def send_message(self, message):
         if self._midi_in and self._direction == MidiPort.IN:
             self._midi_in.send_message(message)
+            logger.debug('MIDI message: {}'.format(message))
         elif self._midi_out and self._direction == MidiPort.OUT:
             self._midi_out.send_message(message)
+            logger.debug('MIDI message: {}'.format(message))
         else:
             raise RuntimeError('Failed to send message.')
 
@@ -132,6 +137,7 @@ class MidiPort:
         while polling and timeout > elapsed:
             raw_message = self._midi_in.get_message()
             event = MidiEvent(*raw_message) if raw_message else None
+            logger.debug('MIDI event: {}'.format(event))
             if event and not match:
                 polling = False
             elif event and match == event.message:
