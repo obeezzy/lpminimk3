@@ -1,5 +1,5 @@
 import unittest
-from lpminimk3.__init__ import Grid
+from lpminimk3.__init__ import Grid, ButtonEvent
 from lpminimk3.colors import ColorPalette,\
                              ColorShadeStore
 from tests._vlpminimk3 import VirtualMidiEvent,\
@@ -951,6 +951,11 @@ class TestButtonGroup(unittest.TestCase):
                               self.lp.grid.buttons().names,
                               'Button name mismatch.')
 
+        with self.assertRaises(ValueError):
+            self.lp.grid.buttons(None).names
+        with self.assertRaises(ValueError):
+            self.lp.grid.buttons('').names
+
     def test_names_by_id(self):
         self.lp.open()
         self.assertCountEqual(['0x0'],
@@ -1351,10 +1356,32 @@ class TestButtonGroup(unittest.TestCase):
 
     def test_prog_layout_poll_event(self):
         self.lp.open()
-        self.lp.will_return(midi_event=VirtualMidiEvent('note_on', button='0x0'))  # noqa
+        self.lp.will_return(midi_event=VirtualMidiEvent([0x90, 0x51, 0x0]))  # noqa
         self.assertEqual(self.lp.grid.buttons('0x0').poll_for_event().message,
-                         VirtualMidiEvent('note_on', button='0x0').message,
+                         VirtualMidiEvent([0x90, 0x51, 0x0]).message,
                          'MIDI message mismatch.')
+
+        self.assertEqual(self.lp.grid.buttons('up').poll_for_event(event_type='press').message,  # noqa
+                         VirtualMidiEvent([0x90, 0x51, 0x0]).message,
+                         'MIDI message mismatch.')
+        self.assertEqual(self.lp.grid.buttons('up').poll_for_event(event_type='release').message,  # noqa
+                         VirtualMidiEvent([0x90, 0x51, 0x0]).message,
+                         'MIDI message mismatch.')
+        self.assertEqual(self.lp.grid.buttons('up').poll_for_event(event_type=ButtonEvent.PRESS).message,  # noqa
+                         VirtualMidiEvent([0x90, 0x51, 0x0]).message,
+                         'MIDI message mismatch.')
+        self.assertEqual(self.lp.grid.buttons('up').poll_for_event(event_type=ButtonEvent.RELEASE).message,  # noqa
+                         VirtualMidiEvent([0x90, 0x51, 0x0]).message,
+                         'MIDI message mismatch.')
+
+        with self.assertRaises(ValueError):
+            self.assertEqual(self.lp.grid.buttons('up').poll_for_event(event_type='pr').message,  # noqa
+                             VirtualMidiEvent([0x90, 0x51, 0x0]).message,
+                             'MIDI message mismatch.')
+        with self.assertRaises(ValueError):
+            self.assertEqual(self.lp.grid.buttons('up').poll_for_event(event_type='rel').message,  # noqa
+                             VirtualMidiEvent([0x90, 0x51, 0x0]).message,
+                             'MIDI message mismatch.')
 
 
 if __name__ == '__main__':

@@ -180,10 +180,9 @@ class ButtonFace:
 class ButtonEvent:
     RELEASE = 'release'
     PRESS = 'press'
-    PRESS_RELEASE = 'press_release'
 
 
-class _Button:
+class Button:
     def __init__(self, launchpad,
                  layout,
                  button_names, *,
@@ -259,6 +258,9 @@ class ButtonGroup:
                                              button_names,
                                              args)
 
+    def __iter__(self):
+        return iter(self._buttons)
+
     @property
     def launchpad(self):
         """
@@ -273,8 +275,12 @@ class ButtonGroup:
         """
         return [button.name for button in self._buttons]
 
-    def poll_for_event(self, event_type=ButtonEvent.PRESS_RELEASE,
-                       *, interface='midi', timeout=None):
+    def poll_for_event(self, *, event_type=ButtonEvent.RELEASE,
+                       interface='midi', timeout=None):
+        if (not event_type
+                or (event_type != ButtonEvent.RELEASE
+                    and event_type != ButtonEvent.PRESS)):
+            raise ValueError('Not a valid event type.')
         """
         Polls for MIDI events of buttons specified
         in this group. If `timeout` <= 0, this function will
@@ -306,27 +312,27 @@ class ButtonGroup:
                 for row, button_name in enumerate(button_name_column):
                     if found:
                         break
-                    elif isinstance(arg, str):
+                    elif arg and isinstance(arg, str):
                         if arg.lower() == button_name:
-                            buttons.append(_Button(launchpad,
-                                                   layout,
-                                                   button_names,
-                                                   name=arg))
+                            buttons.append(Button(launchpad,
+                                                  layout,
+                                                  button_names,
+                                                  name=arg))
                             found = True
                     elif isinstance(arg, tuple):
                         if (len(arg) == 2
                                 and arg[0] == row
                                 and arg[1] == column):
-                            buttons.append(_Button(launchpad,
-                                                   layout,
-                                                   button_names,
-                                                   x=row, y=column))
+                            buttons.append(Button(launchpad,
+                                                  layout,
+                                                  button_names,
+                                                  x=row, y=column))
                             found = True
                     elif isinstance(arg, int):
-                        buttons.append(_Button(launchpad,
-                                               layout,
-                                               button_names,
-                                               button_id=arg))
+                        buttons.append(Button(launchpad,
+                                              layout,
+                                              button_names,
+                                              button_id=arg))
                         found = True
                     else:
                         raise ValueError('Invalid button "{}".'
@@ -483,14 +489,14 @@ class Led:
                                  f'{ColorShade.MIN_COLOR_ID} and '
                                  f'{ColorShade.MAX_COLOR_ID}.')
             else:
-                lighting = SysExMessages.lighting_message([self._LIGHTING_MODE[self._mode],  # noqa
-                                                          self._midi_value, color_id])   # noqa
+                lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
+                                                          self._midi_value, color_id)   # noqa
                 self.launchpad.send_message(lighting)
 
     def reset(self):
         """Sets color to OFF."""
-        lighting = SysExMessages.lighting_message([self._LIGHTING_MODE[self._mode],  # noqa
-                                                  self._midi_value, 0x0])   # noqa
+        lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
+                                                  self._midi_value, 0x0)   # noqa
         self.launchpad.send_message(lighting)
 
     def _is_within_range(self):

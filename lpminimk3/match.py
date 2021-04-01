@@ -2,7 +2,6 @@
 Match MIDI messages with incoming MIDI events.
 """
 
-from enum import Flag, auto
 from .midi_messages import SysExMessages
 
 
@@ -22,7 +21,7 @@ class ButtonMatch(Match):
     def contains(self, message):
         button_messages = self._determine_messages()
         for button_message in button_messages:
-            if message == button_message: 
+            if message == button_message:
                 return True
         return False
 
@@ -35,8 +34,5 @@ class ButtonMatch(Match):
             if self._event_type == 'press':
                 messages.append(SysExMessages.lighting_message(header, button.midi_value, 0xff))  # noqa
             elif self._event_type == 'release':
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x0))  # noqa
-            elif self._event_type == 'press_release':
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0xff))  # noqa
                 messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x0))  # noqa
         return messages

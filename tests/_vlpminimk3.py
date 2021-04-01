@@ -16,17 +16,7 @@ DUMMY_MIDI_EVENT = MidiEvent(DUMMY_MIDI_MESSAGE, 0)
 
 
 class VirtualMidiEvent(MidiEvent):
-    def __init__(self, event, button):
-        self._button = button
-        self._event = event
-        super().__init__(message=[], deltatime=0)
-
-    @property
-    def message(self):
-        if (self._button == 'up'
-                and self._event == 'note_on'):
-            return []
-        return None
+    pass
 
 
 IN_PORTS = {
