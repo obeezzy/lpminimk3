@@ -57,7 +57,7 @@ MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 >>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
 >>> lp.panel.led('logo').color = 'violet'  # Set logo LED color to violet
 >>> lp.panel.led('drums').color = 'green2'  # Set 'Drums' LED color to second shade of green
->>> lp.panel.led('stop').color = 'z1'  # Set 'Stop/Solo/Mute' LED color to first shade of gray
+>>> lp.panel.led('stop').color = 'w1'  # Set 'Stop/Solo/Mute' LED color to first shade of white
 >>> lp.panel.led('mute').color = 'o3'  # Set 'Stop/Solo/Mute' LED color to third shade of orange
 >>> lp.panel.led('mute').color = 'r0'  # Invalid but okay, will default to 'r1'
 ```
