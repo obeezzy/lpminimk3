@@ -5,6 +5,7 @@ Utility classes for Launchpad Mini MK3.
 import enum
 import time
 from . import _logging
+from .match import Match
 
 logger = _logging.getLogger(__name__)
 
@@ -47,9 +48,7 @@ class MidiPort:
         self._direction = direction
         self._virtual = virtual
         if midi_in:
-            midi_in.ignore_types(sysex=False,
-                                 timing=False,
-                                 active_sense=True)
+            midi_in.ignore_types(sysex=False, timing=False)
 
     def __eq__(self, other):
         return self.system_port_name == other.system_port_name
@@ -132,7 +131,8 @@ class MidiPort:
             return
         event = None
         polling = True
-        elapsed = 0
+        elapsed = 0 if timeout else -1
+        timeout = 0 if not timeout else timeout
         timeout = 0 if timeout < 0 else timeout
         while polling and timeout > elapsed:
             raw_message = self._midi_in.get_message()
@@ -140,10 +140,12 @@ class MidiPort:
             logger.debug('MIDI event: {}'.format(event))
             if event and not match:
                 polling = False
-            elif event and match == event.message:
+            elif event and isinstance(match, list) and match == event.message:
+                polling = False
+            elif event and isinstance(match, Match) and match.contains(event.message):  # noqa
                 polling = False
             time.sleep(.1)
-            elapsed += .1 if timeout > 0 else 0
+            elapsed += .1 if timeout and timeout > 0 else 0
         return event
 
     def clear_event_queue(self):

@@ -2,11 +2,22 @@
 Software representation of physical components for Launchpad Mini MK3.
 """
 
+import re
 from .colors import ColorShade, ColorShadeStore, RgbColor
+from .midi_messages import SysExMessages
+from .match import ButtonMatch
 
 
 class Animable:
-    def animate(self, animation, *, timeout=0):
+    @property
+    def max_x(self):
+        return -1
+
+    @property
+    def max_y(self):
+        return -1
+
+    def animate(self, animation, *, timeout=None):
         pass
 
 
@@ -166,7 +177,12 @@ class ButtonFace:
     STOP_SOLO_MUTE = 'stop_solo_mute'
 
 
-class _Button:
+class ButtonEvent:
+    RELEASE = 'release'
+    PRESS = 'press'
+
+
+class Button:
     def __init__(self, launchpad,
                  layout,
                  button_names, *,
@@ -183,6 +199,7 @@ class _Button:
         self._x = coordinate.x
         self._y = coordinate.y
         self._button_id = coordinate.id
+        self._midi_value = coordinate.midi_value
 
     @property
     def x(self):
@@ -197,8 +214,19 @@ class _Button:
         return self._name
 
     @property
+    def midi_value(self):
+        return self._midi_value
+
+    @property
     def id(self):
         return self._button_id
+
+    @property
+    def parent(self):
+        match = re.match('^\\d+x\\d+$', self._name)
+        if match:
+            return 'grid'
+        return 'panel' if self._button_id else ''
 
     def __repr__(self):
         return ('Button(name=\'{}\', x={}, y={}, id={})'
@@ -230,6 +258,9 @@ class ButtonGroup:
                                              button_names,
                                              args)
 
+    def __iter__(self):
+        return iter(self._buttons)
+
     @property
     def launchpad(self):
         """
@@ -244,7 +275,12 @@ class ButtonGroup:
         """
         return [button.name for button in self._buttons]
 
-    def poll_for_event(self, *, interface='midi', timeout=None):
+    def poll_for_event(self, *, event_type=ButtonEvent.RELEASE,
+                       interface='midi', timeout=None):
+        if (not event_type
+                or (event_type != ButtonEvent.RELEASE
+                    and event_type != ButtonEvent.PRESS)):
+            raise ValueError('Not a valid event type.')
         """
         Polls for MIDI events of buttons specified
         in this group. If `timeout` <= 0, this function will
@@ -252,10 +288,12 @@ class ButtonGroup:
         received.
 
         Returns:
-            MidiEvent: MIDI event (or None).
+            MidiEvent: MIDI event (or None if timeout was reached).
         """
         return self._launchpad.poll_for_event(interface=interface,
-                                              timeout=timeout)
+                                              timeout=timeout,
+                                              match=ButtonMatch(self._buttons,
+                                                                event_type))
 
     def clear_event_queue(self, *, interface='midi'):
         """
@@ -274,27 +312,27 @@ class ButtonGroup:
                 for row, button_name in enumerate(button_name_column):
                     if found:
                         break
-                    elif isinstance(arg, str):
+                    elif arg and isinstance(arg, str):
                         if arg.lower() == button_name:
-                            buttons.append(_Button(launchpad,
-                                                   layout,
-                                                   button_names,
-                                                   name=arg))
+                            buttons.append(Button(launchpad,
+                                                  layout,
+                                                  button_names,
+                                                  name=arg))
                             found = True
                     elif isinstance(arg, tuple):
                         if (len(arg) == 2
                                 and arg[0] == row
                                 and arg[1] == column):
-                            buttons.append(_Button(launchpad,
-                                                   layout,
-                                                   button_names,
-                                                   x=row, y=column))
+                            buttons.append(Button(launchpad,
+                                                  layout,
+                                                  button_names,
+                                                  x=row, y=column))
                             found = True
                     elif isinstance(arg, int):
-                        buttons.append(_Button(launchpad,
-                                               layout,
-                                               button_names,
-                                               button_id=arg))
+                        buttons.append(Button(launchpad,
+                                              layout,
+                                              button_names,
+                                              button_id=arg))
                         found = True
                     else:
                         raise ValueError('Invalid button "{}".'
@@ -433,11 +471,11 @@ class Led:
             raise ValueError('Invalid color.')
         elif RgbColor.is_valid(value):
             rgb_color = RgbColor(value)
-            colorspec = self._colorspec_message(self._LIGHTING_TYPE['rgb'],
-                                                self._midi_value,
-                                                rgb_color.r,
-                                                rgb_color.g,
-                                                rgb_color.b)
+            colorspec = SysExMessages.colorspec_message(self._LIGHTING_TYPE['rgb'],  # noqa
+                                                        self._midi_value,
+                                                        rgb_color.r,
+                                                        rgb_color.g,
+                                                        rgb_color.b)
             self.launchpad.send_message(colorspec)
         else:
             color_id = value if ColorShade.is_valid_id(value) else -1
@@ -451,17 +489,15 @@ class Led:
                                  f'{ColorShade.MIN_COLOR_ID} and '
                                  f'{ColorShade.MAX_COLOR_ID}.')
             else:
-                self.launchpad.send_message([self._LIGHTING_MODE[self._mode],
-                                            self._midi_value, color_id])
+                lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
+                                                          self._midi_value, color_id)   # noqa
+                self.launchpad.send_message(lighting)
 
     def reset(self):
         """Sets color to OFF."""
-        self.launchpad.send_message([self._LIGHTING_MODE[Led.OFF],
-                                    self._midi_value, 0x0])
-
-    def _colorspec_message(self, lighting_type, led_index, *lighting_data):
-        return [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03,
-                lighting_type, led_index] + list(lighting_data) + [0xf7]
+        lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
+                                                  self._midi_value, 0x0)   # noqa
+        self.launchpad.send_message(lighting)
 
     def _is_within_range(self):
         return self._x >= 0 \
@@ -530,12 +566,12 @@ class Panel(Animable):
         """Max ID."""
         return self.max_x * self.max_y
 
-    @property
+    @Animable.max_x.getter
     def max_x(self):
         """Max X."""
         return len(Panel._BUTTON_NAMES[0])
 
-    @property
+    @Animable.max_y.getter
     def max_y(self):
         """Max Y."""
         return len(Panel._BUTTON_NAMES)
@@ -661,11 +697,11 @@ class Grid(Animable):
         """Max ID."""
         return self.max_x * self.max_y
 
-    @property
+    @Animable.max_x.getter
     def max_x(self):
         return len(Grid._BUTTON_NAMES[0])
 
-    @property
+    @Animable.max_y.getter
     def max_y(self):
         return len(Grid._BUTTON_NAMES)
 
