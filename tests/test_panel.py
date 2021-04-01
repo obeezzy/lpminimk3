@@ -1144,6 +1144,9 @@ class TestButtonGroup(unittest.TestCase):
         self.assertCountEqual(['up', '7x7', 'stop_solo_mute'],
                               self.lp.panel.buttons('up', '7x7', 'stop_solo_mute').names,  # noqa
                               'Button name mismatch.')
+        self.assertCountEqual(['up'],
+                              self.lp.panel.buttons('up', 'up', 'up').names,  # noqa
+                              'Button name mismatch.')
 
         self.assertCountEqual(['up', 'down', 'left', 'right', 'session', 'drums', 'keys', 'user', 'logo',  # noqa
                                '0x0', '1x0', '2x0', '3x0', '4x0', '5x0', '6x0', '7x0', 'scene_launch_1',  # noqa
@@ -1406,6 +1409,9 @@ class TestButtonGroup(unittest.TestCase):
         self.assertCountEqual(['up', '7x7', 'stop_solo_mute'],
                               self.lp.panel.buttons(0, 79, 80).names,
                               'Button name mismatch.')
+        self.assertCountEqual(['up'],
+                              self.lp.panel.buttons(0, 0, 0).names,
+                              'Button name mismatch.')
 
     def test_names_by_xy(self):
         self.lp.open()
@@ -1655,6 +1661,9 @@ class TestButtonGroup(unittest.TestCase):
 
         self.assertCountEqual(['up', '7x7', 'stop_solo_mute'],
                               self.lp.panel.buttons((0, 0), (7, 8), (8, 8)).names,  # noqa
+                              'Button name mismatch.')
+        self.assertCountEqual(['up'],
+                              self.lp.panel.buttons((0, 0), (0, 0), (0, 0)).names,  # noqa
                               'Button name mismatch.')
 
     def test_prog_layout_poll_event(self):

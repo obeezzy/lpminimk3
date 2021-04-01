@@ -936,6 +936,9 @@ class TestButtonGroup(unittest.TestCase):
         self.assertCountEqual(['0x0', '5x5', '7x7'],
                               self.lp.grid.buttons('0x0', '5x5', '7x7').names,  # noqa
                               'Button name mismatch.')
+        self.assertCountEqual(['0x0'],
+                              self.lp.grid.buttons('0x0', '0x0', '0x0').names,  # noqa
+                              'Button name mismatch.')
 
         self.assertCountEqual(['0x0', '1x0', '2x0', '3x0', '4x0', '5x0', '6x0', '7x0', # noqa
                                '0x1', '1x1', '2x1', '3x1', '4x1', '5x1', '6x1', '7x1', # noqa
@@ -1142,6 +1145,9 @@ class TestButtonGroup(unittest.TestCase):
         self.assertCountEqual(['7x7'],
                               self.lp.grid.buttons(63).names,
                               'Button name mismatch.')
+        self.assertCountEqual(['0x0'],
+                              self.lp.grid.buttons(0, 0, 0).names,
+                              'Button name mismatch.')
 
         self.assertCountEqual(['0x0'],
                               self.lp.grid.buttons((0, 0)).names,
@@ -1338,6 +1344,9 @@ class TestButtonGroup(unittest.TestCase):
 
         self.assertCountEqual(['0x0', '5x5', '7x7'],
                               self.lp.grid.buttons((0, 0), (5, 5), (7, 7)).names,  # noqa
+                              'Button name mismatch.')
+        self.assertCountEqual(['0x0'],
+                              self.lp.grid.buttons((0, 0), (0, 0), (0, 0)).names,  # noqa
                               'Button name mismatch.')
 
     def test_prog_layout_poll_event(self):

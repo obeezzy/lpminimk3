@@ -41,7 +41,13 @@ class _LayoutCoordinate:
 
     @property
     def id(self):
-        return self._id
+        within_range = (self._x >= 0
+                        and self._y >= 0
+                        and self._x < self._max_x
+                        and self._y < self._max_y)
+        if not within_range:
+            return -1
+        return (self._y * self._max_y) + self._x + 1
 
     @property
     def name(self):
@@ -198,6 +204,12 @@ class _Button:
         return ('Button(name=\'{}\', x={}, y={}, id={})'
                 .format(self.name, self.x, self.y, self.id))
 
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(repr(self))
+
 
 class ButtonGroup:
     """
@@ -269,8 +281,10 @@ class ButtonGroup:
                                                    button_names,
                                                    name=arg))
                             found = True
-                    elif isinstance(arg, (tuple, list)):
-                        if arg[0] == row and arg[1] == column:
+                    elif isinstance(arg, tuple):
+                        if (len(arg) == 2
+                                and arg[0] == row
+                                and arg[1] == column):
                             buttons.append(_Button(launchpad,
                                                    layout,
                                                    button_names,
@@ -285,7 +299,7 @@ class ButtonGroup:
                     else:
                         raise ValueError('Invalid button "{}".'
                                          .format(str(arg)))
-        return buttons
+        return set(buttons)
 
     def __repr__(self):
         names = list(map(lambda name: "'{}'".format(name), self.names))
