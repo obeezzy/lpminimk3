@@ -16,7 +16,7 @@ class ButtonMatch(Match):
 
     def __init__(self, buttons, event_type):
         self._buttons = buttons
-        self._event_type = event_type.replace('|', '_')
+        self._event_type = event_type.lower().replace('|', '_')
 
     def contains(self, message):
         button_messages = self._determine_messages()
@@ -32,7 +32,10 @@ class ButtonMatch(Match):
                       if button.parent == 'grid'
                       else ButtonMatch.CC_HEADER)
             if self._event_type == 'press':
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0xff))  # noqa
+                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x7f))  # noqa
             elif self._event_type == 'release':
+                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x0))  # noqa
+            elif self._event_type == 'press_release':
+                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x7f))  # noqa
                 messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x0))  # noqa
         return messages

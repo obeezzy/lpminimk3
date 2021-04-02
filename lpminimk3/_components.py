@@ -18,6 +18,9 @@ class Animable:
     def max_y(self):
         return -1
 
+    def led_range(self):
+        pass
+
     def animate(self, animation, *, timeout=None):
         pass
 
@@ -178,63 +181,6 @@ class ButtonFace:
     STOP_SOLO_MUTE = 'stop_solo_mute'
 
 
-class Button:
-    def __init__(self, launchpad,
-                 layout,
-                 button_names, *,
-                 x=-1, y=-1,
-                 name='',
-                 button_id=-1):
-        coordinate = _LayoutCoordinate(launchpad=launchpad,
-                                       layout=layout,
-                                       button_names=button_names,
-                                       name=name,
-                                       coordinate_id=button_id,
-                                       x=x, y=y)
-        self._name = coordinate.name
-        self._x = coordinate.x
-        self._y = coordinate.y
-        self._button_id = coordinate.id
-        self._midi_value = coordinate.midi_value
-
-    @property
-    def x(self):
-        return self._x
-
-    @property
-    def y(self):
-        return self._y
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def midi_value(self):
-        return self._midi_value
-
-    @property
-    def id(self):
-        return self._button_id
-
-    @property
-    def parent(self):
-        match = re.match('^\\d+x\\d+$', self._name)
-        if match:
-            return 'grid'
-        return 'panel' if self._button_id else ''
-
-    def __repr__(self):
-        return ('Button(name=\'{}\', x={}, y={}, id={})'
-                .format(self.name, self.x, self.y, self.id))
-
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __hash__(self):
-        return hash(repr(self))
-
-
 class ButtonGroup:
     """
     A ButtonGroup simply represents a collection of buttons.
@@ -271,11 +217,12 @@ class ButtonGroup:
         """
         return [button.name for button in self._buttons]
 
-    def poll_for_event(self, *, event_type=ButtonEvent.RELEASE,
+    def poll_for_event(self, *, event_type=ButtonEvent.PRESS_RELEASE,
                        interface='midi', timeout=None):
         if (not event_type
-                or (event_type != ButtonEvent.RELEASE
-                    and event_type != ButtonEvent.PRESS)):
+                or (event_type.lower().replace('|', '_') != ButtonEvent.PRESS_RELEASE  # noqa
+                    and event_type.lower() != ButtonEvent.RELEASE
+                    and event_type.lower() != ButtonEvent.PRESS)):
             raise ValueError('Not a valid event type.')
         """
         Polls for MIDI events of buttons specified
@@ -290,7 +237,7 @@ class ButtonGroup:
                                                     timeout=timeout,
                                                     match=ButtonMatch(self._buttons,  # noqa
                                                                       event_type))  # noqa
-        return ButtonEvent(midi_event, self._buttons, event_type)
+        return ButtonEvent(midi_event, self._buttons)
 
     def clear_event_queue(self, *, interface='midi'):
         """
@@ -490,6 +437,10 @@ class Led:
                                                           self._midi_value, color_id)   # noqa
                 self.launchpad.send_message(lighting)
 
+    @color.deleter
+    def color(self):
+        self.reset()
+
     def reset(self):
         """Sets color to OFF."""
         lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
@@ -502,8 +453,90 @@ class Led:
                 and self._x < self._max_x \
                 and self._y < self._max_y
 
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(repr(self))
+
     def __repr__(self):
         return 'Led(x={}, y={})'.format(self.x, self.y)
+
+
+class Button:
+    def __init__(self, launchpad,
+                 layout,
+                 button_names, *,
+                 x=-1, y=-1,
+                 name='',
+                 button_id=-1):
+        coordinate = _LayoutCoordinate(launchpad=launchpad,
+                                       layout=layout,
+                                       button_names=button_names,
+                                       name=name,
+                                       coordinate_id=button_id,
+                                       x=x, y=y)
+        self._launchpad = launchpad
+        self._layout = layout
+        self._button_names = button_names
+        self._name = coordinate.name
+        self._x = coordinate.x
+        self._y = coordinate.y
+        self._button_id = coordinate.id
+        self._midi_value = coordinate.midi_value
+
+    @property
+    def launchpad(self):
+        return self._launchpad
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def midi_value(self):
+        return self._midi_value
+
+    @property
+    def id(self):
+        return self._button_id
+
+    @property
+    def parent(self):
+        match = re.match('^\\d+x\\d+$', self._name)
+        if match:
+            return 'grid'
+        return 'panel' if self._button_id else ''
+
+    @property
+    def led(self):
+        return Led(launchpad=self._launchpad,
+                   layout=self._layout,
+                   button_names=self._button_names,
+                   x=self._x,
+                   y=self._y)
+
+    @property
+    def layout(self):
+        return self._layout
+
+    def __repr__(self):
+        return ('Button(name=\'{}\', x={}, y={}, id={})'
+                .format(self.name, self.x, self.y, self.id))
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(repr(self))
 
 
 class Panel(Animable):

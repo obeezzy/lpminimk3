@@ -33,11 +33,11 @@ class MidiEvent:
 class ButtonEvent:
     PRESS = 'press'
     RELEASE = 'release'
+    PRESS_RELEASE = 'press_release'
 
-    def __init__(self, midi_event, buttons, event_type):
+    def __init__(self, midi_event, buttons):
         self._midi_event = midi_event
-        self._event_type = event_type
-        self._button = self._determine_button(buttons)
+        self._button = self._determine_button(midi_event, buttons)
 
     @property
     def message(self):
@@ -45,7 +45,7 @@ class ButtonEvent:
 
     @property
     def deltatime(self):
-        return self._midi_client.deltatime
+        return self._midi_event.deltatime
 
     @property
     def button(self):
@@ -53,19 +53,25 @@ class ButtonEvent:
 
     @property
     def event_type(self):
-        return self._event_type
+        return (ButtonEvent.RELEASE
+                if len(self._midi_event.message) == 3
+                and self._midi_event.message[2] == 0x0
+                else ButtonEvent.PRESS)
 
-    def _determine_button(self, buttons):
-        found_buttons = (list(filter(lambda b: b.midi_value == self._midi_event.message[1], buttons))  # noqa
-                         if self._midi_event and self._midi_event.message and len(self._midi_event.message) == 3  # noqa
+    def _determine_button(self, midi_event, buttons):
+        found_buttons = (list(filter(lambda b: b.midi_value == midi_event.message[1], buttons))  # noqa
+                         if midi_event and midi_event.message and len(midi_event.message) == 3  # noqa
                          else None)
         return (found_buttons[0]
                 if found_buttons and len(found_buttons)
                 else None)
 
     def __repr__(self):
-        return ('ButtonEvent(button={}, deltatime={})'
-                .format(self.message, self.deltatime))
+        return ('ButtonEvent(button=\'{}\', '
+                'type=\'{}\', '
+                'deltatime={})'.format(self.button.name,
+                                       self.event_type,
+                                       self.deltatime))
 
 
 class MidiPort:
@@ -173,17 +179,21 @@ class MidiPort:
         timeout = 0 if not timeout else timeout
         timeout = 0 if timeout < 0 else timeout
         while polling and timeout > elapsed:
-            raw_message = self._midi_in.get_message()
-            event = MidiEvent(*raw_message) if raw_message else None
-            logger.debug('MIDI event: {}'.format(event))
-            if event and not match:
-                polling = False
-            elif event and isinstance(match, list) and match == event.message:
-                polling = False
-            elif event and isinstance(match, Match) and match.contains(event.message):  # noqa
-                polling = False
-            time.sleep(.1)
-            elapsed += .1 if timeout and timeout > 0 else 0
+            try:
+                raw_message = self._midi_in.get_message()
+                event = MidiEvent(*raw_message) if raw_message else None
+                logger.debug('MIDI event: {}'.format(event))
+                if event and not match:
+                    polling = False
+                elif event and isinstance(match, list) and match == event.message:  # noqa
+                    polling = False
+                elif event and isinstance(match, Match) and match.contains(event.message):  # noqa
+                    polling = False
+                time.sleep(.1)
+                elapsed += .1 if timeout and timeout > 0 else 0
+            except KeyboardInterrupt:
+                print('\nPolling terminated.')
+                break
         return event
 
     def clear_event_queue(self):
