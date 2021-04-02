@@ -6,6 +6,7 @@ import re
 from .colors import ColorShade, ColorShadeStore, RgbColor
 from .midi_messages import SysExMessages
 from .match import ButtonMatch
+from ._utils import ButtonEvent
 
 
 class Animable:
@@ -177,11 +178,6 @@ class ButtonFace:
     STOP_SOLO_MUTE = 'stop_solo_mute'
 
 
-class ButtonEvent:
-    RELEASE = 'release'
-    PRESS = 'press'
-
-
 class Button:
     def __init__(self, launchpad,
                  layout,
@@ -290,10 +286,11 @@ class ButtonGroup:
         Returns:
             MidiEvent: MIDI event (or None if timeout was reached).
         """
-        return self._launchpad.poll_for_event(interface=interface,
-                                              timeout=timeout,
-                                              match=ButtonMatch(self._buttons,
-                                                                event_type))
+        midi_event = self._launchpad.poll_for_event(interface=interface,
+                                                    timeout=timeout,
+                                                    match=ButtonMatch(self._buttons,  # noqa
+                                                                      event_type))  # noqa
+        return ButtonEvent(midi_event, self._buttons, event_type)
 
     def clear_event_queue(self, *, interface='midi'):
         """
