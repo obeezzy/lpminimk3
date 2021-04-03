@@ -84,7 +84,7 @@ ButtonEvent(button='7x5', event_type='press', deltatime=0.0)
 ```
 Or only button releases instead:
 ```bash
->>> ev = lp.panel.buttons().poll_for_event(event_type='release')  # Block until any button is released
+>>> ev = lp.panel.buttons().poll_for_event(event_type='release')  # Block until released
 >>> ev
 ButtonEvent(button='up', event_type='release', deltatime=0.0)
 ```
