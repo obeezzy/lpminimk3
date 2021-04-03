@@ -7,7 +7,7 @@ import random
 import sys
 
 
-def handle_event(button_event):  # Handle button presses
+def handle_event(button_event):
     if button_event and button_event.event_type == ButtonEvent.PRESS:
         button_event.button.led.color = random.randint(1, 127)  # Set LED to random color while button is pressed  # noqa
         print(f"Button '{button_event.button.name}' pressed.")
@@ -24,7 +24,8 @@ def main():
 
     lp.mode = Mode.PROG  # Switch to the programmer mode
 
-    print("Push any button on your launchpad to see it light up!\n")
+    print('Push any button on your Launchpad to see it light up!\n'
+          'Press Ctrl+C to quit.\n')
     while True:
         handle_event(lp.panel.buttons().poll_for_event())  # Wait for a button press/release  # noqa
 
