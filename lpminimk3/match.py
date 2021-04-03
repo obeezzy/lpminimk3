@@ -6,11 +6,18 @@ from .midi_messages import SysExMessages
 
 
 class Match:
+    """
+    A set of rules for filtering MIDI events.
+    """
+
     def contains(self, message):
         return False
 
 
 class ButtonMatch(Match):
+    """
+    A set of rules for filtering button events.
+    """
     NOTE_HEADER = 0x90
     CC_HEADER = 0xb0
 
@@ -19,6 +26,10 @@ class ButtonMatch(Match):
         self._event_type = event_type.lower().replace('|', '_')
 
     def contains(self, message):
+        """
+        Returns `True` if message `message` is a valid button
+        message, otherwise returns `False`.
+        """
         button_messages = self._determine_messages()
         for button_message in button_messages:
             if message == button_message:
