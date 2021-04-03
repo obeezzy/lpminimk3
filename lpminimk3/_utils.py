@@ -13,6 +13,13 @@ _MIDI_MESSAGE_LENGTH = 9
 
 
 class MidiEvent:
+    """
+    A MIDI event.
+
+    A MIDI event is received every time the Launchpad's MIDI port
+    is read.
+    """
+
     def __init__(self, message, deltatime=0):
         self._message = message
         self._deltatime = deltatime
@@ -31,6 +38,13 @@ class MidiEvent:
 
 
 class ButtonEvent:
+    """
+    A button event.
+
+    A button event is received every time a button on the Launchpad
+    is pushed.
+    """
+
     PRESS = 'press'
     RELEASE = 'release'
     PRESS_RELEASE = 'press_release'
@@ -53,8 +67,11 @@ class ButtonEvent:
 
     @property
     def event_type(self):
+        if not self._midi_event:
+            return ''
         return (ButtonEvent.RELEASE
-                if len(self._midi_event.message) == 3
+                if self._midi_event
+                and len(self._midi_event.message) == 3
                 and self._midi_event.message[2] == 0x0
                 else ButtonEvent.PRESS)
 
@@ -68,13 +85,17 @@ class ButtonEvent:
 
     def __repr__(self):
         return ('ButtonEvent(button=\'{}\', '
-                'type=\'{}\', '
+                'event_type=\'{}\', '
                 'deltatime={})'.format(self.button.name,
                                        self.event_type,
                                        self.deltatime))
 
 
 class MidiPort:
+    """
+    A MIDI port.
+    """
+
     OUT = 'out'
     IN = 'in'
     DEFAULT_CLIENT_NAME = 'lpminimk3'
@@ -170,7 +191,7 @@ class MidiPort:
         else:
             raise RuntimeError('Failed to send message.')
 
-    def poll_for_event(self, *, timeout=5, match=None):
+    def poll_for_event(self, *, timeout=5, match=None, read_delay=.001):
         if not self._midi_in:
             return
         event = None
@@ -189,19 +210,23 @@ class MidiPort:
                     polling = False
                 elif event and isinstance(match, Match) and match.contains(event.message):  # noqa
                     polling = False
-                time.sleep(.1)
+                time.sleep(read_delay)
                 elapsed += .1 if timeout and timeout > 0 else 0
             except KeyboardInterrupt:
                 print('\nPolling terminated.')
                 break
         return event
 
-    def clear_event_queue(self):
+    def clear_event_queue(self, *, read_delay=.001):
         while self._midi_in and self._midi_in.get_message():
-            continue
+            time.sleep(read_delay)
 
 
 class Interface:
+    """
+    Interface of the launchpad.
+    """
+
     DAW = 'daw'
     MIDI = 'midi'
     READBACK_POSITION = 7
@@ -234,6 +259,10 @@ class Interface:
 
 
 class Mode:
+    """
+    A Launchpad mode.
+    """
+
     LIVE = 'live'
     PROG = 'prog'
     READBACK_POSITION = 7
@@ -266,6 +295,10 @@ class Mode:
 
 
 class Layout:
+    """
+    A Launchpad layout.
+    """
+
     SESSION = 'session'
     CUSTOM_1 = 'custom_1'
     CUSTOM_2 = 'custom_2'
@@ -315,6 +348,10 @@ class Layout:
 
 
 class MidiClient:
+    """
+    A MIDI client.
+    """
+
     def __init__(self, client_name, client_number):
         self._client_name = client_name
         self._client_number = client_number
@@ -405,6 +442,10 @@ class MidiClient:
 
 
 class SystemMidiPortParser:
+    """
+    System-specific way of parsing MIDI port names.
+    """
+
     @staticmethod
     def extract_names(system_port_name):
         client_name = ''

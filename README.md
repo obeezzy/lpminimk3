@@ -5,7 +5,7 @@ Python API for the [Novation Launchpad Mini MK3](https://novationmusic.com/en/la
 
 The goals of this project are as follows:
 * Intuitive, object-oriented design
-* Convenient for use in script or in shell
+* Convenient for use in script and shell
 * Access to all (or most) of the Launchpad Mini MK3 MIDI features
 
 
@@ -21,7 +21,9 @@ Make sure your Launchpad is connected to your computer.
 
 ### In script
 ```python
-"""Displays a random array of colors for 5 seconds."""
+"""
+Display a random array of colors for 5 seconds.
+"""
 
 from lpminimk3 import Mode, find_launchpads
 import random
@@ -38,20 +40,26 @@ for led in lp.panel.led_range():  # Loop through all LEDs
 time.sleep(5)  # Keep LEDs on for a while
 
 for led in lp.panel.led_range():
-    led.reset()  # Turn off LED
-
+    del led.color  # Turn off LED
 ```
-View example file [here](https://github.com/obeezzy/lpminimk3/examples/flash.py).
+
+See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/examples).
 
 ### In shell
+Start by finding a connected device and opening the device for reading and writing:
 ```bash
 $ python
 >>> import lpminimk3
 >>> lp = lpminimk3.find_launchpads()[0]
 >>> lp.open()
+```
+Query the device to ensure we can read and write to it:
+```bash
 >>> lp.device_inquiry()  # Query device
 MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
->>>
+```
+Switch to `programmer` mode to start manipulating button LEDs.
+```bash
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
 >>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
@@ -60,6 +68,29 @@ MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 >>> lp.panel.led('stop').color = 'w1'  # Set 'Stop/Solo/Mute' LED color to first shade of white
 >>> lp.panel.led('mute').color = 'o3'  # Set 'Stop/Solo/Mute' LED color to third shade of orange
 >>> lp.panel.led('mute').color = 'r0'  # Invalid but okay, will default to 'r1'
+>>> lp.panel.led('mute').color = 0  # Turn off LED
+>>> lp.panel.led('logo').reset()  # Another way to turn off LED
+>>> del lp.panel.led('stop').color  # Another way to turn off LED
+```
+Note in the above snippet that `lp.grid` only contains the __*grid*__ buttons
+(i.e. the faceless white buttons) and `lp.panel` contains all buttons
+(including the __*logo*__ LED at the top right corner).  
+
+Wait for and respond to button presses and releases:
+```bash
+>>> ev = lp.panel.buttons().poll_for_event()  # Block until any button is pressed/released
+>>> ev
+ButtonEvent(button='7x5', event_type='press', deltatime=0.0)
+```
+Or only button releases instead:
+```bash
+>>> ev = lp.panel.buttons().poll_for_event(event_type='release')  # Block until any button is released
+>>> ev
+ButtonEvent(button='up', event_type='release', deltatime=0.0)
+```
+Pass button names as arguments to wait for specific button events:
+```bash
+>>> lp.panel.buttons('up', '0x0', 'stop').poll_for_event()
 ```
 
 

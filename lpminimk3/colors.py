@@ -6,7 +6,9 @@ import re
 
 
 class RgbColor:
-    """An RGB color."""
+    """
+    An RGB color.
+    """
     _MIN_HEX_LENGTH = 4
     _MAX_HEX_LENGTH = 7
     _MIN_COLOR_VALUE = 0
@@ -44,22 +46,30 @@ class RgbColor:
 
     @property
     def value(self):
-        """RGB value, as string."""
+        """
+        RGB value, as string.
+        """
         return self._value
 
     @property
     def r(self):
-        """Red value"""
+        """
+        Red value
+        """
         return self._r
 
     @property
     def g(self):
-        """Green value"""
+        """
+        Green value
+        """
         return self._g
 
     @property
     def b(self):
-        """Blue value"""
+        """
+        Blue value
+        """
         return self._b
 
     def _parse(self, value):
@@ -80,9 +90,13 @@ class RgbColor:
 
 class ColorShade:
     """
-    This class represents one of the colors in the color palette of the
-    launchpad. There are 128 valid color shades, ranging from ID 0 to 127.
+    A color shade.
+
+    A color shade is color from the Launchpad's color palette.
+    There are 128 valid color shades, ranging from ID 0 to 127
+    (with ID 0 used for OFF).
     """
+
     MIN_COLOR_ID = 0
     MAX_COLOR_ID = 127
     HEX_VALUES = [
@@ -156,7 +170,9 @@ class ColorShade:
 
 class ColorPalette:
     """
-    Color palette of launchpad.
+    Color palette of Launchpad.
+
+    The color palette contains 127 predefined color shades.
     """
     class Red:
         SHADE_1 = ColorShade(0x04, 'red')
@@ -303,8 +319,7 @@ class ColorPalette:
 
 class ColorShadeStore:
     """
-    This class represents a collection of all color shades
-    available to launchpad.
+    Color shade store for the Launchpad.
     """
     COLOR_GROUPS = ['red', 'orange', 'yellow', 'green',
                     'blue', 'violet', 'white']
