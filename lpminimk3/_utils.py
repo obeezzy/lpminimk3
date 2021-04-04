@@ -24,6 +24,13 @@ class MidiEvent:
         self._message = message
         self._deltatime = deltatime
 
+    def __eq__(self, other):
+        if not isinstance(other, (MidiEvent, list)):
+            return False
+        if isinstance(other, list):
+            return self.message == other
+        return self.message == other.message
+
     @property
     def message(self):
         return self._message
@@ -52,6 +59,18 @@ class ButtonEvent:
     def __init__(self, midi_event, buttons):
         self._midi_event = midi_event
         self._button = self._determine_button(midi_event, buttons)
+
+    def __eq__(self, other):
+        if not isinstance(other, ButtonEvent):
+            return False
+        return self.midi_event == other.midi_event
+
+    def __repr__(self):
+        return ('ButtonEvent(button=\'{}\', '
+                'event_type=\'{}\', '
+                'deltatime={})'.format(self.button.name,
+                                       self.event_type,
+                                       self.deltatime))
 
     @property
     def message(self):
@@ -83,13 +102,6 @@ class ButtonEvent:
                 if found_buttons and len(found_buttons)
                 else None)
 
-    def __repr__(self):
-        return ('ButtonEvent(button=\'{}\', '
-                'event_type=\'{}\', '
-                'deltatime={})'.format(self.button.name,
-                                       self.event_type,
-                                       self.deltatime))
-
 
 class MidiPort:
     """
@@ -116,6 +128,8 @@ class MidiPort:
             midi_in.ignore_types(sysex=False, timing=False)
 
     def __eq__(self, other):
+        if not isinstance(other, MidiPort):
+            return False
         return self.system_port_name == other.system_port_name
 
     def __repr__(self):
@@ -247,15 +261,22 @@ class Interface:
                            if midi_value == Interface.MidiWord.MIDI
                            else Interface.DAW)
 
-    @property
-    def midi_event(self):
-        return self._midi_event
+    def __eq__(self, other):
+        if (not isinstance(other, str)
+                or (other.lower() != Interface.MIDI
+                    and other.lower() != Interface.DAW)):
+            return False
+        return self.midi_event == other.midi_event
 
     def __repr__(self):
         return ('Interface()'
                 if self._interface is None
                 else 'Interface(\'Interface.{}\')'
                 .format(self._interface.upper()))
+
+    @property
+    def midi_event(self):
+        return self._midi_event
 
 
 class Mode:
@@ -283,15 +304,22 @@ class Mode:
                       if midi_value == Mode.MidiWord.LIVE
                       else Mode.PROG)
 
-    @property
-    def midi_event(self):
-        return self._midi_event
+    def __eq__(self, other):
+        if (not isinstance(other, str)
+                or (other.lower() != Mode.LIVE
+                    and other.lower() != Mode.PROG)):
+            return False
+        return self.midi_event == other.midi_event
 
     def __repr__(self):
         return ('Mode()'
                 if self._mode is None
                 else 'Mode(\'Mode.{}\')'
                 .format(self._mode.upper()))
+
+    @property
+    def midi_event(self):
+        return self._midi_event
 
 
 class Layout:
@@ -323,28 +351,43 @@ class Layout:
                                        len(midi_event.message)))
         self._midi_event = midi_event
         midi_value = midi_event.message[Layout.READBACK_POSITION]
-        if midi_value == Layout.MidiWord.SESSION:
-            self._layout = Layout.SESSION
-        elif midi_value == Layout.MidiWord.CUSTOM_1:
-            self._layout = Layout.CUSTOM_1
-        elif midi_value == Layout.MidiWord.CUSTOM_2:
-            self._layout = Layout.CUSTOM_2
-        elif midi_value == Layout.MidiWord.CUSTOM_3:
-            self._layout = Layout.CUSTOM_3
-        elif midi_value == Layout.MidiWord.DAW_FADERS:
-            self._layout = Layout.DAW_FADERS
-        else:
-            self._layout = Layout.PROG
+        self._layout = self._determine_layout(midi_value)
 
-    @property
-    def midi_event(self):
-        return self._midi_event
+    def __eq__(self, other):
+        if (not isinstance(other, str)
+                or (other.lower() != Layout.SESSION
+                    and other.lower() != Layout.CUSTOM_1
+                    and other.lower() != Layout.CUSTOM_2
+                    and other.lower() != Layout.CUSTOM_3
+                    and other.lower() != Layout.DAW_FADERS
+                    and other.lower() != Layout.PROG)):
+            return False
+        return self.midi_event == other.midi_event
 
     def __repr__(self):
         return ('Layout()'
                 if self._layout is None
                 else 'Layout(\'Layout.{}\')'
                 .format(self._layout.upper()))
+
+    @property
+    def midi_event(self):
+        return self._midi_event
+
+    def _determine_layout(self, midi_value):
+        if midi_value == Layout.MidiWord.SESSION:
+            layout = Layout.SESSION
+        elif midi_value == Layout.MidiWord.CUSTOM_1:
+            layout = Layout.CUSTOM_1
+        elif midi_value == Layout.MidiWord.CUSTOM_2:
+            layout = Layout.CUSTOM_2
+        elif midi_value == Layout.MidiWord.CUSTOM_3:
+            layout = Layout.CUSTOM_3
+        elif midi_value == Layout.MidiWord.DAW_FADERS:
+            layout = Layout.DAW_FADERS
+        else:
+            layout = Layout.PROG
+        return layout
 
 
 class MidiClient:
@@ -359,7 +402,10 @@ class MidiClient:
         self._in_ports = []
 
     def __eq__(self, other):
-        return self.client_name == other.client_name
+        if not isinstance(other, MidiClient):
+            return False
+        return (self.client_name == other.client_name
+                and self.client_number == other.client_number)
 
     def __repr__(self):
         return ('MidiClient(name={}, number={})'
@@ -430,13 +476,13 @@ class MidiClient:
 
     def append_out_port(self, port):
         if not isinstance(port, MidiPort):
-            raise TypeError('Must be of type "MidiPort".')
+            raise TypeError('Must be of type MidiPort.')
         if port not in self._out_ports:
             self._out_ports.append(port)
 
     def append_in_port(self, port):
         if not isinstance(port, MidiPort):
-            raise TypeError('Must be of type "MidiPort".')
+            raise TypeError('Must be of type MidiPort.')
         if port not in self._in_ports:
             self._in_ports.append(port)
 

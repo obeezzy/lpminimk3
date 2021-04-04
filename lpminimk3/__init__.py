@@ -19,6 +19,14 @@ class LaunchpadMiniMk3:
     def __init__(self, midi_client):
         self._midi_client = midi_client
 
+    def __eq__(self, other):
+        if not isinstance(other, LaunchpadMiniMk3):
+            return False
+        return self.id == other.id
+
+    def __repr__(self):
+        return 'LaunchpadMiniMk3(id={})'.format(self.id)
+
     def is_open(self):
         """
         Returns `True` if the device is open, otherwise
@@ -169,7 +177,9 @@ class LaunchpadMiniMk3:
 
     @property
     def interface(self):
-        """Interface of launchpad. (See :class:`Interface`.)"""
+        """
+        Interface of Launchpad. (See :class:`Interface`.)
+        """
         self.send_message(_SysExMessages.Interfaces.READBACK)
         return Interface(self.poll_for_event())
 
@@ -185,7 +195,7 @@ class LaunchpadMiniMk3:
     @property
     def panel(self):
         """
-        Panel of launchpad; represents the 9x9 array of buttons,
+        Panel of Launchpad; represents the 9x9 array of buttons,
         with face buttons included. (See :class:`Panel`.)
         """
         return Panel(self)
@@ -193,14 +203,16 @@ class LaunchpadMiniMk3:
     @property
     def grid(self):
         """
-        Grid of launchpad; represents the 8x8 array of white,
+        Grid of Launchpad; represents the 8x8 array of white,
         faceless buttons. (See :class:`Grid`.)
         """
         return Grid(self)
 
     @property
     def mode(self):
-        """Mode of launchpad. (See :class:`Mode`.)"""
+        """
+        Mode of Launchpad. (See :class:`Mode`.)
+        """
         self.send_message(_SysExMessages.Modes.READBACK)
         return Mode(self.poll_for_event())
 
@@ -215,7 +227,9 @@ class LaunchpadMiniMk3:
 
     @property
     def layout(self):
-        """Layout of launchpad. (See :class:`Layout`.)"""
+        """
+        Layout of Launchpad. (See :class:`Layout`.)
+        """
         self.send_message(_SysExMessages.Layouts.READBACK)
         return Layout(self.poll_for_event())
 
@@ -246,9 +260,6 @@ class LaunchpadMiniMk3:
         self.mode = Mode.PROG
         self.send_message(_SysExMessages.DEVICE_INQUIRY)
         return self.poll_for_event()
-
-    def __repr__(self):
-        return 'LaunchpadMiniMk3(id={})'.format(self.id)
 
 
 def find_launchpads():

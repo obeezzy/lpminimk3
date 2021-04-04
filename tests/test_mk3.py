@@ -214,6 +214,27 @@ class TestMk3(unittest.TestCase):
                          SysExMessages.Modes.PROG,
                          'Device inquiry mismatch.')
 
+    def test_eq(self):
+        self.lp.open()
+
+        another_lp = create_virtual_launchpad(client_id=99)
+        another_lp.open()
+
+        self.assertTrue(self.lp != another_lp,
+                        'Launchpad mismatch.')
+        self.assertTrue(self.lp.id != another_lp.id,
+                        'Launchpad ID mismatch.')
+        self.assertTrue(self.lp.interface != another_lp.interface,
+                        'Launchpad interface mismatch.')
+        self.assertTrue(self.lp.mode != another_lp.mode,
+                        'Launchpad mode mismatch.')
+        self.assertTrue(self.lp.layout != another_lp.layout,
+                        'Launchpad layout mismatch.')
+        self.assertTrue(self.lp.panel != another_lp.panel,
+                        'Launchpad panel mismatch.')
+        self.assertTrue(self.lp.grid != another_lp.grid,
+                        'Launchpad grid mismatch.')
+
 
 if __name__ == '__main__':
     unittest.main()
