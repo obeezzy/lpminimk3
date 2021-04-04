@@ -95,6 +95,8 @@ Pass button names as arguments to wait for specific button events:
 
 
 ## Release History
+* [0.2.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.1)
+    * Fix version error
 * [0.2.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.0)
     * Add `led_range()` for easy iteration through LEDs
     * Update and add examples
@@ -105,7 +107,7 @@ Pass button names as arguments to wait for specific button events:
     * Move all MIDI messages to `midi_messages` module
     * More robust testing
     * Bug fixes
-    * Completion of `Project Foundation`
+    * Complete [Project Foundation](https://github.com/obeezzy/lpminimk3/projects/1)
 * [0.1.2](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.2)
     * Properly bump up version
 * [0.1.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.1)
