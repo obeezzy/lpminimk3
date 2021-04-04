@@ -125,10 +125,10 @@ class VirtualLaunchpadMiniMk3(LaunchpadMiniMk3):
         self._event_from_button = None
 
 
-def create_virtual_launchpad():
+def create_virtual_launchpad(*, client_id=CLIENT_ID):
     midi_out = MidiOut(API_RTMIDI_DUMMY, CLIENT_NAME)
     midi_in = MidiIn(API_RTMIDI_DUMMY, CLIENT_NAME)
-    midi_client = VirtualMidiClient(CLIENT_NAME, CLIENT_ID)
+    midi_client = VirtualMidiClient(CLIENT_NAME, client_id)
 
     daw_in_port = VirtualMidiPort(IN_PORTS['daw']['port_name'],
                                   IN_PORTS['daw']['port_number'],

@@ -203,6 +203,10 @@ class ButtonGroup:
     def __iter__(self):
         return iter(self._buttons)
 
+    def __repr__(self):
+        names = list(map(lambda name: "'{}'".format(name), self.names))
+        return 'ButtonGroup({})'.format(', '.join(names))
+
     @property
     def launchpad(self):
         """
@@ -301,10 +305,6 @@ class ButtonGroup:
                                          .format(str(arg)))
         return set(buttons)
 
-    def __repr__(self):
-        names = list(map(lambda name: "'{}'".format(name), self.names))
-        return 'ButtonGroup({})'.format(', '.join(names))
-
 
 class Led:
     """
@@ -357,6 +357,19 @@ class Led:
         self._max_x = coordinate.max_x
         self._max_y = coordinate.max_y
         self._midi_value = coordinate.midi_value
+
+    def __eq__(self, other):
+        if not isinstance(other, Led):
+            return False
+        return (self.launchpad == other.launchpad
+                and self.name == other.name)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __repr__(self):
+        return ('Led(x={}, y={}, name=\'{}\')'
+                .format(self.x, self.y, self.name))
 
     @property
     def id(self):
@@ -475,15 +488,6 @@ class Led:
                 and self._x < self._max_x \
                 and self._y < self._max_y
 
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __hash__(self):
-        return hash(repr(self))
-
-    def __repr__(self):
-        return 'Led(x={}, y={})'.format(self.x, self.y)
-
 
 class Button:
     """
@@ -510,6 +514,19 @@ class Button:
         self._y = coordinate.y
         self._button_id = coordinate.id
         self._midi_value = coordinate.midi_value
+
+    def __eq__(self, other):
+        if not isinstance(other, Button):
+            return False
+        return (self.launchpad == other.launchpad
+                and self.name == other.name)
+
+    def __hash__(self):
+        return hash(repr(self))
+
+    def __repr__(self):
+        return ('Button(name=\'{}\', x={}, y={}, id={})'
+                .format(self.name, self.x, self.y, self.id))
 
     @property
     def launchpad(self):
@@ -581,16 +598,6 @@ class Button:
         """
         return self._layout
 
-    def __repr__(self):
-        return ('Button(name=\'{}\', x={}, y={}, id={})'
-                .format(self.name, self.x, self.y, self.id))
-
-    def __eq__(self, other):
-        return self.id == other.id
-
-    def __hash__(self):
-        return hash(repr(self))
-
 
 class Panel(Animable):
     """
@@ -637,6 +644,14 @@ class Panel(Animable):
 
     def __init__(self, launchpad):
         self._launchpad = launchpad
+
+    def __eq__(self, other):
+        if not isinstance(other, Panel):
+            return False
+        return self.launchpad == other.launchpad
+
+    def __repr__(self):
+        return 'Panel({}x{})'.format(self.max_x, self.max_y)
 
     @property
     def launchpad(self):
@@ -731,9 +746,6 @@ class Panel(Animable):
                            button_names=Panel._BUTTON_NAMES,
                            args=list(args))
 
-    def __repr__(self):
-        return 'Panel({}x{})'.format(self.max_x, self.max_y)
-
 
 class Grid(Animable):
     """
@@ -777,6 +789,14 @@ class Grid(Animable):
 
     def __init__(self, launchpad):
         self._launchpad = launchpad
+
+    def __eq__(self, other):
+        if not isinstance(other, Grid):
+            return False
+        return self.launchpad == other.launchpad
+
+    def __repr__(self):
+        return 'Grid({}x{})'.format(self.max_x, self.max_y)
 
     @property
     def launchpad(self):
@@ -869,6 +889,3 @@ class Grid(Animable):
                            layout=Grid._PROG_MODE_MIDI_LAYOUT,
                            button_names=Grid._BUTTON_NAMES,
                            args=list(args))
-
-    def __repr__(self):
-        return 'Grid({}x{})'.format(self.max_x, self.max_y)

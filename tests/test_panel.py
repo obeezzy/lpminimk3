@@ -31,6 +31,17 @@ class TestPanel(unittest.TestCase):
                          9,
                          'Max Y mismatch.')
 
+    def test_eq(self):
+        self.lp.open()
+
+        another_lp = create_virtual_launchpad(client_id=99)
+        another_lp.open()
+
+        self.assertTrue(self.lp.panel == self.lp.panel,
+                        'Panel mismatch.')
+        self.assertTrue(self.lp.panel != another_lp.panel,
+                        'Panel mismatch.')
+
 
 class TestLed(unittest.TestCase):
     def setUp(self):
@@ -38,6 +49,37 @@ class TestLed(unittest.TestCase):
 
     def tearDown(self):
         self.lp.close()
+
+    def test_panel_led(self):
+        self.lp.open()
+
+        another_lp = create_virtual_launchpad(client_id=99)
+        another_lp.open()
+
+        self.assertTrue(self.lp.panel.led(0, 0) == self.lp.panel.led(0, 0),
+                        'LED mismatch.')
+        self.assertTrue(self.lp.panel.led(0, 0) != another_lp.panel.led(0, 0),
+                        'LED mismatch.')
+
+        self.assertTrue(self.lp.panel.led(0, 0, layout=Panel.CUSTOM) == self.lp.panel.led(0, 0),  # noqa
+                        'LED mismatch.')
+        self.assertTrue(self.lp.panel.led(0, 0) != another_lp.panel.led(0, 0, layout=Panel.CUSTOM),  # noqa
+                        'LED mismatch.')
+
+    def test_panel_grid_led(self):
+        self.lp.open()
+
+        another_lp = create_virtual_launchpad(client_id=99)
+        another_lp.open()
+
+        self.assertTrue(self.lp.panel.led(0, 1) == self.lp.grid.led(0, 0),
+                        'LED mismatch.')
+        self.assertTrue(self.lp.panel.led(0, 1) != another_lp.grid.led(0, 0),
+                        'LED mismatch.')
+        self.assertTrue(self.lp.panel.led(0, 1) == self.lp.grid.led(0, 0, layout=Panel.CUSTOM),  # noqa
+                        'LED mismatch.')
+        self.assertTrue(self.lp.panel.led(0, 1) != another_lp.grid.led(0, 0, layout=Panel.CUSTOM),  # noqa
+                        'LED mismatch.')
 
     def test_set_by_index(self):
         self.lp.open()

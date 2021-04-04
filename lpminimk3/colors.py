@@ -26,6 +26,9 @@ class RgbColor:
                                '#rgb and #rrggbb formats are accepted.')
         self._parse(value)
 
+    def __repr__(self):
+        return 'RgbColor(r={}, g={}, b={})'.format(self.r, self.g, self.b)
+
     @staticmethod
     def is_valid(value):
         """
@@ -84,9 +87,6 @@ class RgbColor:
             self._b = int(value[5:7], 16)
             self._value = value
 
-    def __repr__(self):
-        return 'RgbColor(r={}, g={}, b={})'.format(self.r, self.g, self.b)
-
 
 class ColorShade:
     """
@@ -136,6 +136,10 @@ class ColorShade:
         self._color_id = color_id
         self._color_group = color_group
 
+    def __repr__(self):
+        return ('ColorShade(group={}, id={})'
+                .format(self.color_group, self.color_id))
+
     @staticmethod
     def is_valid_id(value):
         """
@@ -162,10 +166,6 @@ class ColorShade:
     def color_group(self):
         """Color group."""
         return self._color_group
-
-    def __repr__(self):
-        return ('ColorShade(group={}, id={})'
-                .format(self.color_group, self.color_id))
 
 
 class ColorPalette:
@@ -333,6 +333,14 @@ class ColorShadeStore:
                 if isinstance(color_shade, ColorShade):
                     yield color_shade
 
+    def contains(self, value):
+        """
+        Searches for color shade `value` and returns `True` if
+        the color shade exists, otherwise returns `False`.
+        """
+        color, _ = self._parse(value)
+        return True if color else False
+
     def find(self, value):
         """
         Searches for color shade `value` and returns the
@@ -367,14 +375,6 @@ class ColorShadeStore:
                 color_shade_id = int(match.group(1))
 
         return color_shade_id
-
-    def contains(self, value):
-        """
-        Searches for color shade `value` and returns `True` if
-        the color shade exists, otherwise returns `False`.
-        """
-        color, _ = self._parse(value)
-        return True if color else False
 
     def _color_from_symbol(self, symbol):
         return ColorShadeStore.COLOR_GROUPS[ColorShadeStore.COLOR_GROUP_SYMBOLS.index(symbol)]  # noqa
