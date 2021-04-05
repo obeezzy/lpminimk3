@@ -80,13 +80,13 @@ Wait for and respond to button presses and releases:
 ```bash
 >>> ev = lp.panel.buttons().poll_for_event()  # Block until any button is pressed/released
 >>> ev
-ButtonEvent(button='7x5', event_type='press', deltatime=0.0)
+ButtonEvent(button='7x5', type='press', deltatime=0.0)
 ```
 Or only button releases instead:
 ```bash
->>> ev = lp.panel.buttons().poll_for_event(event_type='release')  # Block until released
+>>> ev = lp.panel.buttons().poll_for_event(type='release')  # Block until released
 >>> ev
-ButtonEvent(button='up', event_type='release', deltatime=0.0)
+ButtonEvent(button='up', type='release', deltatime=0.0)
 ```
 Pass button names as arguments to wait for specific button events:
 ```bash
