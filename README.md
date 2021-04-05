@@ -95,6 +95,8 @@ Pass button names as arguments to wait for specific button events:
 
 
 ## Release History
+* [0.3.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.3.0)
+    * Change `ButtonEvent.event_type` to `ButtonEvent.type`
 * [0.2.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.1)
     * Fix version error
 * [0.2.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.0)
