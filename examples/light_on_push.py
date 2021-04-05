@@ -8,10 +8,10 @@ import sys
 
 
 def handle_event(button_event):
-    if button_event and button_event.event_type == ButtonEvent.PRESS:
+    if button_event and button_event.type == ButtonEvent.PRESS:
         button_event.button.led.color = random.randint(1, 127)  # Set LED to random color while button is pressed  # noqa
         print(f"Button '{button_event.button.name}' pressed.")
-    elif button_event and button_event.event_type == ButtonEvent.RELEASE:
+    elif button_event and button_event.type == ButtonEvent.RELEASE:
         button_event.button.led.color = 0  # Turn LED off once button is released  # noqa
         print(f"Button '{button_event.button.name}' released.")
     else:

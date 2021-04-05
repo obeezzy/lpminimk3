@@ -67,9 +67,9 @@ class ButtonEvent:
 
     def __repr__(self):
         return ('ButtonEvent(button=\'{}\', '
-                'event_type=\'{}\', '
+                'type=\'{}\', '
                 'deltatime={})'.format(self.button.name,
-                                       self.event_type,
+                                       self.type,
                                        self.deltatime))
 
     @property
@@ -85,7 +85,7 @@ class ButtonEvent:
         return self._button
 
     @property
-    def event_type(self):
+    def type(self):
         if not self._midi_event:
             return ''
         return (ButtonEvent.RELEASE
