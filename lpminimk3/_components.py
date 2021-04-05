@@ -26,7 +26,7 @@ class Matrix(ABC):
         pass
 
 
-class _LayoutCoordinate:
+class _MatrixCoordinate:
     def __init__(self, launchpad, layout, button_names, *,
                  name='',
                  coordinate_id=-1,
@@ -346,7 +346,7 @@ class Led:
         led_id = x if x >= 0 and y < 0 else -1
         x = -1 if isinstance(x, int) and led_id >= 0 else x
 
-        coordinate = _LayoutCoordinate(launchpad=launchpad,
+        coordinate = _MatrixCoordinate(launchpad=launchpad,
                                        layout=layout,
                                        button_names=button_names,
                                        name=name,
@@ -501,7 +501,7 @@ class Button:
                  x=-1, y=-1,
                  name='',
                  button_id=-1):
-        coordinate = _LayoutCoordinate(launchpad=launchpad,
+        coordinate = _MatrixCoordinate(launchpad=launchpad,
                                        layout=layout,
                                        button_names=button_names,
                                        name=name,
