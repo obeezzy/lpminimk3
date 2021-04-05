@@ -222,7 +222,7 @@ class ButtonGroup:
         return [button.name for button in self._buttons]
 
     def poll_for_event(self, *, interface='midi', timeout=None,
-                       event_type=ButtonEvent.PRESS_RELEASE):
+                       type=ButtonEvent.PRESS_RELEASE):
         """
         Polls for MIDI events of buttons specified
         in this group. If `timeout` is `None`, this function will
@@ -233,22 +233,22 @@ class ButtonGroup:
             interface (str): Interface to which to send message.
                 (See :class:`Interface`.)
             timeout (float): Duration in seconds to wait for event to occur
-            event_type (str): Event type.
+            type (str): Event type.
                 (Possible values: 'press', 'release', 'press|release')
 
         Returns:
             ButtonEvent: Button event (See :class:`ButtonEvent`).
         """
-        if (not event_type
-                or (event_type.lower().replace('|', '_') != ButtonEvent.PRESS_RELEASE  # noqa
-                    and event_type.lower() != ButtonEvent.RELEASE
-                    and event_type.lower() != ButtonEvent.PRESS)):
+        if (not type
+                or (type.lower().replace('|', '_') != ButtonEvent.PRESS_RELEASE  # noqa
+                    and type.lower() != ButtonEvent.RELEASE
+                    and type.lower() != ButtonEvent.PRESS)):
             raise ValueError('Not a valid event type.')
 
         midi_event = self._launchpad.poll_for_event(interface=interface,
                                                     timeout=timeout,
                                                     match=ButtonMatch(self._buttons,  # noqa
-                                                                      event_type))  # noqa
+                                                                      type))  # noqa
         return (ButtonEvent(midi_event, self._buttons)
                 if midi_event
                 else None)
@@ -694,15 +694,11 @@ class Panel(Animable):
             layout (Layout): Layout of buttons.
             mode (str): Lighting mode.
         """
-        if layout == Panel.CUSTOM:
-            return Led(launchpad=self._launchpad,
-                       button_names=Panel._BUTTON_NAMES,
-                       layout=Panel._CUSTOM_MODE_MIDI_LAYOUT,
-                       x=x, y=y,
-                       name=name, mode=mode)
         return Led(launchpad=self._launchpad,
                    button_names=Panel._BUTTON_NAMES,
-                   layout=Panel._PROG_MODE_MIDI_LAYOUT,
+                   layout=(Panel._CUSTOM_MODE_MIDI_LAYOUT
+                           if layout == Panel.CUSTOM
+                           else Panel._PROG_MODE_MIDI_LAYOUT),
                    x=x, y=y,
                    name=name, mode=mode)
 
@@ -736,13 +732,10 @@ class Panel(Animable):
                 else [button_name
                       for button_row in Panel._BUTTON_NAMES
                       for button_name in button_row])
-        if layout == Panel.CUSTOM:
-            return ButtonGroup(launchpad=self._launchpad,
-                               layout=Panel._CUSTOM_MODE_MIDI_LAYOUT,
-                               button_names=Panel._BUTTON_NAMES,
-                               args=list(args))
         return ButtonGroup(launchpad=self._launchpad,
-                           layout=Panel._PROG_MODE_MIDI_LAYOUT,
+                           layout=(Panel._CUSTOM_MODE_MIDI_LAYOUT
+                                   if layout == Panel.CUSTOM
+                                   else Panel._PROG_MODE_MIDI_LAYOUT),
                            button_names=Panel._BUTTON_NAMES,
                            args=list(args))
 
@@ -839,16 +832,13 @@ class Grid(Animable):
             layout (Layout): Layout of buttons.
             mode (str): Lighting mode.
         """
-        if layout == Grid.CUSTOM:
-            return Led(launchpad=self._launchpad,
-                       button_names=Grid._BUTTON_NAMES,
-                       layout=Grid._CUSTOM_MODE_MIDI_LAYOUT,
-                       x=x, y=y,
-                       name=name, mode=mode)
         return Led(launchpad=self._launchpad,
                    button_names=Grid._BUTTON_NAMES,
-                   layout=Grid._PROG_MODE_MIDI_LAYOUT,
-                   x=x, y=y, name=name, mode=mode)
+                   layout=(Grid._CUSTOM_MODE_MIDI_LAYOUT
+                           if layout == Grid.CUSTOM
+                           else Grid._PROG_MODE_MIDI_LAYOUT),
+                   x=x, y=y,
+                   name=name, mode=mode)
 
     def led_range(self, *, layout=PROG, mode=Led.STATIC):
         """
@@ -880,12 +870,9 @@ class Grid(Animable):
                 else [button_name
                       for button_row in Grid._BUTTON_NAMES
                       for button_name in button_row])
-        if layout == Grid.CUSTOM:
-            return ButtonGroup(launchpad=self._launchpad,
-                               layout=Grid._CUSTOM_MODE_MIDI_LAYOUT,
-                               button_names=Grid._BUTTON_NAMES,
-                               args=list(args))
         return ButtonGroup(launchpad=self._launchpad,
-                           layout=Grid._PROG_MODE_MIDI_LAYOUT,
+                           layout=(Grid._CUSTOM_MODE_MIDI_LAYOUT
+                                   if layout == Grid.CUSTOM
+                                   else Grid._PROG_MODE_MIDI_LAYOUT),
                            button_names=Grid._BUTTON_NAMES,
                            args=list(args))
