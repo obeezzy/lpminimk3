@@ -3,13 +3,14 @@ Software representation of physical components for Launchpad Mini MK3.
 """
 
 import re
+from abc import ABC
 from .colors import ColorShade, ColorShadeStore, RgbColor
 from .midi_messages import SysExMessages
 from .match import ButtonMatch
 from ._utils import ButtonEvent
 
 
-class Animable:
+class Matrix(ABC):
     @property
     def max_x(self):
         return -1
@@ -21,7 +22,7 @@ class Animable:
     def led_range(self):
         pass
 
-    def animate(self, animation, *, timeout=None):
+    def render(self, renderable):
         pass
 
 
@@ -599,7 +600,7 @@ class Button:
         return self._layout
 
 
-class Panel(Animable):
+class Panel(Matrix):
     """
     Panel of Launchpad.
 
@@ -667,14 +668,14 @@ class Panel(Animable):
         """
         return self.max_x * self.max_y
 
-    @Animable.max_x.getter
+    @Matrix.max_x.getter
     def max_x(self):
         """
         Max X.
         """
         return len(Panel._BUTTON_NAMES[0])
 
-    @Animable.max_y.getter
+    @Matrix.max_y.getter
     def max_y(self):
         """
         Max Y.
@@ -740,7 +741,7 @@ class Panel(Animable):
                            args=list(args))
 
 
-class Grid(Animable):
+class Grid(Matrix):
     """
     Grid of Launchpad.
 
@@ -805,14 +806,14 @@ class Grid(Animable):
         """
         return self.max_x * self.max_y
 
-    @Animable.max_x.getter
+    @Matrix.max_x.getter
     def max_x(self):
         """
         Max X.
         """
         return len(Grid._BUTTON_NAMES[0])
 
-    @Animable.max_y.getter
+    @Matrix.max_y.getter
     def max_y(self):
         """
         Max Y.
