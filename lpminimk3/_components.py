@@ -11,6 +11,9 @@ from ._utils import ButtonEvent
 
 
 class Matrix(ABC):
+    """
+    A matrix of buttons (and LEDs) on the surface of the Launchpad.
+    """
     @property
     def max_x(self):
         return -1
