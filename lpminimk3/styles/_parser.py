@@ -54,7 +54,7 @@ class GlyphDictionary:
 
 
 class LightingConfig:
-    DEFAULT_ON_STATE = 5
+    DEFAULT_ON_STATE = 1
     DEFAULT_OFF_STATE = 0
 
     def __init__(self, lighting_type, *, on_state=None, off_state=None):
@@ -109,7 +109,7 @@ class BitConfig:
         if self._data:
             return LightingConfig(self.lighting_type,
                                   **self._data.get('lighting_data'))
-        return LightingConfig(self.lighting_type)
+        return None
 
 
 class BitmapConfig:
