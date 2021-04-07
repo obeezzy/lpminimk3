@@ -1,2 +1,2 @@
 python-rtmidi==1.4.7
-jsonschema==0.3.2
+jsonschema
