@@ -1,6 +1,7 @@
 """
 MIDI messages for the Launchpad Mini MK3.
 """
+from abc import ABC
 
 
 class SysExMessages:
@@ -25,11 +26,106 @@ class SysExMessages:
         PROG = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x0e, 0x01, 0xf7]
         READBACK = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x0e, 0xf7]
 
-    @staticmethod
-    def colorspec_message(lighting_type, led_index, *lighting_data):
-        return [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03,
-                lighting_type, led_index] + list(lighting_data) + [0xf7]
 
-    @staticmethod
-    def lighting_message(lighting_mode, midi_value, color_id):
-        return [lighting_mode, midi_value, color_id]
+class MidiMessage(ABC):
+    @property
+    def data(self):
+        return []
+
+
+class Constants:
+    DEFAULT_COLOR_ID = 9
+
+    class LightingMode:
+        OFF = 0x80
+        STATIC = 0x90
+        FLASH = 0x91
+
+    class LightingType:
+        STATIC = 0x00
+        FLASH = 0x01
+        PULSE = 0x02
+        RGB = 0x03
+
+
+class ColorspecFragment:
+    def __init__(self, lighting_type, led_index, *lighting_data):
+        self._lighting_type = lighting_type
+        self._led_index = led_index
+        self._lighting_data = list(lighting_data)
+
+    @property
+    def data(self):
+        return ([self._lighting_type,
+                self._led_index]
+                + self._lighting_data)
+
+    def append(self, lighting_data):
+        self._lighting_data.extend(lighting_data)
+
+    def __repr__(self):
+        return ('ColorspecFragment('
+                'lighting_type={}, '
+                'led_index={}, '
+                'lighitng_data={})'.format(self._lighting_type,
+                                                  self._led_index,  # noqa
+                                                  self._lighting_data))  # noqa
+
+    def __str__(self):
+        return '{}'.format([self._lighting_type,
+                            self._led_index]
+                           + list(self._lighting_data))
+
+
+class Colorspec(MidiMessage):
+    def __init__(self, *fragments):
+        self._start_clause = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03]
+        self._fragments = []
+        self._end_clause = [0xf7]
+
+    @MidiMessage.data.getter
+    def data(self):
+        payload = [f.data for f in self._fragments]
+        return (self._start_clause
+                + payload
+                + self._end_clause)
+
+    def append(self, fragment):
+        if not isinstance(fragment, ColorspecFragment):
+            raise ValueError('Must be a ColorspecFragment.')
+        self._fragments.append(fragment)
+
+    def __repr__(self):
+        return 'Colorspec(\'{}\')'.format(str(self._fragments))
+
+
+class Lighting(MidiMessage):
+    def __init__(self, lighting_mode, midi_value, color_id):
+        self._lighting_mode = lighting_mode
+        self._midi_value = midi_value
+        self._color_id = color_id
+
+    def __repr__(self):
+        return ('Lighting(lighting_mode={}, '
+                'midi_value={}, '
+                'color_id={})'.format(self._lighting_mode,
+                                      self._midi_value,
+                                      self.color_id))
+
+    @MidiMessage.data.getter
+    def data(self):
+        return [self._lighting_mode,
+                self._midi_value,
+                self._color_id]
+
+    @property
+    def lighting_mode(self):
+        return self._lighting_mode
+
+    @property
+    def midi_value(self):
+        return self._midi_value
+
+    @property
+    def color_id(self):
+        return self._color_id

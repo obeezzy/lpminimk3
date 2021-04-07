@@ -4,10 +4,10 @@ Software representation of the Launchpad Mini MK3.
 
 from rtmidi import MidiOut as _MidiOut, MidiIn as _MidiIn
 from .__version__ import __version__, VERSION  # noqa
-from ._components import Grid, Panel, Led, ButtonFace  # noqa
-from ._utils import SystemMidiPortParser as _SystemMidiPortParser,\
-                    MidiPort as _MidiPort, MidiClient as _MidiClient, \
-                    Interface, Mode, Layout, ButtonEvent  # noqa
+from ._core._components import Grid, Panel, Led, ButtonFace  # noqa
+from ._core._utils import SystemMidiPortParser as _SystemMidiPortParser,\
+                          MidiPort as _MidiPort, MidiClient as _MidiClient, \
+                          Interface, Mode, Layout, ButtonEvent  # noqa
 from .midi_messages import SysExMessages as _SysExMessages
 
 
