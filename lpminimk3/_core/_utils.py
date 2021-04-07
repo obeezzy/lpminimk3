@@ -200,6 +200,9 @@ class MidiPort:
                 or (not isinstance(message, list)
                     and not hasattr(message, 'data'))):
             raise TypeError('Message must be of type list or MidiMessage.')
+        message = (message.data
+                   if hasattr(message, 'data')
+                   else message)
 
         if self._midi_in and self._direction == MidiPort.IN:
             self._midi_in.send_message(message)
