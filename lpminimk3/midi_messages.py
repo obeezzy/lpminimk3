@@ -2,6 +2,7 @@
 MIDI messages for the Launchpad Mini MK3.
 """
 from abc import ABC
+from functools import reduce
 
 
 class SysExMessages:
@@ -67,7 +68,7 @@ class ColorspecFragment:
         return ('ColorspecFragment('
                 'lighting_type={}, '
                 'led_index={}, '
-                'lighitng_data={})'.format(self._lighting_type,
+                'lighting_data={})'.format(self._lighting_type,
                                                   self._led_index,  # noqa
                                                   self._lighting_data))  # noqa
 
@@ -80,12 +81,13 @@ class ColorspecFragment:
 class Colorspec(MidiMessage):
     def __init__(self, *fragments):
         self._start_clause = [0xf0, 0x00, 0x20, 0x29, 0x02, 0x0d, 0x03]
-        self._fragments = []
+        self._fragments = list(fragments)
         self._end_clause = [0xf7]
 
     @MidiMessage.data.getter
     def data(self):
-        payload = [f.data for f in self._fragments]
+        payload = list(reduce(lambda data, fragment: data + fragment.data,
+                              self._fragments, []))  # noqa
         return (self._start_clause
                 + payload
                 + self._end_clause)

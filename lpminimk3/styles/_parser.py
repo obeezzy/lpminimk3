@@ -1,12 +1,12 @@
 import os
 import json
 import jsonschema
-from ..midimessages import Constants
+from ..midi_messages import Constants
 
 
 class GlyphDictionary:
     def __init__(self, json_filename, schema_filename):
-        self._filename = os.path.abspath(json_filename)
+        self._filename = self._determine_abspath(json_filename)
         self._data = self._load(json_filename)
         schema = self._load(schema_filename)
         self._validate(self._data, schema)
@@ -35,8 +35,9 @@ class GlyphDictionary:
 
     def _load(self, filename):
         data = None
-        with open(os.path.abspath(filename)) as f:
-            data = json.load(f.read())
+        filename = self._determine_abspath(filename)
+        with open(filename) as f:
+            data = json.load(f)
         return data
 
     def _validate(self, data, schema):
@@ -45,9 +46,19 @@ class GlyphDictionary:
         except jsonschema.exceptions.ValidationError:
             raise ValueError('Invalid JSON file format.')
 
+    def _determine_abspath(self, filename):
+        if not os.path.isabs(filename):
+            current_dir = os.path.abspath(os.path.dirname(__file__))
+            return os.path.join(current_dir, filename)
+        return filename
+
 
 class LightingConfig:
-    def __init__(self, *, on_state=None, off_state=None):
+    DEFAULT_ON_STATE = 5
+    DEFAULT_OFF_STATE = 0
+
+    def __init__(self, lighting_type, *, on_state=None, off_state=None):
+        self._lighting_type = lighting_type
         self._on_state = on_state
         self._off_state = off_state
 
@@ -61,13 +72,13 @@ class LightingConfig:
     def on_state(self):
         return (self._on_state
                 if self._on_state
-                else [Constants.DEFAULT_COLOR_ID])
+                else [LightingConfig.DEFAULT_ON_STATE])
 
     @property
     def off_state(self):
         return (self._off_state
                 if self._off_state
-                else [Constants.LightingMode.OFF])
+                else [LightingConfig.DEFAULT_OFF_STATE])
 
 
 class BitConfig:
@@ -95,10 +106,10 @@ class BitConfig:
 
     @property
     def lighting_data(self):
-        return (LightingConfig(self.lighting_type,
-                               **self._data['lighting_data'])
-                if self._data and 'lighting_data' in self._data
-                else Constants.LightingType.STATIC)
+        if self._data:
+            return LightingConfig(self.lighting_type,
+                                  **self._data.get('lighting_data'))
+        return LightingConfig(self.lighting_type)
 
 
 class BitmapConfig:
@@ -106,7 +117,7 @@ class BitmapConfig:
         self._data = config_data
 
     def __getitem__(self, name):
-        if name in self._data:
+        if self._data and name in self._data:
             return self._data[name]
         return BitConfig()
 

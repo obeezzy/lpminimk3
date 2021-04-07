@@ -206,10 +206,10 @@ class MidiPort:
 
         if self._midi_in and self._direction == MidiPort.IN:
             self._midi_in.send_message(message)
-            logger.debug('MIDI message: {}'.format(message))
+            logger.debug('MIDI message sent: {}'.format(message))
         elif self._midi_out and self._direction == MidiPort.OUT:
             self._midi_out.send_message(message)
-            logger.debug('MIDI message: {}'.format(message))
+            logger.debug('MIDI message sent: {}'.format(message))
         else:
             raise RuntimeError('Failed to send message.')
 

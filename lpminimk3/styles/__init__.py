@@ -1,6 +1,6 @@
 from abc import ABC
-from ..midimessages import Colorspec,\
-                           ColorspecFragment
+from ..midi_messages import Colorspec,\
+                            ColorspecFragment
 from ._parser import GlyphDictionary as _GlyphDictionary,\
                      BitmapConfig as _BitmapConfig,\
                      Character as _Character
@@ -17,10 +17,10 @@ class Bitmap(Renderable):
         self._config = _BitmapConfig(config_data)
 
     def __iter__(self):
-        for byte in self._data:
-            bitmask = 2 >> len(self._data)
+        for word in self._data:
+            bitmask = 1 << len(self._data)
             while bitmask:
-                bit = 1 if (byte & bitmask) else 0
+                bit = 1 if (word & bitmask) else 0
                 yield bit
                 bitmask = bitmask >> 1
         yield None
@@ -29,6 +29,7 @@ class Bitmap(Renderable):
     def data(self):
         return self._data
 
+    @property
     def config(self):
         return self._config
 
@@ -70,8 +71,8 @@ class Text(Renderable):
                 lighting_type = bit_config.lighting_type
                 led_index = led.midi_value
                 lighting_data = self._determine_lighting_data(bit_config, bit)
-                colorspec = ColorspecFragment(lighting_type, led_index, *lighting_data)  # noqa
-                colorspec_fragments.extend(colorspec)
+                fragment = ColorspecFragment(lighting_type, led_index, *lighting_data)  # noqa
+                colorspec_fragments.append(fragment)
         payload = Colorspec(*colorspec_fragments)
         matrix.launchpad.send_message(payload)
 
@@ -86,11 +87,7 @@ class Text(Renderable):
 
     def _determine_lighting_data(self, config, bit):
         lighting_data = []
-        if config.lighting_type == 'static':
-            lighting_data = (config.lighting_data.on_state
-                             if bit
-                             else config.lighting_data.off_state)
-        elif config.lighting_type == 'flash':
+        if config.lighting_type == 'flash':
             lighting_data = (config.lighting_data.on_state
                              if bit
                              else config.lighting_data.off_state)
@@ -103,5 +100,7 @@ class Text(Renderable):
                              if bit
                              else config.lighting_data.off_state)
         else:
-            raise ValueError('Invalid lighting type.')
+            lighting_data = (config.lighting_data.on_state
+                             if bit
+                             else config.lighting_data.off_state)
         return lighting_data
