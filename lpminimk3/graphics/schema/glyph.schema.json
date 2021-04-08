@@ -4,14 +4,36 @@
    "description": "A dictionary of glyphs for a 8x8 LED matrix array",
    "type": "object",
    "properties":{
+      "title":{
+         "description": "Title",
+         "type": "string"
+      },
+      "description":{
+         "description": "Description",
+         "type": "string"
+      },
       "glyphs":{
-         "description": "Payload",
-         "type":"object"
+         "description": "Dictionary of glyph to bitmap",
+         "type": "object"
       },
       "version":{
          "description": "Version",
          "type":"string"
+      },
+      "metadata":{
+         "description": "Metadata",
+         "type": "object",
+         "properties": {
+             "url": {
+                 "description": "URL for more info",
+                 "type": "string"
+             },
+             "author": {
+                 "description": "Author",
+                 "type": "string"
+             }
+         }
       }
    },
-   "required": [ "glyphs", "version" ]
+   "required": [ "title", "glyphs", "version" ]
 }

@@ -23,7 +23,7 @@ def get_console_handler():
 
 def get_file_handler():
     if LOGFILE:
-        if not os.path.exits(os.path.dirname(LOGFILE)):
+        if not os.path.exists(os.path.dirname(LOGFILE)):
             os.makedirs(os.path.dirname(LOGFILE))
         fileHandler = FileHandler(LOGFILE)
         fileHandler.setFormatter(FORMATTER)

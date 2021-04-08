@@ -64,7 +64,7 @@ class GlyphDictionary:
 
     def _determine_abspath(self, filename):
         if not os.path.isabs(filename):
-            current_dir = os.path.abspath(os.path.dirname(__file__))
+            current_dir = os.path.dirname(__file__)
             return os.path.join(current_dir, filename)
         return filename
 

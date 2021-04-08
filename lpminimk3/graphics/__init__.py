@@ -1,3 +1,4 @@
+import os
 from ._parser import GlyphDictionary as _GlyphDictionary,\
                      Character as _Character,\
                      String as _String,\
@@ -15,8 +16,7 @@ class Text(Renderable):
         self._text = text
         self._bg_color = bg_color
         self._fg_color = fg_color
-        self._glyph_dicts = [_GlyphDictionary('./glyphs/basic_latin.glyph.json',  # noqa
-                                              './schema/glyph.schema.json')]
+        self._glyph_dicts = self._create_glyph_dicts()
         self._characters = self._create_characters(text,
                                                    self._glyph_dicts,
                                                    fg_color,
@@ -64,3 +64,13 @@ class Text(Renderable):
                                                  bg_color))
                     break
         return characters
+
+    def _create_glyph_dicts(self):
+        glyph_dicts = []
+        current_dir = os.path.dirname(__file__)
+        glyph_dict_dir = os.path.join(current_dir, 'glyphs')
+        for filename in os.listdir(glyph_dict_dir):
+            if filename.endswith('.glyph.json'):
+                glyph_dicts.append(_GlyphDictionary(os.path.join(glyph_dict_dir, filename),  # noqa
+                                   './schema/glyph.schema.json'))
+        return glyph_dicts
