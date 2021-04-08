@@ -5,7 +5,7 @@ Utility classes for Launchpad Mini MK3.
 import enum
 import time
 from . import _logging
-from .match import Match
+from ..match import Match
 
 logger = _logging.getLogger(__name__)
 
@@ -196,12 +196,20 @@ class MidiPort:
                 self._midi_in.close_port()
 
     def send_message(self, message):
+        if (not message
+                or (not isinstance(message, list)
+                    and not hasattr(message, 'data'))):
+            raise TypeError('Message must be of type list or MidiMessage.')
+        message = (message.data
+                   if hasattr(message, 'data')
+                   else message)
+
         if self._midi_in and self._direction == MidiPort.IN:
             self._midi_in.send_message(message)
-            logger.debug('MIDI message: {}'.format(message))
+            logger.debug('MIDI message sent: {}'.format(message))
         elif self._midi_out and self._direction == MidiPort.OUT:
             self._midi_out.send_message(message)
-            logger.debug('MIDI message: {}'.format(message))
+            logger.debug('MIDI message sent: {}'.format(message))
         else:
             raise RuntimeError('Failed to send message.')
 

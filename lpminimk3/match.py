@@ -2,7 +2,7 @@
 Match MIDI messages with incoming MIDI events.
 """
 
-from .midi_messages import SysExMessages
+from .midi_messages import Lighting
 
 
 class Match:
@@ -43,10 +43,10 @@ class ButtonMatch(Match):
                       if button.parent == 'grid'
                       else ButtonMatch.CC_HEADER)
             if self._type == 'press':
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x7f))  # noqa
+                messages.append(Lighting(header, button.midi_value, 0x7f).data)  # noqa
             elif self._type == 'release':
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x0))  # noqa
+                messages.append(Lighting(header, button.midi_value, 0x0).data)  # noqa
             elif self._type == 'press_release':
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x7f))  # noqa
-                messages.append(SysExMessages.lighting_message(header, button.midi_value, 0x0))  # noqa
+                messages.append(Lighting(header, button.midi_value, 0x7f).data)  # noqa
+                messages.append(Lighting(header, button.midi_value, 0x0).data)  # noqa
         return messages

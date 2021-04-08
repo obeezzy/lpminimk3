@@ -1,0 +1,17 @@
+{
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+   "title": "Glyph Dictionary",
+   "description": "A dictionary of glyphs for a 8x8 LED matrix array",
+   "type": "object",
+   "properties":{
+      "glyphs":{
+         "description": "Payload",
+         "type":"object"
+      },
+      "version":{
+         "description": "Version",
+         "type":"string"
+      }
+   },
+   "required": [ "glyphs", "version" ]
+}

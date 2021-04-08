@@ -4,9 +4,12 @@ Software representation of physical components for Launchpad Mini MK3.
 
 import re
 from abc import ABC
-from .colors import ColorShade, ColorShadeStore, RgbColor
-from .midi_messages import SysExMessages
-from .match import ButtonMatch
+from ..colors import ColorShade, ColorShadeStore, RgbColor
+from ..midi_messages import Colorspec,\
+                            ColorspecFragment,\
+                            Constants,\
+                            Lighting
+from ..match import ButtonMatch
 from ._utils import ButtonEvent
 
 
@@ -14,6 +17,10 @@ class Matrix(ABC):
     """
     A matrix of buttons (and LEDs) on the surface of the Launchpad.
     """
+    @property
+    def launchpad(self):
+        pass
+
     @property
     def max_x(self):
         return -1
@@ -26,7 +33,7 @@ class Matrix(ABC):
         pass
 
     def render(self, renderable):
-        pass
+        renderable.render(self)
 
 
 class _MatrixCoordinate:
@@ -321,16 +328,15 @@ class Led:
     PULSE = 'pulse'
 
     _LIGHTING_MODE = {
-            'off': 0x80,
-            'static': 0x90,
-            'flash': 0x91,
-            'pulse': 0x92
+            'off': Constants.LightingMode.OFF,
+            'static': Constants.LightingMode.STATIC,
+            'flash': Constants.LightingMode.FLASH
     }
     _LIGHTING_TYPE = {
-            'static': 0x00,
-            'flash': 0x01,
-            'pulse': 0x02,
-            'rgb': 0x03
+            'static': Constants.LightingType.STATIC,
+            'flash': Constants.LightingType.FLASH,
+            'pulse': Constants.LightingType.PULSE,
+            'rgb': Constants.LightingType.RGB
     }
 
     def __init__(self, *, launchpad, button_names,
@@ -453,11 +459,11 @@ class Led:
             raise ValueError('Invalid color.')
         elif RgbColor.is_valid(value):
             rgb_color = RgbColor(value)
-            colorspec = SysExMessages.colorspec_message(self._LIGHTING_TYPE['rgb'],  # noqa
-                                                        self._midi_value,
-                                                        rgb_color.r,
-                                                        rgb_color.g,
-                                                        rgb_color.b)
+            colorspec = Colorspec(ColorspecFragment(self._LIGHTING_TYPE['rgb'],  # noqa
+                                                    self._midi_value,
+                                                    rgb_color.r,
+                                                    rgb_color.g,
+                                                    rgb_color.b))
             self.launchpad.send_message(colorspec)
         else:
             color_id = value if ColorShade.is_valid_id(value) else -1
@@ -471,8 +477,9 @@ class Led:
                                  f'{ColorShade.MIN_COLOR_ID} and '
                                  f'{ColorShade.MAX_COLOR_ID}.')
             else:
-                lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
-                                                          self._midi_value, color_id)   # noqa
+                lighting = Lighting(self._LIGHTING_MODE[self._mode],
+                                    self._midi_value,
+                                    color_id)
                 self.launchpad.send_message(lighting)
 
     @color.deleter
@@ -482,8 +489,9 @@ class Led:
 
     def reset(self):
         """Turns LED off."""
-        lighting = SysExMessages.lighting_message(self._LIGHTING_MODE[self._mode],  # noqa
-                                                  self._midi_value, 0x0)   # noqa
+        lighting = Lighting(self._LIGHTING_MODE[self._mode],
+                            self._midi_value,
+                            0x0)
         self.launchpad.send_message(lighting)
 
     def _is_within_range(self):
@@ -657,19 +665,12 @@ class Panel(Matrix):
     def __repr__(self):
         return 'Panel({}x{})'.format(self.max_x, self.max_y)
 
-    @property
+    @Matrix.launchpad.getter
     def launchpad(self):
         """
         Launchpad reference.
         """
         return self._launchpad
-
-    @property
-    def max_id(self):
-        """
-        Max ID.
-        """
-        return self.max_x * self.max_y
 
     @Matrix.max_x.getter
     def max_x(self):
@@ -684,6 +685,13 @@ class Panel(Matrix):
         Max Y.
         """
         return len(Panel._BUTTON_NAMES)
+
+    @property
+    def max_id(self):
+        """
+        Max ID.
+        """
+        return self.max_x * self.max_y
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
         """
@@ -795,19 +803,12 @@ class Grid(Matrix):
     def __repr__(self):
         return 'Grid({}x{})'.format(self.max_x, self.max_y)
 
-    @property
+    @Matrix.launchpad.getter
     def launchpad(self):
         """
         Launchpad reference.
         """
         return self._launchpad
-
-    @property
-    def max_id(self):
-        """
-        Max ID.
-        """
-        return self.max_x * self.max_y
 
     @Matrix.max_x.getter
     def max_x(self):
@@ -822,6 +823,13 @@ class Grid(Matrix):
         Max Y.
         """
         return len(Grid._BUTTON_NAMES)
+
+    @property
+    def max_id(self):
+        """
+        Max ID.
+        """
+        return self.max_x * self.max_y
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
         """
