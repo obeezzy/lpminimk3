@@ -105,6 +105,23 @@ class RawBitmap:
         pass
 
 
+class Offset:
+    def __init__(self, x=0, y=0):
+        self._x = x
+        self._y = y
+
+    def __repr__(self):
+        return 'Offset({}, {})'.format(self.x, self.y)
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+
 class LightingConfig:
     DEFAULT_ON_STATE = 1
     DEFAULT_OFF_STATE = 0
@@ -175,11 +192,13 @@ class BitmapConfig:
 
 
 class CharacterRenderer:
-    def __init__(self, raw_bitmap, matrix, fg_color, bg_color=None):
-        self._raw_bitmap = raw_bitmap
+    def __init__(self, character, matrix, *, raw_bitmap=None):
+        self._raw_bitmap = (raw_bitmap
+                            if raw_bitmap
+                            else character._raw_bitmap)
         self._matrix = matrix
-        self._fg_color = fg_color
-        self._bg_color = bg_color
+        self._fg_color = character.fg_color
+        self._bg_color = character.bg_color
 
     def render(self):
         colorspec_fragments = []
@@ -226,11 +245,31 @@ class CharacterRenderer:
 
 
 class Character(Renderable):
-    def __init__(self, glyph, bitmap_data, fg_color, bg_color):
+    def __init__(self,
+                 glyph,
+                 bitmap_data,
+                 fg_color,
+                 bg_color=None,
+                 *,
+                 carry=None,
+                 transformed_bitmap_data=None,
+                 offset=None):
         self._glyph = glyph
         self._raw_bitmap = RawBitmap(bitmap_data)
         self._fg_color = fg_color
         self._bg_color = bg_color
+        self._carry = carry
+        self._raw_bitmap_transformed = (RawBitmap(transformed_bitmap_data)
+                                        if transformed_bitmap_data
+                                        else None)
+        self._offset = Offset(*offset) if offset else Offset()
+
+    def __repr__(self):
+        return 'Character(glyph=\'{}\', offset={})'.format(self._glyph,
+                                                           repr(self._offset))
+
+    def __str__(self):
+        return self._glyph
 
     def __iter__(self):
         return self.bits
@@ -248,19 +287,105 @@ class Character(Renderable):
     def glyph(self):
         return self._glyph
 
+    @property
+    def fg_color(self):
+        return self._fg_color
+
+    @property
+    def bg_color(self):
+        return self._bg_color
+
+    @property
+    def carry(self):
+        return self._carry
+
+    @property
+    def raw_bitmap(self):
+        return self._raw_bitmap
+
+    @property
+    def raw_bitmap_transformed(self):
+        return self._raw_bitmap_transformed
+
+    @property
+    def offset(self):
+        return self._offset
+
     def render(self, matrix):
-        CharacterRenderer(self._raw_bitmap,
+        CharacterRenderer(self,
                           matrix,
-                          self._fg_color,
-                          self._bg_color).render()
+                          raw_bitmap=(self.raw_bitmap_transformed
+                                      if self.raw_bitmap_transformed
+                                      else self.raw_bitmap)).render()
 
-    def __repr__(self):
-        return 'Character(\'{}\')'.format(self._glyph)
+    def shift_left(self, *, carry=None, count=1):
+        bitmap_data = []
+        shift_count = count + self.offset.x
+        new_carry = 0
+        for index, word in enumerate(self._raw_bitmap.data, start=1):
+            if carry:
+                bitmap_data.append((word >> shift_count) | (carry << (self.word_count - index)))  # noqa
+            else:
+                bitmap_data.append(word >> shift_count)
+            new_carry |= ((word << (self.word_count - index)) >> (index - 1))
+        return Character(self.glyph,
+                         self._raw_bitmap.data,
+                         self._fg_color,
+                         self._bg_color,
+                         carry=new_carry,
+                         transformed_bitmap_data=bitmap_data,
+                         offset=(self.offset.x + 1, self.offset.y))
 
-    def __str__(self):
-        return self._glyph
+    def shift_right(self, *, carry=None, count=1):
+        bitmap_data = []
+        shift_count = count + self.offset.x
+        new_carry = 0
+        for index, word in enumerate(self._raw_bitmap.data, start=1):
+            if carry:
+                bitmap_data.append((word << shift_count) | (carry >> (self.word_count - index)))  # noqa
+            else:
+                bitmap_data.append(word << shift_count)
+            new_carry |= ((word >> (self.word_count - index)) << (index - 1))
+        return Character(self.glyph,
+                         self._raw_bitmap.data,
+                         self._fg_color,
+                         self._bg_color,
+                         carry=new_carry,
+                         transformed_bitmap_data=bitmap_data,
+                         offset=(self.offset.x - 1, self.offset.y))
 
 
 class String(Renderable):
-    def __init__(self, *characters, fg_color, bg_color=None):
-        pass
+    def __init__(self, *characters):
+        self._characters = list(characters)
+        self._character_to_render = self._characters[0]
+
+    def __iter__(self):
+        return self.bits
+
+    @Renderable.bits.getter
+    def bits(self):
+        for bit in self._character_to_render:
+            yield bit
+
+    @Renderable.word_count.getter
+    def word_count(self):
+        return self._character_to_render.word_count
+
+    def render(self, matrix):
+        CharacterRenderer(self._character_to_render,
+                          matrix).render()
+
+    def shift_left(self):
+        carry = None
+        self._character_to_render = self._character_to_render.shift_left(carry)
+
+    def shift_right(self):
+        carry = None
+        self._character_to_render = self._character_to_render.shift_right(carry)  # noqa
+
+    def __repr__(self):
+        return 'String(\'{}\')'.format(self._rendered_character.glyph)
+
+    def __str__(self):
+        return self._glyph

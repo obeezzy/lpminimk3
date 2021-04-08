@@ -21,9 +21,7 @@ class Text(Renderable):
                                                    self._glyph_dicts,
                                                    fg_color,
                                                    bg_color)
-        self._string = _String(*self.characters,
-                               fg_color=fg_color,
-                               bg_color=bg_color)
+        self._string = _String(*self.characters)
 
     def __repr__(self):
         return 'Text(\'{}\')'.format(self._text)
@@ -52,6 +50,18 @@ class Text(Renderable):
             self.characters[0].render(matrix)
         else:
             self._string.render(matrix)
+
+    def shift_left(self, count=1):
+        if len(self.characters) == 1:
+            self.characters[0] = self.characters[0].shift_left(count=count)
+            return self.characters[0]
+        return self._string.shift_left(count=count)
+
+    def shift_right(self, count=1):
+        if len(self.characters) == 1:
+            self.characters[0] = self.characters[0].shift_right(count=count)
+            return self.characters[0]
+        return self._string.shift_right(count=count)
 
     def _create_characters(self, text, dicts, fg_color, bg_color):
         characters = []
