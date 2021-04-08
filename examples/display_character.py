@@ -9,7 +9,6 @@ import termios
 import tty
 
 
-# Taken from https://github.com/magmax/python-readchar/blob/master/readchar/readchar_linux.py  # noqa
 def getchar():
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
