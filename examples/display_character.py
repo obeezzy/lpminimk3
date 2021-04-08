@@ -1,0 +1,46 @@
+"""
+Display characters typed with a QWERTY keyboard.
+"""
+
+from lpminimk3 import Mode, find_launchpads
+from lpminimk3.graphics import Text
+import sys
+import termios
+import tty
+
+
+# Taken from https://github.com/magmax/python-readchar/blob/master/readchar/readchar_linux.py  # noqa
+def getchar():
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(sys.stdin.fileno())
+        ch = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
+
+
+def render_character(lp):
+    while True:
+        c = getchar()
+        if ord(c) == 0x03:
+            print('\n')
+            sys.exit()
+        elif c.isalnum():
+            lp.grid.render(Text(c))
+
+
+def main():
+    lp = find_launchpads()[0]  # Get the first available launchpad
+    lp.open()  # Open device for reading and writing on MIDI interface (by default)  # noqa
+
+    lp.mode = Mode.PROG  # Switch to the programmer mode
+
+    print('Press a key on your keyboard to display a character on your Launchpad.\n'  # noqa
+          'Press Ctrl+C to quit.\n')
+    render_character(lp)
+
+
+if __name__ == '__main__':
+    main()
