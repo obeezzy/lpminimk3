@@ -1,4 +1,6 @@
 {
+    "title": "Basic Latin (font8x8)",
+    "description": "Contains an 8x8 font map for unicode points U+0000 - U+007F (basic latin)",
     "glyphs": {
         "\u0000": [0, 0, 0, 0, 0, 0, 0, 0],
         "\u0001": [0, 0, 0, 0, 0, 0, 0, 0],
@@ -129,5 +131,9 @@
         "\u007e": [110, 59, 0, 0, 0, 0, 0, 0],
         "\u007f": [0, 0, 0, 0, 0, 0, 0, 0]
     },
-    "version": "0.1"
+    "version": "0.1",
+    "metadata": {
+        "author": "Chronic Coder",
+        "url": "https://github.com/obeezzy/lpminimk3/tree/main/lpminimk3/graphics/glyphs"
+    }
 }
