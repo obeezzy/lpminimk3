@@ -8,14 +8,10 @@
          "description": "Payload",
          "type":"object"
       },
-      "fg_color": {
-         "description": "Foreground color as hex value",
-         "type":"string"
-      },
-      "bg_color": {
-         "description":"Background color as hex value",
+      "version":{
+         "description": "Version",
          "type":"string"
       }
    },
-   "required": [ "glyphs" ]
+   "required": [ "glyphs", "version" ]
 }

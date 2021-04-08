@@ -11,8 +11,10 @@ def render(text):
     for index, bit in enumerate(text.bits, start=1):
         if bit:
             print('X', end='')
-        else:
+        elif 'LOGLEVEL' in os.environ:
             print('.', end='')
+        else:
+            print(' ', end='')
 
         if index % text.word_count == 0:
             print('\n', end='')
@@ -23,8 +25,8 @@ def main():
         if len(sys.argv) != 2:
             raise ValueError('Missing character argument.')
 
-        character = sys.argv[1]
-        text = Text(character)
+        input_string = sys.argv[1]
+        text = Text(input_string[0])
         render(text)
     except Exception as e:
         print(e, file=sys.stderr)

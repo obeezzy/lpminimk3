@@ -2,12 +2,12 @@ from ._parser import GlyphDictionary as _GlyphDictionary,\
                      Character as _Character,\
                      String as _String,\
                      Renderable
-from ..colors import ColorPalette
+from ..colors import ColorPalette as _ColorPalette
 
 
 class Text(Renderable):
     def __init__(self, text, *,
-                 fg_color=ColorPalette.Red.SHADE_4,
+                 fg_color=_ColorPalette.Red.SHADE_4,
                  bg_color=None):
         if not isinstance(text, str):
             raise TypeError('Must be of type str.')
@@ -61,6 +61,6 @@ class Text(Renderable):
                     characters.append(_Character(glyph,
                                                  glyph_dict[glyph],
                                                  fg_color,
-                                                 bg_color))  # noqa
+                                                 bg_color))
                     break
         return characters
