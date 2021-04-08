@@ -25,7 +25,7 @@ def render_character(lp):
         c = getchar()
         if ord(c) == 0x03:
             sys.exit()
-        elif c.isalnum():
+        else:
             lp.grid.render(Text(c))
 
 
