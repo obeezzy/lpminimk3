@@ -377,12 +377,16 @@ class String(Renderable):
                           matrix).render()
 
     def shift_left(self):
-        carry = None
-        self._character_to_render = self._character_to_render.shift_left(carry)
+        carry = self._characters[-1].carry
+        for character in self._characters:
+            carry = character.shift_left(carry)
+        self._character_to_render = self._characters[0]
 
     def shift_right(self):
-        carry = None
-        self._character_to_render = self._character_to_render.shift_right(carry)  # noqa
+        carry = self._characters[-1].carry
+        for character in self._characters:
+            carry = character.shift_right(carry)
+        self._character_to_render = self._characters[0]
 
     def __repr__(self):
         return 'String(\'{}\')'.format(self._rendered_character.glyph)
