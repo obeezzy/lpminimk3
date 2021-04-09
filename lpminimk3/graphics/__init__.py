@@ -21,9 +21,7 @@ class Text(Renderable):
                                                    self._glyph_dicts,
                                                    fg_color,
                                                    bg_color)
-        self._string = _String(*self.characters,
-                               fg_color=fg_color,
-                               bg_color=bg_color)
+        self._string = _String(*self._characters)
 
     def __repr__(self):
         return 'Text(\'{}\')'.format(self._text)
@@ -33,25 +31,33 @@ class Text(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
-        if len(self.characters) == 1:
+        if len(self._characters) == 1:
             return self._characters[0].bits
         return self._string.bits
 
     @Renderable.word_count.getter
     def word_count(self):
-        if len(self.characters) == 1:
+        if len(self._characters) == 1:
             return self._characters[0].word_count
         return self._string.word_count
 
-    @property
-    def characters(self):
-        return self._characters
-
     def render(self, matrix):
-        if len(self.characters) == 1:
-            self.characters[0].render(matrix)
+        if len(self._characters) == 1:
+            self._characters[0].render(matrix)
         else:
             self._string.render(matrix)
+
+    def shift_left(self, count=1):
+        if len(self._characters) == 1:
+            self._characters[0] = self._characters[0].shift_left(count=count)
+            return self._characters[0]
+        return self._string.shift_left(count=count)
+
+    def shift_right(self, count=1):
+        if len(self._characters) == 1:
+            self._characters[0] = self._characters[0].shift_right(count=count)
+            return self._characters[0]
+        return self._string.shift_right(count=count)
 
     def _create_characters(self, text, dicts, fg_color, bg_color):
         characters = []
