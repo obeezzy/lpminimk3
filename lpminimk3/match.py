@@ -2,10 +2,11 @@
 Match MIDI messages with incoming MIDI events.
 """
 
+from abc import ABC
 from .midi_messages import Lighting, Constants
 
 
-class Match:
+class Match(ABC):
     """
     A set of rules for filtering MIDI events.
     """
