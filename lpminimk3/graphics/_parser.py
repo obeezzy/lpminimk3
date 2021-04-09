@@ -1,5 +1,4 @@
 import os
-from functools import reduce
 from abc import ABC
 import json
 import jsonschema
@@ -396,9 +395,9 @@ class Character(Renderable):
                                                    circular=circular)
 
     def shift_right(self, *, carry=None, count=1, circular=False):
-        return CharacterTransform(self).shift_left(carry=carry,
-                                                   count=count,
-                                                   circular=circular)
+        return CharacterTransform(self).shift_right(carry=carry,
+                                                    count=count,
+                                                    circular=circular)
 
 
 class String(Renderable):
