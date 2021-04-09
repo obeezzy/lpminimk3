@@ -36,6 +36,8 @@ class MidiMessage(ABC):
 
 class Constants:
     DEFAULT_COLOR_ID = 9
+    MIDI_MIN_VALUE = 0
+    MIDI_MAX_VALUE = 0x7f
 
     class LightingMode:
         OFF = 0x80
@@ -47,6 +49,10 @@ class Constants:
         FLASH = 0x01
         PULSE = 0x02
         RGB = 0x03
+
+    class MidiWord:
+        NOTE_HEADER = 0x90
+        CC_HEADER = 0xb0
 
 
 class ColorspecFragment:

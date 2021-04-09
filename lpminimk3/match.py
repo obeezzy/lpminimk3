@@ -2,10 +2,11 @@
 Match MIDI messages with incoming MIDI events.
 """
 
-from .midi_messages import Lighting
+from abc import ABC
+from .midi_messages import Lighting, Constants
 
 
-class Match:
+class Match(ABC):
     """
     A set of rules for filtering MIDI events.
     """
@@ -18,8 +19,6 @@ class ButtonMatch(Match):
     """
     A set of rules for filtering button events.
     """
-    NOTE_HEADER = 0x90
-    CC_HEADER = 0xb0
 
     def __init__(self, buttons, type):
         self._buttons = buttons
@@ -39,14 +38,14 @@ class ButtonMatch(Match):
     def _determine_messages(self):
         messages = []
         for button in self._buttons:
-            header = (ButtonMatch.NOTE_HEADER
+            header = (Constants.MidiWord.NOTE_HEADER
                       if button.parent == 'grid'
-                      else ButtonMatch.CC_HEADER)
+                      else Constants.MidiWord.CC_HEADER)
             if self._type == 'press':
-                messages.append(Lighting(header, button.midi_value, 0x7f).data)  # noqa
+                messages.append(Lighting(header, button.midi_value, Constants.MIDI_MAX_VALUE).data)  # noqa
             elif self._type == 'release':
-                messages.append(Lighting(header, button.midi_value, 0x0).data)  # noqa
+                messages.append(Lighting(header, button.midi_value, Constants.MIDI_MIN_VALUE).data)  # noqa
             elif self._type == 'press_release':
-                messages.append(Lighting(header, button.midi_value, 0x7f).data)  # noqa
-                messages.append(Lighting(header, button.midi_value, 0x0).data)  # noqa
+                messages.append(Lighting(header, button.midi_value, Constants.MIDI_MAX_VALUE).data)  # noqa
+                messages.append(Lighting(header, button.midi_value, Constants.MIDI_MIN_VALUE).data)  # noqa
         return messages
