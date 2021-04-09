@@ -27,7 +27,9 @@ class Text(Renderable):
         return 'Text(\'{}\')'.format(self._text)
 
     def __str__(self):
-        return self._text
+        if len(self._characters) == 1:
+            return str(self._characters[0])
+        return str(self._string)
 
     @Renderable.bits.getter
     def bits(self):
@@ -47,17 +49,25 @@ class Text(Renderable):
         else:
             self._string.render(matrix)
 
-    def shift_left(self, count=1):
+    def print(self):
         if len(self._characters) == 1:
-            self._characters[0] = self._characters[0].shift_left(count=count)
-            return self._characters[0]
-        return self._string.shift_left(count=count)
+            self._characters[0].print()
+        else:
+            self._string.print()
 
-    def shift_right(self, count=1):
+    def shift_left(self, count=1, *, circular=False):
+        count = 0 if not isinstance(count, int) or count < 0 else count
         if len(self._characters) == 1:
-            self._characters[0] = self._characters[0].shift_right(count=count)
+            self._characters[0] = self._characters[0].shift_left(count=count, circular=circular)  # noqa
             return self._characters[0]
-        return self._string.shift_right(count=count)
+        return self._string.shift_left(count=count, circular=circular)
+
+    def shift_right(self, count=1, *, circular=False):
+        count = 0 if not isinstance(count, int) or count < 0 else count
+        if len(self._characters) == 1:
+            self._characters[0] = self._characters[0].shift_right(count=count, circular=circular)  # noqa
+            return self._characters[0]
+        return self._string.shift_right(count=count, circular=circular)
 
     def _create_characters(self, text, dicts, fg_color, bg_color):
         characters = []

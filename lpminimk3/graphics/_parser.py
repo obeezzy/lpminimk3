@@ -10,7 +10,7 @@ from ..midi_messages import Constants,\
 class Renderable(ABC):
     @property
     def bits(self):
-        yield None
+        pass
 
     @property
     def word_count(self):
@@ -81,13 +81,18 @@ class RawBitmap:
                 bit = 1 if (word & bitmask) else 0
                 yield bit
                 bitmask = bitmask << 1
-        yield None
 
     def __repr__(self):
         return 'RawBitmap(\'{}\')'.format(self._data)
 
     def __str__(self):
-        return self._data
+        bit_string = ''
+        for index, bit in enumerate(self, start=1):
+            bit_string += str(bit)
+            bit_string += ('\n'
+                           if index % self.word_count == 0
+                           else ' ')
+        return bit_string
 
     @property
     def data(self):
@@ -191,11 +196,80 @@ class BitmapConfig:
         return BitConfig()
 
 
+class CharacterTransform:
+    def __init__(self, character):
+        self._character = character
+
+    def __repr__(self):
+        return 'CharacterTransform(character=\'{}\')'.format(self._character)
+
+    def shift_left(self, *, carry=None, count=1, circular=False):
+        count = max(0, count)
+        count = count % self._character.word_count
+        character = self._character
+        for _ in range(count):
+            transformed_bitmap_data = []
+            temp_bitmap_data = []
+            new_carry = 0
+            msb_address = self._character.word_count - 1
+            for index, word in enumerate(character.raw_bitmap.data):  # noqa
+                if carry:
+                    temp_bitmap_data.append((word >> 1) | ((carry & (1 << index))  # noqa
+                                                            << (msb_address - index)))  # noqa
+                else:
+                    temp_bitmap_data.append(word >> 1)
+                new_carry |= (word & 1) << index
+            transformed_bitmap_data = temp_bitmap_data
+            if circular and new_carry:
+                temp_bitmap_data = []
+                for index, word in enumerate(transformed_bitmap_data):  # noqa
+                    temp_bitmap_data.append(word | ((new_carry & (1 << index))  # noqa
+                                                     << (msb_address - index)))  # noqa
+            transformed_bitmap_data = temp_bitmap_data
+            character = Character(self._character.glyph,
+                                  self._character._raw_bitmap.data,
+                                  self._character._fg_color,
+                                  self._character._bg_color,
+                                  carry=new_carry,
+                                  transformed_bitmap_data=transformed_bitmap_data,  # noqa
+                                  offset=(self._character.offset.x + count, self._character.offset.y))  # noqa
+        return character
+
+    def shift_right(self, *, carry=None, count=1, circular=False):
+        count = count % self._character.word_count
+        character = self._character
+        for _ in range(count):
+            transformed_bitmap_data = []
+            temp_bitmap_data = []
+            new_carry = 0
+            msb_address = self._character.word_count - 1
+            for index, word in enumerate(character.raw_bitmap.data):  # noqa
+                if carry:
+                    temp_bitmap_data.append((word << 1) | ((carry & (1 >> index))  # noqa
+                                                            >> (msb_address - index)))  # noqa
+                else:
+                    temp_bitmap_data.append(word << 1)
+                new_carry |= (word & 1) >> index
+            transformed_bitmap_data = temp_bitmap_data
+            if circular and new_carry:
+                temp_bitmap_data = []
+                for index, word in enumerate(transformed_bitmap_data):  # noqa
+                    temp_bitmap_data.append(word | ((new_carry & (1 >> index))  # noqa
+                                                     >> (msb_address - index)))  # noqa
+            transformed_bitmap_data = temp_bitmap_data
+            character = Character(self._character.glyph,
+                                  self._character._raw_bitmap.data,
+                                  self._character._fg_color,
+                                  self._character._bg_color,
+                                  carry=new_carry,
+                                  transformed_bitmap_data=transformed_bitmap_data,  # noqa
+                                  offset=(self._character.offset.x - count, self._character.offset.y))  # noqa
+        return character
+
+
 class CharacterRenderer:
-    def __init__(self, character, matrix, *, raw_bitmap=None):
-        self._raw_bitmap = (raw_bitmap
-                            if raw_bitmap
-                            else character._raw_bitmap)
+    def __init__(self, character, matrix):
+        self._raw_bitmap = character.raw_bitmap
         self._matrix = matrix
         self._fg_color = character.fg_color
         self._bg_color = character.bg_color
@@ -269,7 +343,7 @@ class Character(Renderable):
                                                            repr(self._offset))
 
     def __str__(self):
-        return self._glyph
+        return '{}'.format(self._glyph)
 
     def __iter__(self):
         return self.bits
@@ -301,64 +375,38 @@ class Character(Renderable):
 
     @property
     def raw_bitmap(self):
-        return self._raw_bitmap
-
-    @property
-    def raw_bitmap_transformed(self):
-        return self._raw_bitmap_transformed
+        return (self._raw_bitmap_transformed
+                if self._raw_bitmap_transformed
+                else self._raw_bitmap)
 
     @property
     def offset(self):
         return self._offset
 
     def render(self, matrix):
-        CharacterRenderer(self,
-                          matrix,
-                          raw_bitmap=(self.raw_bitmap_transformed
-                                      if self.raw_bitmap_transformed
-                                      else self.raw_bitmap)).render()
+        CharacterRenderer(self, matrix).render()
 
-    def shift_left(self, *, carry=None, count=1):
-        bitmap_data = []
-        shift_count = count + self.offset.x
-        new_carry = 0
-        for index, word in enumerate(self._raw_bitmap.data, start=1):
-            if carry:
-                bitmap_data.append((word >> shift_count) | (carry << (self.word_count - index)))  # noqa
-            else:
-                bitmap_data.append(word >> shift_count)
-            new_carry |= ((word << (self.word_count - index)) >> (index - 1))
-        return Character(self.glyph,
-                         self._raw_bitmap.data,
-                         self._fg_color,
-                         self._bg_color,
-                         carry=new_carry,
-                         transformed_bitmap_data=bitmap_data,
-                         offset=(self.offset.x + 1, self.offset.y))
+    def print(self):
+        print(self.raw_bitmap)
 
-    def shift_right(self, *, carry=None, count=1):
-        bitmap_data = []
-        shift_count = count + self.offset.x
-        new_carry = 0
-        for index, word in enumerate(self._raw_bitmap.data, start=1):
-            if carry:
-                bitmap_data.append((word << shift_count) | (carry >> (self.word_count - index)))  # noqa
-            else:
-                bitmap_data.append(word << shift_count)
-            new_carry |= ((word >> (self.word_count - index)) << (index - 1))
-        return Character(self.glyph,
-                         self._raw_bitmap.data,
-                         self._fg_color,
-                         self._bg_color,
-                         carry=new_carry,
-                         transformed_bitmap_data=bitmap_data,
-                         offset=(self.offset.x - 1, self.offset.y))
+    def shift_left(self, *, carry=None, count=1, circular=False):
+        return CharacterTransform(self).shift_left(carry=carry,
+                                                   count=count,
+                                                   circular=circular)
+
+    def shift_right(self, *, carry=None, count=1, circular=False):
+        return CharacterTransform(self).shift_right(carry=carry,
+                                                    count=count,
+                                                    circular=circular)
 
 
 class String(Renderable):
     def __init__(self, *characters):
         self._characters = list(characters)
         self._character_to_render = self._characters[0]
+
+    def __repr__(self):
+        return 'String(\'{}\')'.format(repr(self._character_to_render))
 
     def __iter__(self):
         return self.bits
@@ -376,20 +424,34 @@ class String(Renderable):
         CharacterRenderer(self._character_to_render,
                           matrix).render()
 
-    def shift_left(self):
-        carry = self._characters[-1].carry
-        for character in self._characters:
-            carry = character.shift_left(carry)
+    def print(self):
+        print(self._character_to_render)
+
+    def shift_left(self, *, count=1, circular=False):
+        characters = []
+        carry = 0
+        for character in reversed(self._characters):
+            new_character = character.shift_left(carry=carry, count=count)
+            carry = new_character.carry
+            if len(characters) == 0:
+                characters.append(character)
+            elif len(characters) == len(self._characters) - 1:
+                new_character = character.shift_left(carry=carry, count=count)  # noqa
+                characters.append(new_character)
+            else:
+                characters.append(new_character)
+        characters.reverse()
+        self._characters = characters
         self._character_to_render = self._characters[0]
+        return self
 
-    def shift_right(self):
+    def shift_right(self, *, count=1, circular=False):
         carry = self._characters[-1].carry
+        characters = []
         for character in self._characters:
-            carry = character.shift_right(carry)
+            character = character.shift_right(carry=carry, count=count)
+            carry = character.carry
+            characters.append(character)
+        self._characters = characters
         self._character_to_render = self._characters[0]
-
-    def __repr__(self):
-        return 'String(\'{}\')'.format(self._rendered_character.glyph)
-
-    def __str__(self):
-        return self._glyph
+        return self
