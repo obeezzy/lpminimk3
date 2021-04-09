@@ -10,7 +10,7 @@ from ..midi_messages import Constants,\
 class Renderable(ABC):
     @property
     def bits(self):
-        yield None
+        pass
 
     @property
     def word_count(self):
