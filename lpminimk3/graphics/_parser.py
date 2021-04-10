@@ -206,7 +206,7 @@ class CharacterTransform:
 
     def __repr__(self):
         return ("CharacterTransform("
-                f"character='{self._character}')"
+                f"character='{self._character}')")
 
     def shift_left(self, *, carry=None, count=1, circular=False):
         count = max(0, count)
