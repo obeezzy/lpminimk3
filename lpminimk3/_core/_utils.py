@@ -40,8 +40,9 @@ class MidiEvent:
         return self._deltatime
 
     def __repr__(self):
-        return ('MidiEvent(message={}, deltatime={})'
-                .format(self.message, self.deltatime))
+        return ('MidiEvent('
+                f'message={self.message}, '
+                f'deltatime={self.deltatime})')
 
 
 class ButtonEvent:
@@ -66,11 +67,10 @@ class ButtonEvent:
         return self.midi_event == other.midi_event
 
     def __repr__(self):
-        return ('ButtonEvent(button=\'{}\', '
-                'type=\'{}\', '
-                'deltatime={})'.format(self.button.name,
-                                       self.type,
-                                       self.deltatime))
+        return ("ButtonEvent("
+                f"button='{self.button.name}', "
+                f"type='{self.type}', "
+                f"deltatime={self.deltatime})")
 
     @property
     def message(self):
@@ -133,10 +133,10 @@ class MidiPort:
         return self.system_port_name == other.system_port_name
 
     def __repr__(self):
-        return ('MidiPort(name={}, number={}, index={})'
-                .format(self.port_name,
-                        self.port_number,
-                        self.port_index))
+        return ("MidiPort("
+                f"name='{self.port_name}', "
+                f"number={self.port_number}, "
+                f"index={self.port_index})")
 
     def __exit__(self, *args, **kwargs):
         self.close()
@@ -206,10 +206,10 @@ class MidiPort:
 
         if self._midi_in and self._direction == MidiPort.IN:
             self._midi_in.send_message(message)
-            logger.debug('MIDI message sent: {}'.format(message))
+            logger.debug(f'MIDI message sent: {message}')
         elif self._midi_out and self._direction == MidiPort.OUT:
             self._midi_out.send_message(message)
-            logger.debug('MIDI message sent: {}'.format(message))
+            logger.debug(f'MIDI message sent: {message}')
         else:
             raise RuntimeError('Failed to send message.')
 
@@ -225,7 +225,7 @@ class MidiPort:
             try:
                 raw_message = self._midi_in.get_message()
                 event = MidiEvent(*raw_message) if raw_message else None
-                logger.debug('MIDI event: {}'.format(event))
+                logger.debug(f'MIDI event: {event}')
                 if event and not match:
                     polling = False
                 elif event and isinstance(match, list) and match == event.message:  # noqa
@@ -260,9 +260,8 @@ class Interface:
     def __init__(self, midi_event):
         if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
             raise RuntimeError('Unexpected MIDI message length; '
-                               'expected {}, got {}.'
-                               .format(_MIDI_MESSAGE_LENGTH,
-                                       len(midi_event.message)))
+                               f'expected {_MIDI_MESSAGE_LENGTH}, '
+                               f'got {len(midi_event.message)}.')
         self._midi_event = midi_event
         midi_value = midi_event.message[Interface.READBACK_POSITION]
         self._interface = (Interface.MIDI
@@ -278,9 +277,8 @@ class Interface:
 
     def __repr__(self):
         return ('Interface()'
-                if self._interface is None
-                else 'Interface(\'Interface.{}\')'
-                .format(self._interface.upper()))
+                if not self._interface
+                else f"Interface('Interface.{self._interface.upper()}')")
 
     @property
     def midi_event(self):
@@ -303,9 +301,8 @@ class Mode:
     def __init__(self, midi_event):
         if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
             raise RuntimeError('Unexpected MIDI message length; '
-                               'expected {}, got {}.'
-                               .format(_MIDI_MESSAGE_LENGTH,
-                                       len(midi_event.message)))
+                               f'expected {_MIDI_MESSAGE_LENGTH}, '
+                               f'got {midi_event.message}.')
         self._midi_event = midi_event
         midi_value = midi_event.message[Mode.READBACK_POSITION]
         self._mode = (Mode.LIVE
@@ -321,9 +318,8 @@ class Mode:
 
     def __repr__(self):
         return ('Mode()'
-                if self._mode is None
-                else 'Mode(\'Mode.{}\')'
-                .format(self._mode.upper()))
+                if not self._mode
+                else f"Mode('Mode.{self._mode.upper()}')")
 
     @property
     def midi_event(self):
@@ -354,9 +350,8 @@ class Layout:
     def __init__(self, midi_event):
         if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
             raise RuntimeError('Unexpected MIDI message length; '
-                               'expected {}, got {}.'
-                               .format(_MIDI_MESSAGE_LENGTH,
-                                       len(midi_event.message)))
+                               f'expected {_MIDI_MESSAGE_LENGTH}, '
+                               f'got {len(midi_event.message)}.')
         self._midi_event = midi_event
         midi_value = midi_event.message[Layout.READBACK_POSITION]
         self._layout = self._determine_layout(midi_value)
@@ -374,9 +369,8 @@ class Layout:
 
     def __repr__(self):
         return ('Layout()'
-                if self._layout is None
-                else 'Layout(\'Layout.{}\')'
-                .format(self._layout.upper()))
+                if not self._layout
+                else f"Layout('Layout.{self._layout.upper()}')")
 
     @property
     def midi_event(self):
@@ -416,8 +410,9 @@ class MidiClient:
                 and self.client_number == other.client_number)
 
     def __repr__(self):
-        return ('MidiClient(name={}, number={})'
-                .format(self.client_name, self.client_number))
+        return ("MidiClient("
+                f"name='{self.client_name}', "
+                f"number={self.client_number})")
 
     @property
     def daw_out_port(self):

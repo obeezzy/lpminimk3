@@ -137,9 +137,8 @@ class _MatrixCoordinate:
                         and y < max_y)
         if not within_range:
             raise ValueError('Led(x,y) out of range: '
-                             'value({},{}), '
-                             'range((0,{}),(0,{}))'
-                             .format(x, y, max_x, max_y))
+                             f'value({x},{y}), '
+                             f'range((0,{max_x}),(0,{max_y}))')
         return layout[y][x]
 
     def _determine_name_from_coordinate(self, x, y, button_names, bounds):
@@ -150,9 +149,8 @@ class _MatrixCoordinate:
                         and y < max_y)
         if not within_range:
             raise ValueError('Led(x,y) out of range: '
-                             'value({},{}), '
-                             'range((0,{}),(0,{}))'
-                             .format(x, y, max_x, max_y))
+                             f'value({x},{y}), '
+                             f'range((0,{max_x}),(0,{max_y}))')
         return button_names[y][x]
 
     def _determine_bounds(self, button_names):
@@ -164,8 +162,11 @@ class _MatrixCoordinate:
             raise RuntimeError('Empty button name list.')
 
     def __repr__(self):
-        return ('LayoutCoordinate(name={}, x={}, y={}, id={})'
-                .format(self.name, self.x, self.y, self.id))
+        return ('LayoutCoordinate('
+                f'name={self.name}, '
+                f'x={self.x}, '
+                f'y={self.y}, '
+                f'id={self.id})')
 
 
 class ButtonFace:
@@ -215,8 +216,8 @@ class ButtonGroup:
         return iter(self._buttons)
 
     def __repr__(self):
-        names = list(map(lambda name: "'{}'".format(name), self.names))
-        return 'ButtonGroup({})'.format(', '.join(names))
+        names = list(map(lambda name: f"'{name}'", self.names))
+        return f'ButtonGroup({names})'
 
     @property
     def launchpad(self):
@@ -312,8 +313,7 @@ class ButtonGroup:
                                               button_id=arg))
                         found = True
                     else:
-                        raise ValueError('Invalid button "{}".'
-                                         .format(str(arg)))
+                        raise ValueError(f'Invalid button "{str(arg)}".')
         return set(buttons)
 
 
@@ -378,8 +378,7 @@ class Led:
         return hash(repr(self))
 
     def __repr__(self):
-        return ('Led(x={}, y={}, name=\'{}\')'
-                .format(self.x, self.y, self.name))
+        return f"Led(x={self.x}, y={self.x}, name='{self.name}')"
 
     @property
     def id(self):
@@ -537,8 +536,11 @@ class Button:
         return hash(repr(self))
 
     def __repr__(self):
-        return ('Button(name=\'{}\', x={}, y={}, id={})'
-                .format(self.name, self.x, self.y, self.id))
+        return ("Button("
+                f"name='{self.name}', "
+                f"x={self.x}, "
+                f"y={self.y}, "
+                f"id={self.id})")
 
     @property
     def launchpad(self):
@@ -663,7 +665,7 @@ class Panel(Matrix):
         return self.launchpad == other.launchpad
 
     def __repr__(self):
-        return 'Panel({}x{})'.format(self.max_x, self.max_y)
+        return f'Panel({self.max_x}x{self.max_y})'
 
     @Matrix.launchpad.getter
     def launchpad(self):
@@ -801,7 +803,7 @@ class Grid(Matrix):
         return self.launchpad == other.launchpad
 
     def __repr__(self):
-        return 'Grid({}x{})'.format(self.max_x, self.max_y)
+        return f'Grid({self.max_x}x{self.max_y})'
 
     @Matrix.launchpad.getter
     def launchpad(self):
