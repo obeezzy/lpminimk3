@@ -118,6 +118,9 @@ class Offset:
     def __repr__(self):
         return 'Offset({}, {})'.format(self.x, self.y)
 
+    def __str__(self):
+        return '({}, {})'.format(self.x, self.y)
+
     @property
     def x(self):
         return self._x
@@ -197,8 +200,9 @@ class BitmapConfig:
 
 
 class CharacterTransform:
-    def __init__(self, character):
+    def __init__(self, character, bitmap_data):
         self._character = character
+        self._character_raw_bitmap_data = RawBitmap(bitmap_data)
 
     def __repr__(self):
         return 'CharacterTransform(character=\'{}\')'.format(self._character)
@@ -223,16 +227,17 @@ class CharacterTransform:
             if circular and new_carry:
                 temp_bitmap_data = []
                 for index, word in enumerate(transformed_bitmap_data):  # noqa
-                    temp_bitmap_data.append(word | ((new_carry & (1 << index))  # noqa
-                                                     << (msb_address - index)))  # noqa
+                    temp_bitmap_data.append(word | (((new_carry & (1 << index))  # noqa
+                                                     >> index << msb_address)))  # noqa
             transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
-                                  self._character._raw_bitmap.data,
-                                  self._character._fg_color,
-                                  self._character._bg_color,
+                                  self._character_raw_bitmap_data,
+                                  self._character.fg_color,
+                                  self._character.bg_color,
                                   carry=new_carry,
                                   transformed_bitmap_data=transformed_bitmap_data,  # noqa
-                                  offset=(self._character.offset.x + count, self._character.offset.y))  # noqa
+                                  offset=(self._character.offset.x + count,
+                                          self._character.offset.y))
         return character
 
     def shift_right(self, *, carry=None, count=1, circular=False):
@@ -249,21 +254,22 @@ class CharacterTransform:
                                                             >> (msb_address - index)))  # noqa
                 else:
                     temp_bitmap_data.append(word << 1)
-                new_carry |= (word & 1) >> index
+                new_carry |= (word & (1 << msb_address)) >> (msb_address - index)  # noqa
             transformed_bitmap_data = temp_bitmap_data
             if circular and new_carry:
                 temp_bitmap_data = []
                 for index, word in enumerate(transformed_bitmap_data):  # noqa
-                    temp_bitmap_data.append(word | ((new_carry & (1 >> index))  # noqa
-                                                     >> (msb_address - index)))  # noqa
+                    temp_bitmap_data.append(word | ((new_carry & (1 << index))  # noqa
+                                                     >> index))  # noqa
             transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
-                                  self._character._raw_bitmap.data,
-                                  self._character._fg_color,
-                                  self._character._bg_color,
+                                  self._character_raw_bitmap_data,
+                                  self._character.fg_color,
+                                  self._character.bg_color,
                                   carry=new_carry,
                                   transformed_bitmap_data=transformed_bitmap_data,  # noqa
-                                  offset=(self._character.offset.x - count, self._character.offset.y))  # noqa
+                                  offset=(self._character.offset.x - count,
+                                          self._character.offset.y))
         return character
 
 
@@ -339,8 +345,9 @@ class Character(Renderable):
         self._offset = Offset(*offset) if offset else Offset()
 
     def __repr__(self):
-        return 'Character(glyph=\'{}\', offset={})'.format(self._glyph,
-                                                           repr(self._offset))
+        return 'Character(glyph=\'{}\', offset={}, carry={})'.format(self._glyph,  # noqa
+                                                                     self._offset,  # noqa
+                                                                     self.carry)  # noqa
 
     def __str__(self):
         return '{}'.format(self._glyph)
@@ -390,14 +397,18 @@ class Character(Renderable):
         print(self.raw_bitmap)
 
     def shift_left(self, *, carry=None, count=1, circular=False):
-        return CharacterTransform(self).shift_left(carry=carry,
-                                                   count=count,
-                                                   circular=circular)
+        return CharacterTransform(self,
+                                  self._raw_bitmap)\
+                                          .shift_left(carry=carry,
+                                                      count=count,
+                                                      circular=circular)
 
     def shift_right(self, *, carry=None, count=1, circular=False):
-        return CharacterTransform(self).shift_right(carry=carry,
-                                                    count=count,
-                                                    circular=circular)
+        return CharacterTransform(self,
+                                  self._raw_bitmap)\
+                                          .shift_right(carry=carry,
+                                                       count=count,
+                                                       circular=circular)
 
 
 class String(Renderable):
@@ -427,31 +438,40 @@ class String(Renderable):
     def print(self):
         print(self._character_to_render)
 
-    def shift_left(self, *, count=1, circular=False):
+    def shift_left(self, *, count=1, circular=True):
         characters = []
         carry = 0
-        for character in reversed(self._characters):
+        first_character = self._characters[0]
+        for character in self._characters:
             new_character = character.shift_left(carry=carry, count=count)
             carry = new_character.carry
-            if len(characters) == 0:
-                characters.append(character)
-            elif len(characters) == len(self._characters) - 1:
-                new_character = character.shift_left(carry=carry, count=count)  # noqa
-                characters.append(new_character)
-            else:
-                characters.append(new_character)
-        characters.reverse()
+            characters.append(new_character)
+        if circular and len(characters):
+            carry = characters[-1].carry
+            new_character = first_character.shift_left(carry=carry, count=count)  # noqa
+            characters[0] = new_character
+
         self._characters = characters
         self._character_to_render = self._characters[0]
         return self
 
-    def shift_right(self, *, count=1, circular=False):
-        carry = self._characters[-1].carry
+    def shift_right(self, *, count=1, circular=True):
         characters = []
+        carry = 0
+        last_character = self._characters[-1]
         for character in self._characters:
-            character = character.shift_right(carry=carry, count=count)
-            carry = character.carry
-            characters.append(character)
+            new_character = character.shift_right(carry=carry,
+                                                  count=count,
+                                                  circular=circular)
+            carry = new_character.carry
+            characters.append(new_character)
+        if circular and len(characters):
+            carry = characters[0].carry
+            new_character = last_character.shift_right(carry=carry,
+                                                       count=count,
+                                                       circular=circular)  # noqa
+            characters[-1] = new_character
+
         self._characters = characters
         self._character_to_render = self._characters[0]
         return self

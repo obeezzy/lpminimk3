@@ -55,14 +55,14 @@ class Text(Renderable):
         else:
             self._string.print()
 
-    def shift_left(self, count=1, *, circular=False):
+    def shift_left(self, count=1, *, circular=True):
         count = 0 if not isinstance(count, int) or count < 0 else count
         if len(self._characters) == 1:
             self._characters[0] = self._characters[0].shift_left(count=count, circular=circular)  # noqa
             return self._characters[0]
         return self._string.shift_left(count=count, circular=circular)
 
-    def shift_right(self, count=1, *, circular=False):
+    def shift_right(self, count=1, *, circular=True):
         count = 0 if not isinstance(count, int) or count < 0 else count
         if len(self._characters) == 1:
             self._characters[0] = self._characters[0].shift_right(count=count, circular=circular)  # noqa
