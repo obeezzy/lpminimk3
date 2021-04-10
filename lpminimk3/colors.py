@@ -27,7 +27,7 @@ class RgbColor:
         self._parse(value)
 
     def __repr__(self):
-        return 'RgbColor(r={}, g={}, b={})'.format(self.r, self.g, self.b)
+        return f'RgbColor(r={self.r}, g={self.g}, b={self.b})'
 
     @staticmethod
     def is_valid(value):
@@ -137,8 +137,9 @@ class ColorShade:
         self._color_group = color_group
 
     def __repr__(self):
-        return ('ColorShade(group={}, id={})'
-                .format(self.color_group, self.color_id))
+        return ('ColorShade('
+                f'group={self.color_group}, '
+                f'id={self.color_id})')
 
     @staticmethod
     def is_valid_id(value):
@@ -355,7 +356,7 @@ class ColorShadeStore:
         color_shade = None
         color_shades_in_group = ColorPalette.__dict__[color.capitalize()].__dict__  # noqa
         if color_shade_id:
-            shade_clause = 'SHADE_{}'.format(color_shade_id)
+            shade_clause = f'SHADE_{color_shade_id}'
             if shade_clause in color_shades_in_group:
                 color_shade = color_shades_in_group[shade_clause]
         else:
@@ -365,8 +366,7 @@ class ColorShadeStore:
 
     def _find_shade_id(self, color_shade):
         if not isinstance(color_shade, ColorShade):
-            raise RuntimeError('Expected ColorShade, got "{}".'
-                               .format(color_shade))
+            raise RuntimeError(f"Expected ColorShade, got '{color_shade}'.")
         color_shades_in_group = ColorPalette.__dict__[color_shade.color_group.capitalize()].__dict__  # noqa
         color_shade_id = 1
         for shade_name in color_shades_in_group:

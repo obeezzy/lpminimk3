@@ -25,7 +25,7 @@ class LaunchpadMiniMk3:
         return self.id == other.id
 
     def __repr__(self):
-        return 'LaunchpadMiniMk3(id={})'.format(self.id)
+        return f'LaunchpadMiniMk3(id={self.id})'
 
     def is_open(self):
         """

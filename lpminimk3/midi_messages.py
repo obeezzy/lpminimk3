@@ -72,16 +72,14 @@ class ColorspecFragment:
 
     def __repr__(self):
         return ('ColorspecFragment('
-                'lighting_type={}, '
-                'led_index={}, '
-                'lighting_data={})'.format(self._lighting_type,
-                                                  self._led_index,  # noqa
-                                                  self._lighting_data))  # noqa
+                f'lighting_type={self._lighting_type}, '
+                f'led_index={self._led_index}, '
+                f'lighting_data={self._lighting_data})')
 
     def __str__(self):
-        return '{}'.format([self._lighting_type,
-                            self._led_index]
+        fragment_str = str([self._lighting_type, self._led_index]
                            + list(self._lighting_data))
+        return fragment_str
 
 
 class Colorspec(MidiMessage):
@@ -104,7 +102,7 @@ class Colorspec(MidiMessage):
         self._fragments.append(fragment)
 
     def __repr__(self):
-        return 'Colorspec(\'{}\')'.format(str(self._fragments))
+        return f"Colorspec('{str(self._fragments)}')"
 
 
 class Lighting(MidiMessage):
@@ -114,11 +112,10 @@ class Lighting(MidiMessage):
         self._color_id = color_id
 
     def __repr__(self):
-        return ('Lighting(lighting_mode={}, '
-                'midi_value={}, '
-                'color_id={})'.format(self._lighting_mode,
-                                      self._midi_value,
-                                      self.color_id))
+        return ('Lighting('
+                f'lighting_mode={self._lighting_mode}, '
+                f'midi_value={self._midi_value}, '
+                f'color_id={self.color_id})')
 
     @MidiMessage.data.getter
     def data(self):

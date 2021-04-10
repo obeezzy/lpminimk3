@@ -38,7 +38,7 @@ class GlyphDictionary:
         return self._data['glyphs'][unicode]
 
     def __repr__(self):
-        return 'GlyphDictionary(filename=\'{}\')'.format(self.filename)
+        return f"GlyphDictionary(filename='{self.filename}')"
 
     def __str__(self):
         return (str(self._data['glyphs'])
@@ -83,7 +83,7 @@ class RawBitmap:
                 bitmask = bitmask << 1
 
     def __repr__(self):
-        return 'RawBitmap(\'{}\')'.format(self._data)
+        return f"RawBitmap('{self._data}')"
 
     def __str__(self):
         bit_string = ''
@@ -116,10 +116,10 @@ class Offset:
         self._y = y
 
     def __repr__(self):
-        return 'Offset({}, {})'.format(self.x, self.y)
+        return f'Offset({self.x}, {self.y})'
 
     def __str__(self):
-        return '({}, {})'.format(self.x, self.y)
+        return f'({self.x}, {self.y})'
 
     @property
     def x(self):
@@ -140,7 +140,7 @@ class LightingConfig:
         self._off_state = off_state
 
     def __repr__(self):
-        return 'LightingConfig(\'{}\')'.format(self._name)
+        return f"LightingConfig('{self._name}')"
 
     def __str__(self):
         return self._data
@@ -164,7 +164,7 @@ class BitConfig:
         self._data = config_data
 
     def __repr__(self):
-        return 'BitConfig(\'{}\')'.format(self._name)
+        return f"BitConfig(name='{self._name}')"
 
     def __str__(self):
         return self._data
@@ -205,7 +205,8 @@ class CharacterTransform:
         self._character_raw_bitmap_data = RawBitmap(bitmap_data)
 
     def __repr__(self):
-        return 'CharacterTransform(character=\'{}\')'.format(self._character)
+        return ("CharacterTransform("
+                f"character='{self._character}')"
 
     def shift_left(self, *, carry=None, count=1, circular=False):
         count = max(0, count)
@@ -345,12 +346,13 @@ class Character(Renderable):
         self._offset = Offset(*offset) if offset else Offset()
 
     def __repr__(self):
-        return 'Character(glyph=\'{}\', offset={}, carry={})'.format(self._glyph,  # noqa
-                                                                     self._offset,  # noqa
-                                                                     self.carry)  # noqa
+        return ("Character("
+                f"glyph='{self._glyph}',"
+                f"offset={self._offset}, "
+                f"carry={self.carry})")
 
     def __str__(self):
-        return '{}'.format(self._glyph)
+        return f'{self._glyph}'
 
     def __iter__(self):
         return self.bits
@@ -417,7 +419,8 @@ class String(Renderable):
         self._character_to_render = self._characters[0]
 
     def __repr__(self):
-        return 'String(\'{}\')'.format(repr(self._character_to_render))
+        return ("String("
+                f"'{repr(self._character_to_render)}')")
 
     def __iter__(self):
         return self.bits

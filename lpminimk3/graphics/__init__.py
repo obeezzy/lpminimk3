@@ -24,7 +24,7 @@ class Text(Renderable):
         self._string = _String(*self._characters)
 
     def __repr__(self):
-        return 'Text(\'{}\')'.format(self._text)
+        return f"Text('{self._text}')"
 
     def __str__(self):
         if len(self._characters) == 1:
