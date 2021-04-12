@@ -473,8 +473,8 @@ class String(Renderable):
                 shifted_characters = []
                 carry = 0
                 if circular:
-                    first_character = self._characters[0].shift_left()
-                    carry = first_character.carry
+                    shifted_first_character = self._characters[0].shift_left()
+                    carry = shifted_first_character.carry
                 for character in reversed(self._characters):
                     new_character = character.shift_left(carry=carry)
                     carry = new_character.carry
@@ -492,8 +492,8 @@ class String(Renderable):
                 shifted_characters = []
                 carry = 0
                 if circular:
-                    last_character = self._characters[-1].shift_right()
-                    carry = last_character.carry
+                    shifted_last_character = self._characters[-1].shift_right()
+                    carry = shifted_last_character.carry
                 for character in self._characters:
                     new_character = character.shift_right(carry=carry)
                     carry = new_character.carry
