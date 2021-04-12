@@ -18,8 +18,8 @@ def ascending_range():
 def scroll_text(text, lp):
     try:
         while True:
-            for shift_count in ascending_range():
-                lp.grid.render(Text(text).shift_left(shift_count))
+            for count in ascending_range():
+                lp.grid.render(Text(text).shift_left(count))
                 time.sleep(.02)
     except KeyboardInterrupt:
         sys.exit()

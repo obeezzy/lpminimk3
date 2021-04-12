@@ -232,7 +232,7 @@ class CharacterTransform:
                 for index, word in enumerate(transformed_bitmap_data):  # noqa
                     temp_bitmap_data.append(word | (((new_carry & (1 << index))  # noqa
                                                      >> index << msb_address)))  # noqa
-            transformed_bitmap_data = temp_bitmap_data
+                transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
                                   self._character_raw_bitmap.data,
                                   self._character.fg_color,
@@ -254,18 +254,18 @@ class CharacterTransform:
             msb_address = self._character.word_count - 1
             for index, word in enumerate(character.raw_bitmap.data):  # noqa
                 if carry:
-                    temp_bitmap_data.append((word << 1) | ((carry & (1 >> index))  # noqa
+                    temp_bitmap_data.append((word << 1) | ((carry & (1 << (msb_address - index)))  # noqa
                                                             >> (msb_address - index)))  # noqa
                 else:
                     temp_bitmap_data.append(word << 1)
-                new_carry |= (word & (1 << msb_address)) >> (msb_address - index)  # noqa
+                new_carry |= (word & (1 << msb_address)) >> index  # noqa
             transformed_bitmap_data = temp_bitmap_data
             if circular and new_carry:
                 temp_bitmap_data = []
                 for index, word in enumerate(transformed_bitmap_data):  # noqa
                     temp_bitmap_data.append(word | ((new_carry & (1 << index))  # noqa
                                                      >> index))  # noqa
-            transformed_bitmap_data = temp_bitmap_data
+                transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
                                   self._character_raw_bitmap.data,
                                   self._character.fg_color,
