@@ -52,10 +52,10 @@ class _MatrixTransform:
         self._led_mode = led_mode
 
     def _flip_angle(self, angle):
-        if angle == 90:
-            return 270
-        elif angle == 270 or angle == -90:
+        if angle == -90 or angle == 270:
             return 90
+        elif angle == 90 or angle == -270:
+            return 270
         return angle
 
     def rotated_led_range(self, angle):
