@@ -2,6 +2,7 @@ import os
 from abc import ABC
 import json
 import jsonschema
+from ..colors import ColorShade, ColorShadeStore, RgbColor
 from ..midi_messages import Constants,\
                             Colorspec,\
                             ColorspecFragment
@@ -201,6 +202,55 @@ class BitmapConfig:
         return BitConfig()
 
 
+class TextColor:
+    def __init__(self, renderable, value):
+        self._renderable = renderable
+        self._value = value
+        self._validate(value)
+
+    def __repr__(self):
+        return f'TextColor({self._value})'
+
+    @property
+    def color_id(self):
+        return self._color_id
+
+    def set(self, value):
+        self._validate(value)
+        return self._renderable
+
+    def _validate(self, value):
+        if not value:
+            self._color_id = 0
+        elif (not isinstance(value, ColorShade)
+                and not isinstance(value, str)
+                and not isinstance(value, int)):
+            raise TypeError('Must be of type ColorShade or str or int.')
+        elif ((isinstance(value, str)
+                and not ColorShadeStore().contains(value)
+                and not RgbColor.is_valid(value))
+                or (isinstance(value, (tuple, list))
+                    and not RgbColor.is_valid(value))):
+            raise ValueError('Invalid color.')
+        elif RgbColor.is_valid(value):
+            self._rgb_color = RgbColor(value)
+        else:
+            self._color_id = self._determine_color_id(value)
+
+    def _determine_color_id(self, value):
+        color_id = value if ColorShade.is_valid_id(value) else -1
+        if color_id < 0:
+            color_shade = ColorShadeStore().find(value)
+            color_id = (color_shade.color_id
+                        if color_shade
+                        else color_id)
+        if color_id < 0:
+            raise ValueError(f'Color ID values must be between '
+                             f'{ColorShade.MIN_COLOR_ID} and '
+                             f'{ColorShade.MAX_COLOR_ID}.')
+        return color_id
+
+
 class CharacterTransform:
     def __init__(self, character, bitmap_data):
         self._character = character
@@ -335,11 +385,14 @@ class Character(Renderable):
                  glyph,
                  bitmap_data,
                  fg_color,
-                 bg_color=None,
+                 bg_color,
                  *,
                  carry=None,
                  transformed_bitmap_data=None,
                  offset=None):
+        assert isinstance(fg_color, TextColor)
+        assert isinstance(bg_color, TextColor)
+
         self._glyph = glyph
         self._raw_bitmap = RawBitmap(bitmap_data)
         self._fg_color = fg_color
@@ -425,11 +478,15 @@ class Character(Renderable):
 
 
 class String(Renderable):
-    def __init__(self, text, *, fg_color, bg_color=None):
+    def __init__(self, text, *, fg_color, bg_color):
+        assert isinstance(fg_color, TextColor)
+        assert isinstance(bg_color, TextColor)
+
         if not isinstance(text, str):
             raise TypeError("text must be of type 'str'.")
         if not len(text):
-            raise ValueError("text cannot be empty.")
+            raise ValueError('text cannot be empty.')
+
         self._glyph_dicts = self._create_glyph_dicts()
         characters = self._create_characters(text,
                                              self._glyph_dicts,
@@ -456,6 +513,14 @@ class String(Renderable):
     @Renderable.word_count.getter
     def word_count(self):
         return self.character_to_render.word_count
+
+    @property
+    def fg_color(self):
+        return self.character_to_render.fg_color
+
+    @property
+    def bg_color(self):
+        return self.character_to_render.bg_color
 
     @property
     def characters(self):
