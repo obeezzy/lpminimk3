@@ -212,6 +212,83 @@ class _MatrixCoordinate:
             raise RuntimeError('Empty button name list.')
 
 
+class LedColor:
+    def __init__(self,
+                 value=None, *,
+                 lighting_mode,
+                 midi_value,
+                 lighting_type=Constants.LightingType.STATIC):
+        self._value = value
+        self._message = None
+        self._lighting_mode = lighting_mode
+        self._lighting_type = lighting_type
+        self._midi_value = midi_value
+
+        assert isinstance(lighting_mode, int)
+        assert isinstance(lighting_type, int)
+
+        if not value or value == '':
+            self._message = self._create_reset_message(lighting_mode,
+                                                       midi_value)
+        elif (not isinstance(value, ColorShade)
+                and not isinstance(value, str)
+                and not isinstance(value, int)):
+            raise TypeError('Must be of type ColorShade or str or int.')
+        elif ((isinstance(value, str)
+                and not ColorShadeStore().contains(value)
+                and not RgbColor.is_valid(value))
+                or (isinstance(value, (tuple, list))
+                    and not RgbColor.is_valid(value))):
+            raise ValueError('Invalid color.')
+        elif RgbColor.is_valid(value):
+            colorspec = self._create_colorspec_message(value,
+                                                       lighting_type,
+                                                       midi_value)
+            self._message = colorspec
+        else:
+            lighting = self._create_lighting_message(value,
+                                                     lighting_mode,
+                                                     midi_value)
+            self._message = lighting
+
+    @property
+    def message(self):
+        return self._message
+
+    def _create_colorspec_message(self, value, lighting_type, midi_value):
+        rgb_color = RgbColor(value)
+        colorspec = Colorspec(ColorspecFragment(lighting_type,
+                                                midi_value,
+                                                rgb_color.r,
+                                                rgb_color.g,
+                                                rgb_color.b))
+        return colorspec
+
+    def _create_lighting_message(self, value, lighting_mode, midi_value):
+        color_id = value if ColorShade.is_valid_id(value) else -1
+        lighting = None
+        if color_id < 0:
+            color_shade = ColorShadeStore().find(value)
+            color_id = (color_shade.color_id
+                        if color_shade
+                        else color_id)
+        if color_id < 0:
+            raise ValueError(f'Color ID values must be between '
+                             f'{ColorShade.MIN_COLOR_ID} and '
+                             f'{ColorShade.MAX_COLOR_ID}.')
+        else:
+            lighting = Lighting(lighting_mode,
+                                midi_value,
+                                color_id)
+        return lighting
+
+    def _create_reset_message(self, lighting_mode, midi_value):
+        lighting = Lighting(lighting_mode,
+                            midi_value,
+                            0x0)
+        return lighting
+
+
 class ButtonFace:
     """
     A button face.
@@ -392,7 +469,7 @@ class Led:
         name = (x if isinstance(x, str)
                 and name == '' else name)
         if isinstance(x, str) and name == '':
-            raise ValueError('Invalid name')
+            raise ValueError('Invalid name.')
         x = -1 if isinstance(x, str) else x
 
         led_id = x if x >= 0 and y < 0 else -1
@@ -488,41 +565,11 @@ class Led:
             ValueError: When invalid value is used.
             TypeError: When invalid type is used.
         """
-        if not value or value == '':
-            self.reset()
-        elif not isinstance(value, ColorShade) and not isinstance(value, str) \
-                and not isinstance(value, int):
-            raise TypeError('Must be of type ColorShade or str or int.')
-        elif ((isinstance(value, str)
-                and not ColorShadeStore().contains(value)
-                and not RgbColor.is_valid(value))
-                or ((isinstance(value, tuple) or isinstance(value, list))
-                    and not RgbColor.is_valid(value))):
-            raise ValueError('Invalid color.')
-        elif RgbColor.is_valid(value):
-            rgb_color = RgbColor(value)
-            colorspec = Colorspec(ColorspecFragment(self._LIGHTING_TYPE['rgb'],  # noqa
-                                                    self._midi_value,
-                                                    rgb_color.r,
-                                                    rgb_color.g,
-                                                    rgb_color.b))
-            self.launchpad.send_message(colorspec)
-        else:
-            color_id = value if ColorShade.is_valid_id(value) else -1
-            if color_id < 0:
-                color_shade = ColorShadeStore().find(value)
-                color_id = (color_shade.color_id
-                            if color_shade
-                            else color_id)
-            if color_id < 0:
-                raise ValueError(f'Color ID values must be between '
-                                 f'{ColorShade.MIN_COLOR_ID} and '
-                                 f'{ColorShade.MAX_COLOR_ID}.')
-            else:
-                lighting = Lighting(self._LIGHTING_MODE[self._mode],
-                                    self._midi_value,
-                                    color_id)
-                self.launchpad.send_message(lighting)
+        message = LedColor(value,
+                           lighting_mode=self._LIGHTING_MODE[self._mode],
+                           lighting_type=self._LIGHTING_TYPE['rgb'],
+                           midi_value=self._midi_value).message
+        self.launchpad.send_message(message)
 
     @color.deleter
     def color(self):
@@ -531,16 +578,15 @@ class Led:
 
     def reset(self):
         """Turns LED off."""
-        lighting = Lighting(self._LIGHTING_MODE[self._mode],
-                            self._midi_value,
-                            0x0)
-        self.launchpad.send_message(lighting)
+        message = LedColor(lighting_mode=self._LIGHTING_MODE[self._mode],
+                           midi_value=self._midi_value).message
+        self.launchpad.send_message(message)
 
     def _is_within_range(self):
-        return self._x >= 0 \
-                and self._y >= 0 \
-                and self._x < self._matrix_width \
-                and self._y < self._matrix_height
+        return (self._x >= 0
+                and self._y >= 0
+                and self._x < self._matrix_width
+                and self._y < self._matrix_height)
 
 
 class Button:
