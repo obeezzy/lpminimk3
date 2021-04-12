@@ -110,7 +110,7 @@ class LaunchpadMiniMk3:
                 return self.midi_in_port.poll_for_event(timeout=timeout,
                                                         match=match)
             else:
-                raise ValueError('Must be a valid Interface')
+                raise ValueError('Must be a valid Interface.')
         else:
             raise RuntimeError('Port closed.')
 
@@ -132,7 +132,7 @@ class LaunchpadMiniMk3:
             elif interface == Interface.MIDI:
                 return self.midi_in_port.clear_event_queue()
             else:
-                raise ValueError('Must be a valid Interface')
+                raise ValueError('Must be a valid Interface.')
         else:
             raise RuntimeError('Port closed.')
 
