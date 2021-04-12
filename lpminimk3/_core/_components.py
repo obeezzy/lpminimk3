@@ -230,13 +230,14 @@ class LedColor:
         if not value or value == '':
             self._message = self._create_reset_message(lighting_mode,
                                                        midi_value)
-        elif not isinstance(value, ColorShade) and not isinstance(value, str) \
-                and not isinstance(value, int):
+        elif (not isinstance(value, ColorShade)
+                and not isinstance(value, str)
+                and not isinstance(value, int)):
             raise TypeError('Must be of type ColorShade or str or int.')
         elif ((isinstance(value, str)
                 and not ColorShadeStore().contains(value)
                 and not RgbColor.is_valid(value))
-                or ((isinstance(value, tuple) or isinstance(value, list))
+                or (isinstance(value, (tuple, list))
                     and not RgbColor.is_valid(value))):
             raise ValueError('Invalid color.')
         elif RgbColor.is_valid(value):
