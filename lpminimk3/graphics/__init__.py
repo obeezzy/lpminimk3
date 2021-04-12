@@ -1,4 +1,3 @@
-import os
 from ._utils import String as _String,\
                      Renderable
 from ..colors import ColorPalette as _ColorPalette
