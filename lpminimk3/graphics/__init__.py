@@ -1,19 +1,27 @@
 from ._utils import String as _String,\
-                     Renderable
+                     Renderable,\
+                     TextColor as _TextColor
 from ..colors import ColorPalette as _ColorPalette
 
 
 class Text(Renderable):
-    def __init__(self, text, *,
+    def __init__(self,
+                 text, *,
                  fg_color=_ColorPalette.Red.SHADE_4,
                  bg_color=None):
-        if not isinstance(text, str):
+        if isinstance(text, Text):
+            text = text.text
+            fg_color = text.fg_color
+            bg_color = text.bg_color
+        elif not isinstance(text, str):
             raise TypeError('Must be of type str.')
 
         self._text = text
         self._string = _String(text,
-                               fg_color=fg_color,
-                               bg_color=bg_color)
+                               fg_color=_TextColor(self,
+                                                   fg_color),
+                               bg_color=_TextColor(self,
+                                                   bg_color))
 
     def __repr__(self):
         return f"Text('{self._text}')"
@@ -31,6 +39,22 @@ class Text(Renderable):
     @Renderable.word_count.getter
     def word_count(self):
         return self._string.word_count
+
+    @property
+    def fg_color(self):
+        return self._string.fg_color
+
+    @fg_color.setter
+    def fg_color(self, color):
+        self._string.fg_color = _TextColor(self, color)
+
+    @property
+    def bg_color(self):
+        return self._string.bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        self._string.bg_color = _TextColor(self, color)
 
     def render(self, matrix):
         self._string.render(matrix)

@@ -16,7 +16,7 @@ from ._utils import ButtonEvent
 
 class Matrix(ABC):
     """
-    A matrix of buttons (or LEDs) on the surface of the Launchpad.
+    A matrix of pad buttons/LEDs on the surface of the Launchpad.
     """
     @property
     def launchpad(self):
@@ -227,7 +227,7 @@ class LedColor:
         assert isinstance(lighting_mode, int)
         assert isinstance(lighting_type, int)
 
-        if not value or value == '':
+        if not value:
             self._message = self._create_reset_message(lighting_mode,
                                                        midi_value)
         elif (not isinstance(value, ColorShade)
@@ -467,8 +467,8 @@ class Led:
         self._x = self._y = -1
 
         name = (x if isinstance(x, str)
-                and name == '' else name)
-        if isinstance(x, str) and name == '':
+                and not name else name)
+        if isinstance(x, str) and not name:
             raise ValueError('Invalid name.')
         x = -1 if isinstance(x, str) else x
 
@@ -706,7 +706,8 @@ class Panel(Matrix):
     """
     Panel of Launchpad.
 
-    The panel represents the 9x9 grid of buttons of the Launchpad.
+    The panel represents the 9x9 matrix of pad buttons
+    on the surface of the Launchpad.
     """
     PROG = 'prog'
     CUSTOM = 'custom'
