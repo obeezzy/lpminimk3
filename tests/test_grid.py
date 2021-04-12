@@ -22,14 +22,26 @@ class TestGrid(unittest.TestCase):
     def test_max_x(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.max_x,
-                         8,
+                         7,
                          'Max X mismatch.')
 
     def test_max_y(self):
         self.lp.open()
         self.assertEqual(self.lp.grid.max_y,
-                         8,
+                         7,
                          'Max Y mismatch.')
+
+    def test_width(self):
+        self.lp.open()
+        self.assertEqual(self.lp.grid.width,
+                         8,
+                         'Width mismatch.')
+
+    def test_height(self):
+        self.lp.open()
+        self.assertEqual(self.lp.grid.height,
+                         8,
+                         'Height mismatch.')
 
     def test_eq(self):
         self.lp.open()

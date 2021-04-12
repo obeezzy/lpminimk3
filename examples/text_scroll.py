@@ -8,17 +8,10 @@ import sys
 import time
 
 
-def ascending_range():
-    counter = 1
-    while True:
-        yield counter
-        counter += 1
-
-
 def scroll_text(text, lp):
     try:
         while True:
-            for count in ascending_range():
+            for count in range(len(text) * lp.grid.width):
                 lp.grid.render(Text(text).shift_left(count))
                 time.sleep(.02)
     except KeyboardInterrupt:

@@ -21,6 +21,9 @@ class Text(Renderable):
     def __str__(self):
         return self._text
 
+    def __len__(self):
+        return len(self._text)
+
     @Renderable.bits.getter
     def bits(self):
         return self._string.bits
@@ -43,4 +46,8 @@ class Text(Renderable):
     def shift_right(self, count=1, *, circular=True):
         count = 0 if not isinstance(count, int) or count < 0 else count
         self._string.shift_right(count=count, circular=circular)
+        return self
+
+    def rotate(self, angle):
+        self._string.rotate(angle)
         return self

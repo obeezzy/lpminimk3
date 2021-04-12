@@ -22,14 +22,26 @@ class TestPanel(unittest.TestCase):
     def test_max_x(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.max_x,
-                         9,
+                         8,
                          'Max X mismatch.')
 
     def test_max_y(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.max_y,
-                         9,
+                         8,
                          'Max Y mismatch.')
+
+    def test_width(self):
+        self.lp.open()
+        self.assertEqual(self.lp.panel.width,
+                         9,
+                         'Width mismatch.')
+
+    def test_height(self):
+        self.lp.open()
+        self.assertEqual(self.lp.panel.height,
+                         9,
+                         'Height mismatch.')
 
     def test_eq(self):
         self.lp.open()
