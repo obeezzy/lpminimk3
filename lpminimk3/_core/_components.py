@@ -212,7 +212,7 @@ class _MatrixCoordinate:
             raise RuntimeError('Empty button name list.')
 
 
-class LedColor:
+class _LedColor:
     def __init__(self,
                  value=None, *,
                  lighting_mode,
@@ -565,10 +565,10 @@ class Led:
             ValueError: When invalid value is used.
             TypeError: When invalid type is used.
         """
-        message = LedColor(value,
-                           lighting_mode=self._LIGHTING_MODE[self._mode],
-                           lighting_type=self._LIGHTING_TYPE['rgb'],
-                           midi_value=self._midi_value).message
+        message = _LedColor(value,
+                            lighting_mode=self._LIGHTING_MODE[self._mode],
+                            lighting_type=self._LIGHTING_TYPE['rgb'],
+                            midi_value=self._midi_value).message
         self.launchpad.send_message(message)
 
     @color.deleter
@@ -578,8 +578,8 @@ class Led:
 
     def reset(self):
         """Turns LED off."""
-        message = LedColor(lighting_mode=self._LIGHTING_MODE[self._mode],
-                           midi_value=self._midi_value).message
+        message = _LedColor(lighting_mode=self._LIGHTING_MODE[self._mode],
+                            midi_value=self._midi_value).message
         self.launchpad.send_message(message)
 
     def _is_within_range(self):
