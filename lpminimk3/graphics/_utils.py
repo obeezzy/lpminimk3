@@ -278,15 +278,17 @@ class CharacterTransform:
 
 
 class CharacterRenderer:
-    def __init__(self, character, matrix):
+    def __init__(self, character, matrix, *, angle=0):
         self._raw_bitmap = character.raw_bitmap
         self._matrix = matrix
         self._fg_color = character.fg_color
         self._bg_color = character.bg_color
+        self._angle = angle
 
     def render(self):
         colorspec_fragments = []
-        for led, bit in zip(self._matrix.led_range(), self._raw_bitmap):
+        for led, bit in zip(self._matrix.led_range(rotation=self._angle),
+                            self._raw_bitmap):
             bit_config = self._raw_bitmap.config[led.name]
             lighting_type = bit_config.lighting_type
             led_index = led.midi_value
@@ -347,6 +349,7 @@ class Character(Renderable):
                                         if transformed_bitmap_data
                                         else None)
         self._offset = Offset(*offset) if offset else Offset()
+        self._angle = 0
 
     def __repr__(self):
         return ("Character("
@@ -396,7 +399,9 @@ class Character(Renderable):
         return self._offset
 
     def render(self, matrix):
-        CharacterRenderer(self, matrix).render()
+        CharacterRenderer(self,
+                          matrix,
+                          angle=self._angle).render()
 
     def print(self):
         print(self.raw_bitmap)
@@ -415,6 +420,9 @@ class Character(Renderable):
                                                        count=count,
                                                        circular=circular)
 
+    def rotate(self, angle):
+        self._angle = angle
+
 
 class String(Renderable):
     def __init__(self, text, *, fg_color, bg_color=None):
@@ -428,6 +436,7 @@ class String(Renderable):
                                              fg_color,
                                              bg_color)
         self._characters = list(characters)
+        self._angle = 0
 
     def __repr__(self):
         return ("String("
@@ -458,7 +467,8 @@ class String(Renderable):
 
     def render(self, matrix):
         CharacterRenderer(self.character_to_render,
-                          matrix).render()
+                          matrix,
+                          angle=self._angle).render()
 
     def print(self):
         print(self.character_to_render.raw_bitmap)
@@ -499,6 +509,9 @@ class String(Renderable):
                     carry = new_character.carry
                     shifted_characters.append(new_character)
                 self._characters = shifted_characters
+
+    def rotate(self, angle):
+        self._angle = angle
 
     def _create_characters(self, text, dicts, fg_color, bg_color):
         characters = []

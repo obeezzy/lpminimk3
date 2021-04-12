@@ -2,6 +2,7 @@
 Software representation of physical components for Launchpad Mini MK3.
 """
 
+import math
 import re
 from abc import ABC
 from ..colors import ColorShade, ColorShadeStore, RgbColor
@@ -15,11 +16,19 @@ from ._utils import ButtonEvent
 
 class Matrix(ABC):
     """
-    A matrix of buttons (and LEDs) on the surface of the Launchpad.
+    A matrix of buttons (or LEDs) on the surface of the Launchpad.
     """
     @property
     def launchpad(self):
         pass
+
+    @property
+    def width(self):
+        return -1
+
+    @property
+    def height(self):
+        return -1
 
     @property
     def max_x(self):
@@ -36,6 +45,40 @@ class Matrix(ABC):
         renderable.render(self)
 
 
+class _MatrixTransform:
+    def __init__(self, matrix, layout, led_mode):
+        self._matrix = matrix
+        self._layout = layout
+        self._led_mode = led_mode
+
+    def _flip_angle(self, angle):
+        if angle == 90:
+            return 270
+        elif angle == 270 or angle == -90:
+            return 90
+        return angle
+
+    def rotated_led_range(self, angle):
+        assert (round(abs(angle)) in (90, 180, 270)), 'Angle must be +/-90, +/-180 or +/-270.' # noqa
+        angle = self._flip_angle(angle)
+        angle_rad = math.radians(angle)
+        for led in self._matrix.led_range(layout=self._layout,
+                                          mode=self._led_mode):
+            rotated_x = round((led.y * math.sin(angle_rad)) + (led.x * math.cos(angle_rad)))  # noqa
+            rotated_y = round((led.y * math.cos(angle_rad)) - (led.x * math.sin(angle_rad)))  # noqa
+            if angle == 90:
+                rotated_y = min(self._matrix.max_y + rotated_y, self._matrix.max_y)  # noqa
+            elif angle == 180:
+                rotated_y = min(self._matrix.max_y + rotated_y, self._matrix.max_y)  # noqa
+                rotated_x = min(self._matrix.max_x + rotated_x, self._matrix.max_x)  # noqa
+            elif angle == 270:
+                rotated_x = min(self._matrix.max_x + rotated_x, self._matrix.max_x)  # noqa
+            yield self._matrix.led(x=rotated_x,
+                                   y=rotated_y,
+                                   layout=self._layout,
+                                   mode=self._led_mode)
+
+
 class _MatrixCoordinate:
     def __init__(self, launchpad, layout, button_names, *,
                  name='',
@@ -45,35 +88,42 @@ class _MatrixCoordinate:
                                                      button_names)
                 if x < 0 and y < 0 and len(name) > 0
                 else (x, y))
-        max_x, max_y = self._determine_bounds(button_names)
+        matrix_width, matrix_height = self._determine_bounds(button_names)
 
         x, y = (self._determine_coordinate_from_id(coordinate_id,
-                                                   bounds=(max_x, max_y))
+                                                   bounds=(matrix_width, matrix_height))  # noqa
                 if coordinate_id >= 0 and x < 0 and y < 0
                 else (x, y))
         name = self._determine_name_from_coordinate(x, y,
                                                     button_names,
-                                                    bounds=(max_x, max_y))
+                                                    bounds=(matrix_width, matrix_height))  # noqa
         midi_value = self._determine_midi_value(x, y,
                                                 layout,
-                                                bounds=(max_x, max_y))
+                                                bounds=(matrix_width, matrix_height))  # noqa
         self._x = x
         self._y = y
         self._id = coordinate_id
-        self._max_x = max_x
-        self._max_y = max_y
+        self._matrix_width = matrix_width
+        self._matrix_height = matrix_height
         self._name = name
         self._midi_value = midi_value
+
+    def __repr__(self):
+        return ('LayoutCoordinate('
+                f'name={self.name}, '
+                f'x={self.x}, '
+                f'y={self.y}, '
+                f'id={self.id})')
 
     @property
     def id(self):
         within_range = (self._x >= 0
                         and self._y >= 0
-                        and self._x < self._max_x
-                        and self._y < self._max_y)
+                        and self._x < self._matrix_width
+                        and self._y < self._matrix_height)
         if not within_range:
             return -1
-        return (self._y * self._max_y) + self._x + 1
+        return (self._y * self._matrix_height) + self._x + 1
 
     @property
     def name(self):
@@ -92,17 +142,17 @@ class _MatrixCoordinate:
         return self._midi_value
 
     @property
-    def max_x(self):
-        return self._max_x
+    def matrix_width(self):
+        return self._matrix_width
 
     @property
-    def max_y(self):
-        return self._max_y
+    def matrix_height(self):
+        return self._matrix_height
 
     def _determine_coordinate_from_id(self, led_id, bounds):
-        max_x, max_y = bounds
-        x = int(led_id % max_x)
-        y = int(led_id / max_y)
+        width, height = bounds
+        x = int(led_id % width)
+        y = int(led_id / height)
         return x, y
 
     def _determine_coordinate_from_name(self, name, button_names):
@@ -130,43 +180,36 @@ class _MatrixCoordinate:
         return x, y
 
     def _determine_midi_value(self, x, y, layout, bounds):
-        max_x, max_y = bounds
+        width, height = bounds
         within_range = (x >= 0
                         and y >= 0
-                        and x < max_x
-                        and y < max_y)
+                        and x < width
+                        and y < height)
         if not within_range:
             raise ValueError('Led(x,y) out of range: '
                              f'value({x},{y}), '
-                             f'range((0,{max_x}),(0,{max_y}))')
+                             f'range((0,{width}),(0,{height}))')
         return layout[y][x]
 
     def _determine_name_from_coordinate(self, x, y, button_names, bounds):
-        max_x, max_y = bounds
+        matrix_width, matrix_height = bounds
         within_range = (x >= 0
                         and y >= 0
-                        and x < max_x
-                        and y < max_y)
+                        and x < matrix_width
+                        and y < matrix_height)
         if not within_range:
             raise ValueError('Led(x,y) out of range: '
                              f'value({x},{y}), '
-                             f'range((0,{max_x}),(0,{max_y}))')
+                             f'range((0,{matrix_width}),(0,{matrix_height}))')
         return button_names[y][x]
 
     def _determine_bounds(self, button_names):
         if len(button_names) > 0:
-            max_x = len(button_names[0])
-            max_y = len(button_names)
-            return max_x, max_y
+            matrix_width = len(button_names[0])
+            matrix_height = len(button_names)
+            return matrix_width, matrix_height
         else:
             raise RuntimeError('Empty button name list.')
-
-    def __repr__(self):
-        return ('LayoutCoordinate('
-                f'name={self.name}, '
-                f'x={self.x}, '
-                f'y={self.y}, '
-                f'id={self.id})')
 
 
 class ButtonFace:
@@ -364,8 +407,8 @@ class Led:
 
         self._x = coordinate.x
         self._y = coordinate.y
-        self._max_x = coordinate.max_x
-        self._max_y = coordinate.max_y
+        self._matrix_width = coordinate.matrix_width
+        self._matrix_height = coordinate.matrix_height
         self._midi_value = coordinate.midi_value
 
     def __eq__(self, other):
@@ -387,7 +430,7 @@ class Led:
         """
         if not self._is_within_range():
             return -1
-        return (self._y * self._max_y) + self._x + 1
+        return (self._y * self._matrix_height) + self._x + 1
 
     @property
     def x(self):
@@ -496,8 +539,8 @@ class Led:
     def _is_within_range(self):
         return self._x >= 0 \
                 and self._y >= 0 \
-                and self._x < self._max_x \
-                and self._y < self._max_y
+                and self._x < self._matrix_width \
+                and self._y < self._matrix_height
 
 
 class Button:
@@ -665,7 +708,7 @@ class Panel(Matrix):
         return self.launchpad == other.launchpad
 
     def __repr__(self):
-        return f'Panel({self.max_x}x{self.max_y})'
+        return f'Panel({self.width}x{self.height})'
 
     @Matrix.launchpad.getter
     def launchpad(self):
@@ -674,15 +717,15 @@ class Panel(Matrix):
         """
         return self._launchpad
 
-    @Matrix.max_x.getter
-    def max_x(self):
+    @Matrix.width.getter
+    def width(self):
         """
         Max X.
         """
         return len(Panel._BUTTON_NAMES[0])
 
-    @Matrix.max_y.getter
-    def max_y(self):
+    @Matrix.height.getter
+    def height(self):
         """
         Max Y.
         """
@@ -693,7 +736,25 @@ class Panel(Matrix):
         """
         Max ID.
         """
-        return self.max_x * self.max_y
+        return self.width * self.height
+
+    @Matrix.max_x.getter
+    def max_x(self):
+        """
+        Max X.
+        """
+        return (self.width - 1
+                if self.width >= 0
+                else -1)
+
+    @Matrix.max_y.getter
+    def max_y(self):
+        """
+        Max Y.
+        """
+        return (self.height - 1
+                if self.height >= 0
+                else -1)
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
         """
@@ -716,19 +777,27 @@ class Panel(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *, layout=PROG, mode=Led.STATIC):
+    def led_range(self, *, layout=PROG, mode=Led.STATIC, rotation=0):
         """
         Returns an immutable sequence of LEDs.
 
         Keyword Args:
             layout (Layout): Layout of buttons.
             mode (str): Lighting mode.
+            rotation (int): Rotation angle in degrees.
+                (Possible values: 0, 90, 180, 270, -90)
 
         Yields:
             Led: Sequence of LEDs
         """
-        for led_id in range(self.max_id):
-            yield self.led(led_id, layout=layout, mode=mode)
+        if rotation and not isinstance(rotation, int):
+            raise ValueError("'rotation' must be of type 'int'.")
+        elif rotation:
+            for led_id in _MatrixTransform(self, layout, mode).rotated_led_range(rotation):  # noqa
+                yield self.led(led_id, layout=layout, mode=mode)
+        else:
+            for led_id in range(self.max_id):
+                yield self.led(led_id, layout=layout, mode=mode)
 
     def buttons(self, *args, layout=PROG):
         """
@@ -803,7 +872,7 @@ class Grid(Matrix):
         return self.launchpad == other.launchpad
 
     def __repr__(self):
-        return f'Grid({self.max_x}x{self.max_y})'
+        return f'Grid({self.width}x{self.height})'
 
     @Matrix.launchpad.getter
     def launchpad(self):
@@ -812,15 +881,15 @@ class Grid(Matrix):
         """
         return self._launchpad
 
-    @Matrix.max_x.getter
-    def max_x(self):
+    @Matrix.width.getter
+    def width(self):
         """
         Max X.
         """
         return len(Grid._BUTTON_NAMES[0])
 
-    @Matrix.max_y.getter
-    def max_y(self):
+    @Matrix.height.getter
+    def height(self):
         """
         Max Y.
         """
@@ -831,7 +900,25 @@ class Grid(Matrix):
         """
         Max ID.
         """
-        return self.max_x * self.max_y
+        return self.width * self.height
+
+    @Matrix.max_x.getter
+    def max_x(self):
+        """
+        Max X.
+        """
+        return (self.width - 1
+                if self.width >= 0
+                else -1)
+
+    @Matrix.max_y.getter
+    def max_y(self):
+        """
+        Max Y.
+        """
+        return (self.height - 1
+                if self.height >= 0
+                else -1)
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
         """
@@ -854,19 +941,27 @@ class Grid(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *, layout=PROG, mode=Led.STATIC):
+    def led_range(self, *, layout=PROG, mode=Led.STATIC, rotation=0):
         """
         Returns an immutable sequence of LEDs.
 
         Keyword Args:
             layout (Layout): Layout of buttons.
             mode (str): Lighting mode.
+            rotation (int): Rotation angle in degrees.
+                (Possible values: 0, 90, 180, 270, -90)
 
         Yields:
             Led: Sequence of LEDs
         """
-        for led_id in range(self.max_id):
-            yield self.led(led_id, layout=layout, mode=mode)
+        if rotation and not isinstance(rotation, int):
+            raise ValueError("'rotation' must be of type 'int'.")
+        elif rotation:
+            for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation):  # noqa
+                yield led
+        else:
+            for led_id in range(self.max_id):
+                yield self.led(led_id, layout=layout, mode=mode)
 
     def buttons(self, *args, layout=PROG):
         """
