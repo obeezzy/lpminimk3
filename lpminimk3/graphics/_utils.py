@@ -71,6 +71,8 @@ class GlyphDictionary:
 
 class RawBitmap:
     def __init__(self, bitmap_data, config_data=None):
+        if not isinstance(bitmap_data, list):
+            raise TypeError("bitmap_data must be of type 'list'.")
         self._data = bitmap_data
         self._config = BitmapConfig(config_data)
 
@@ -202,7 +204,7 @@ class BitmapConfig:
 class CharacterTransform:
     def __init__(self, character, bitmap_data):
         self._character = character
-        self._character_raw_bitmap_data = RawBitmap(bitmap_data)
+        self._character_raw_bitmap = RawBitmap(bitmap_data)
 
     def __repr__(self):
         return ("CharacterTransform("
@@ -232,7 +234,7 @@ class CharacterTransform:
                                                      >> index << msb_address)))  # noqa
             transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
-                                  self._character_raw_bitmap_data,
+                                  self._character_raw_bitmap.data,
                                   self._character.fg_color,
                                   self._character.bg_color,
                                   carry=new_carry,
@@ -242,6 +244,7 @@ class CharacterTransform:
         return character
 
     def shift_right(self, *, carry=None, count=1, circular=False):
+        count = max(0, count)
         count = count % self._character.word_count
         character = self._character
         for _ in range(count):
@@ -264,7 +267,7 @@ class CharacterTransform:
                                                      >> index))  # noqa
             transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
-                                  self._character_raw_bitmap_data,
+                                  self._character_raw_bitmap.data,
                                   self._character.fg_color,
                                   self._character.bg_color,
                                   carry=new_carry,
@@ -347,7 +350,7 @@ class Character(Renderable):
 
     def __repr__(self):
         return ("Character("
-                f"glyph='{self._glyph}',"
+                f"glyph='{self._glyph}', "
                 f"offset={self._offset}, "
                 f"carry={self.carry})")
 
@@ -400,81 +403,121 @@ class Character(Renderable):
 
     def shift_left(self, *, carry=None, count=1, circular=False):
         return CharacterTransform(self,
-                                  self._raw_bitmap)\
+                                  self._raw_bitmap.data)\
                                           .shift_left(carry=carry,
                                                       count=count,
                                                       circular=circular)
 
     def shift_right(self, *, carry=None, count=1, circular=False):
         return CharacterTransform(self,
-                                  self._raw_bitmap)\
+                                  self._raw_bitmap.data)\
                                           .shift_right(carry=carry,
                                                        count=count,
                                                        circular=circular)
 
 
 class String(Renderable):
-    def __init__(self, *characters):
+    def __init__(self, text, *, fg_color, bg_color=None):
+        if not isinstance(text, str):
+            raise TypeError("text must be of type 'str'.")
+        if not len(text):
+            raise ValueError("text cannot be empty.")
+        self._glyph_dicts = self._create_glyph_dicts()
+        characters = self._create_characters(text,
+                                             self._glyph_dicts,
+                                             fg_color,
+                                             bg_color)
         self._characters = list(characters)
-        self._character_to_render = self._characters[0]
 
     def __repr__(self):
         return ("String("
-                f"'{repr(self._character_to_render)}')")
+                f"'{repr(self.character_to_render)}')")
 
     def __iter__(self):
         return self.bits
 
+    def __str__(self):
+        return ''
+
     @Renderable.bits.getter
     def bits(self):
-        for bit in self._character_to_render:
+        for bit in self.character_to_render.raw_bitmap:
             yield bit
 
     @Renderable.word_count.getter
     def word_count(self):
-        return self._character_to_render.word_count
+        return self.character_to_render.word_count
+
+    @property
+    def characters(self):
+        return self._characters
+
+    @property
+    def character_to_render(self):
+        return self._characters[0]
 
     def render(self, matrix):
-        CharacterRenderer(self._character_to_render,
+        CharacterRenderer(self.character_to_render,
                           matrix).render()
 
     def print(self):
-        print(self._character_to_render)
+        print(self.character_to_render.raw_bitmap)
 
     def shift_left(self, *, count=1, circular=True):
-        characters = []
-        carry = 0
-        first_character = self._characters[0]
-        for character in self._characters:
-            new_character = character.shift_left(carry=carry, count=count)
-            carry = new_character.carry
-            characters.append(new_character)
-        if circular and len(characters):
-            carry = characters[-1].carry
-            new_character = first_character.shift_left(carry=carry, count=count)  # noqa
-            characters[0] = new_character
-
-        self._characters = characters
-        self._character_to_render = self._characters[0]
-        return self
+        count = 0 if not isinstance(count, int) or count < 0 else count
+        if len(self._characters) == 1:
+            self._characters[0] = self._characters[0].shift_left(count=count,
+                                                                 circular=circular)  # noqa
+        else:
+            for _ in range(count):
+                shifted_characters = []
+                carry = 0
+                if circular:
+                    first_character = self._characters[0].shift_left()
+                    carry = first_character.carry
+                for character in reversed(self._characters):
+                    new_character = character.shift_left(carry=carry)
+                    carry = new_character.carry
+                    shifted_characters.append(new_character)
+                shifted_characters.reverse()
+                self._characters = shifted_characters
 
     def shift_right(self, *, count=1, circular=True):
-        characters = []
-        carry = 0
-        last_character = self._characters[-1]
-        for character in self._characters:
-            new_character = character.shift_right(carry=carry,
-                                                  count=count,
-                                                  circular=circular)
-            carry = new_character.carry
-            characters.append(new_character)
-        if circular and len(characters):
-            carry = characters[0].carry
-            new_character = last_character.shift_right(carry=carry,
-                                                       count=count,
-                                                       circular=circular)  # noqa
-            characters[-1] = new_character
+        count = 0 if not isinstance(count, int) or count < 0 else count
+        if len(self._characters) == 1:
+            self._characters[0] = self._characters[0].shift_right(count=count,
+                                                                  circular=circular)  # noqa
+        else:
+            for _ in range(count):
+                shifted_characters = []
+                carry = 0
+                if circular:
+                    last_character = self._characters[-1].shift_right()
+                    carry = last_character.carry
+                for character in self._characters:
+                    new_character = character.shift_right(carry=carry)
+                    carry = new_character.carry
+                    shifted_characters.append(new_character)
+                self._characters = shifted_characters
 
-        self._characters = characters
-        self._character_to_render = self._characters[0]
-        return self
+    def _create_characters(self, text, dicts, fg_color, bg_color):
+        characters = []
+        for glyph in text:
+            for glyph_dict in dicts:
+                if glyph in glyph_dict:
+                    characters.append(Character(glyph,
+                                                glyph_dict[glyph],
+                                                fg_color,
+                                                bg_color))
+                    break
+        return characters
+
+    def _create_glyph_dicts(self):
+        glyph_dicts = []
+        current_dir = os.path.dirname(__file__)
+        glyph_dict_dir = os.path.join(current_dir, 'glyphs')
+        for filename in os.listdir(glyph_dict_dir):
+            if filename.endswith('.glyph.json'):
+                glyph_dicts.append(GlyphDictionary(os.path.join(glyph_dict_dir, filename),  # noqa
+                                   './schema/glyph.schema.json'))
+        return glyph_dicts
