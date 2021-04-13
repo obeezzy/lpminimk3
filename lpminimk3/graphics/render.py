@@ -13,7 +13,7 @@ def main():
             raise ValueError('Missing character argument.')
 
         input_string = sys.argv[1]
-        Text(input_string[0]).print()
+        Text(input_string).print()
     except Exception as e:
         print(e, file=sys.stderr)
         print_usage()
