@@ -1,6 +1,8 @@
-from ._utils import String as _String,\
-                     Renderable,\
-                     TextColor as _TextColor
+from ._utils import Renderable,\
+                    ScrollDirection,\
+                    String as _String,\
+                    TextColor as _TextColor,\
+                    TextScroll as _TextScroll
 from ..colors import ColorPalette as _ColorPalette
 
 
@@ -74,4 +76,16 @@ class Text(Renderable):
 
     def rotate(self, angle):
         self._string.rotate(angle)
+        return self
+
+    def scroll(self, *,
+               clock_rate=.05,
+               direction=ScrollDirection.LTR,
+               timeout=None):
+        if timeout and timeout < clock_rate:
+            raise ValueError("'timeout' must be greater than the clock rate.")
+        self._string.text_scroll = _TextScroll(self._text,
+                                               clock_rate,
+                                               direction,
+                                               timeout)
         return self
