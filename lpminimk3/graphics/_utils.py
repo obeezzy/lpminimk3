@@ -564,13 +564,12 @@ class String(Renderable):
         self._text_scroll = None
 
     def __repr__(self):
-        return ("String("
-                f"'{self}')")
+        return (f"String('{self}')")
 
     def __str__(self):
-        char_string = list(reduce(lambda literal, char: literal + str(char),
-                                  self._characters, ''))
-        return f"{''.join(char_string)}"
+        char_list = list(reduce(lambda literal, char: literal + str(char),
+                                self._characters, ''))
+        return f"{''.join(char_list)}"
 
     @Renderable.bits.getter
     def bits(self):
