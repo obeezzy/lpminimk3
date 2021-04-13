@@ -4,18 +4,6 @@ Scroll text from left to right along the Launchpad's surface.
 
 from lpminimk3 import Mode, find_launchpads
 from lpminimk3.graphics import Text
-import sys
-import time
-
-
-def scroll_text(text, lp):
-    try:
-        while True:
-            for count in range(len(text) * lp.grid.width):
-                lp.grid.render(Text(text).shift_left(count))
-                time.sleep(.02)
-    except KeyboardInterrupt:
-        sys.exit()
 
 
 def main():
@@ -26,7 +14,8 @@ def main():
 
     print('Watch text scroll across the Launchpad\'s surface.\n'  # noqa
           'Press Ctrl+C to quit.\n')
-    scroll_text('Hello world! ', lp)
+
+    lp.grid.render(Text('Hello, world! ').scroll())
 
 
 if __name__ == '__main__':

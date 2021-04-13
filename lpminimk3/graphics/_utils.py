@@ -2,6 +2,7 @@ import os
 from abc import ABC
 import json
 import jsonschema
+import time
 from ..colors import ColorShade, ColorShadeStore, RgbColor
 from ..midi_messages import Constants,\
                             Colorspec,\
@@ -251,6 +252,40 @@ class TextColor:
         return color_id
 
 
+class TextScroll:
+    def __init__(self, text, clock_rate, direction, timeout):
+        if timeout:
+            assert clock_rate < timeout
+        self._text = text
+        self._clock_rate = clock_rate
+        self._direction = direction
+        self._timeout = -1 if not timeout else timeout
+
+    def render(self, string, matrix):
+        try:
+            timeout = self._timeout
+            while timeout:
+                for count in range(len(self._text) * matrix.width):
+                    if self._direction == ScrollDirection.RTL:
+                        string.shift_right()
+                    else:
+                        string.shift_left()
+                    CharacterRenderer(string.character_to_render,
+                                      matrix,
+                                      angle=string.angle).render()
+                    time.sleep(self._clock_rate)
+                    timeout = (max(timeout - self._clock_rate, 0)
+                               if timeout != -1
+                               else timeout)
+        except KeyboardInterrupt:
+            pass
+
+
+class ScrollDirection:
+    LTR = 'ltr'
+    RTL = 'rtl'
+
+
 class CharacterTransform:
     def __init__(self, character, bitmap_data):
         self._character = character
@@ -494,6 +529,7 @@ class String(Renderable):
                                              bg_color)
         self._characters = list(characters)
         self._angle = 0
+        self._text_scroll = None
 
     def __repr__(self):
         return ("String("
@@ -530,10 +566,27 @@ class String(Renderable):
     def character_to_render(self):
         return self._characters[0]
 
+    @property
+    def angle(self):
+        return self._angle
+
+    @property
+    def text_scroll(self):
+        return self._text_scroll
+
+    @text_scroll.setter
+    def text_scroll(self, text_scroll):
+        if not isinstance(text_scroll, TextScroll):
+            raise ValueError("Must be of type 'TextScroll'.")
+        self._text_scroll = text_scroll
+
     def render(self, matrix):
-        CharacterRenderer(self.character_to_render,
-                          matrix,
-                          angle=self._angle).render()
+        if self._text_scroll:
+            self._text_scroll.render(self, matrix)
+        else:
+            CharacterRenderer(self.character_to_render,
+                              matrix,
+                              angle=self._angle).render()
 
     def print(self):
         print(self.character_to_render.raw_bitmap)
