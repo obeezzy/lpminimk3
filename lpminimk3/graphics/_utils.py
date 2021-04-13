@@ -3,6 +3,7 @@ from abc import ABC
 import json
 import jsonschema
 import time
+from functools import reduce
 from ..colors import ColorShade, ColorShadeStore, RgbColor
 from ..midi_messages import Constants,\
                             Colorspec,\
@@ -334,7 +335,7 @@ class CharacterTransform:
             temp_bitmap_data = []
             new_carry = 0
             msb_address = self._character.word_count - 1
-            for index, word in enumerate(character.raw_bitmap.data):  # noqa
+            for index, word in enumerate(character.raw_bitmap.data):
                 if carry:
                     temp_bitmap_data.append((word >> 1) | ((carry & (1 << index))  # noqa
                                                             << (msb_address - index)))  # noqa
@@ -345,8 +346,8 @@ class CharacterTransform:
             if circular and new_carry:
                 temp_bitmap_data = []
                 for index, word in enumerate(transformed_bitmap_data):  # noqa
-                    temp_bitmap_data.append(word | (((new_carry & (1 << index))  # noqa
-                                                     >> index << msb_address)))  # noqa
+                    temp_bitmap_data.append(word | (((new_carry & (1 << index))
+                                                     >> index << msb_address)))
                 transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
                                   self._character_raw_bitmap.data,
@@ -367,19 +368,19 @@ class CharacterTransform:
             temp_bitmap_data = []
             new_carry = 0
             msb_address = self._character.word_count - 1
-            for index, word in enumerate(character.raw_bitmap.data):  # noqa
+            for index, word in enumerate(character.raw_bitmap.data):
                 if carry:
                     temp_bitmap_data.append((word << 1) | ((carry & (1 << (msb_address - index)))  # noqa
                                                             >> (msb_address - index)))  # noqa
                 else:
                     temp_bitmap_data.append(word << 1)
-                new_carry |= (word & (1 << msb_address)) >> index  # noqa
+                new_carry |= (word & (1 << msb_address)) >> index
             transformed_bitmap_data = temp_bitmap_data
             if circular and new_carry:
                 temp_bitmap_data = []
-                for index, word in enumerate(transformed_bitmap_data):  # noqa
+                for index, word in enumerate(transformed_bitmap_data):
                     temp_bitmap_data.append(word | ((new_carry & (1 << index))  # noqa
-                                                     >> index))  # noqa
+                                                    >> index))
                 transformed_bitmap_data = temp_bitmap_data
             character = Character(self._character.glyph,
                                   self._character_raw_bitmap.data,
@@ -563,14 +564,12 @@ class String(Renderable):
         self._text_scroll = None
 
     def __repr__(self):
-        return ("String("
-                f"'{repr(self.character_to_render)}')")
-
-    def __iter__(self):
-        return self.bits
+        return (f"String('{self}')")
 
     def __str__(self):
-        return ''
+        char_list = list(reduce(lambda literal, char: literal + str(char),
+                                self._characters, ''))
+        return f"{''.join(char_list)}"
 
     @Renderable.bits.getter
     def bits(self):
@@ -692,7 +691,7 @@ class String(Renderable):
         return glyph_dicts
 
     def _print_in_console(self, one='X', zero=' '):
-        for index, bit in enumerate(self.character_to_render.raw_bitmap,  # noqa
+        for index, bit in enumerate(self.character_to_render.raw_bitmap,
                                     start=1):
             if bit:
                 print(one, end='')
