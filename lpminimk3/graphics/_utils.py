@@ -254,30 +254,41 @@ class TextColor:
 
 
 class TextScroll:
-    def __init__(self, text, clock_rate, direction, timeout):
+    def __init__(self,
+                 text,
+                 period,
+                 direction,
+                 *,
+                 timeout,
+                 count):
         if timeout:
-            assert clock_rate < timeout
+            assert period < timeout
         self._text = text
-        self._clock_rate = clock_rate
+        self._period = period
         self._direction = direction
         self._timeout = -1 if not timeout else timeout
+        self._count = -1 if not count else count
 
     def render(self, string, matrix):
         try:
-            timeout = self._timeout
-            while timeout:
-                for count in range(len(self._text) * matrix.width):
-                    if self._direction == ScrollDirection.RTL:
+            time_left = self._timeout
+            rotations_left = self._count
+            while time_left and rotations_left:
+                for _ in range(len(self._text) * matrix.width):
+                    if self._direction == ScrollDirection.RIGHT:
                         string.shift_right()
                     else:
                         string.shift_left()
                     CharacterRenderer(string.character_to_render,
                                       matrix,
                                       angle=string.angle).render()
-                    time.sleep(self._clock_rate)
-                    timeout = (max(timeout - self._clock_rate, 0)
-                               if timeout != -1
-                               else timeout)
+                    time.sleep(self._period)
+                    time_left = (max(time_left - self._period, 0)
+                                 if time_left != -1
+                                 else time_left)
+                rotations_left = (max(rotations_left - 1, 0)
+                                  if rotations_left != -1
+                                  else rotations_left)
         except KeyboardInterrupt:
             pass
 
@@ -285,10 +296,15 @@ class TextScroll:
               string,
               one,
               zero):
-        timeout = self._timeout
+        time_left = self._timeout
+        rotations_left = self._count
         try:
-            while timeout:
+            while time_left and rotations_left:
                 for _ in range(len(self._text) * string.character_to_render.word_count):  # noqa
+                    if self._direction == ScrollDirection.RIGHT:
+                        string.shift_right()
+                    else:
+                        string.shift_left()
                     for index, bit in enumerate(string.character_to_render.raw_bitmap,  # noqa
                                                 start=1):
                         if bit:
@@ -297,24 +313,22 @@ class TextScroll:
                             print(zero, end='')
                         if index % string.character_to_render.word_count == 0:
                             print('\n', end='')
-                    time.sleep(self._clock_rate)
-                    timeout = (max(timeout - self._clock_rate, 0)
-                               if timeout != -1
-                               else timeout)
-
-                    if self._direction == ScrollDirection.RTL:
-                        string.shift_right()
-                    else:
-                        string.shift_left()
+                    time.sleep(self._period)
+                    time_left = (max(time_left - self._period, 0)
+                                 if time_left != -1
+                                 else time_left)
                     os.system('clear')
                     print('\r', end='')
+                rotations_left = (max(rotations_left - 1, 0)
+                                  if rotations_left != -1
+                                  else rotations_left)
         except KeyboardInterrupt:
             pass
 
 
 class ScrollDirection:
-    LTR = 'ltr'
-    RTL = 'rtl'
+    LEFT = 'left'
+    RIGHT = 'right'
 
 
 class CharacterTransform:

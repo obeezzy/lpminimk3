@@ -79,13 +79,15 @@ class Text(Renderable):
         return self
 
     def scroll(self, *,
-               clock_rate=.05,
-               direction=ScrollDirection.LTR,
+               period=.05,
+               direction=ScrollDirection.LEFT,
+               count=None,
                timeout=None):
-        if timeout and timeout < clock_rate:
-            raise ValueError("'timeout' must be greater than the clock rate.")
+        if timeout and timeout < period:
+            raise ValueError("'timeout' must be greater than the period.")
         self._string.text_scroll = _TextScroll(self._text,
-                                               clock_rate,
+                                               period,
                                                direction,
-                                               timeout)
+                                               timeout=timeout,
+                                               count=count)
         return self
