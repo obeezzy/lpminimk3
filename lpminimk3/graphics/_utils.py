@@ -280,6 +280,36 @@ class TextScroll:
         except KeyboardInterrupt:
             pass
 
+    def print(self, *,
+              string,
+              one,
+              zero):
+        timeout = self._timeout
+        try:
+            while timeout:
+                for _ in range(len(self._text) * string.character_to_render.word_count):  # noqa
+                    for index, bit in enumerate(string.character_to_render.raw_bitmap,  # noqa
+                                                start=1):
+                        if bit:
+                            print(one, end='')
+                        else:
+                            print(zero, end='')
+                        if index % string.character_to_render.word_count == 0:
+                            print('\n', end='')
+                    time.sleep(self._clock_rate)
+                    timeout = (max(timeout - self._clock_rate, 0)
+                               if timeout != -1
+                               else timeout)
+
+                    if self._direction == ScrollDirection.RTL:
+                        string.shift_right()
+                    else:
+                        string.shift_left()
+                    os.system('clear')
+                    print('\r', end='')
+        except KeyboardInterrupt:
+            pass
+
 
 class ScrollDirection:
     LTR = 'ltr'
@@ -588,8 +618,15 @@ class String(Renderable):
                               matrix,
                               angle=self._angle).render()
 
-    def print(self):
-        print(self.character_to_render.raw_bitmap)
+    def print(self, *,
+              one='X',
+              zero=' '):
+        if self._text_scroll:
+            self._text_scroll.print(string=self,
+                                    one=one,
+                                    zero=zero)
+        else:
+            print(self.character_to_render.raw_bitmap)
 
     def shift_left(self, *, count=1, circular=True):
         count = 0 if not isinstance(count, int) or count < 0 else count

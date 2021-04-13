@@ -61,8 +61,8 @@ class Text(Renderable):
     def render(self, matrix):
         self._string.render(matrix)
 
-    def print(self):
-        self._string.print()
+    def print(self, one='X', zero=' '):
+        self._string.print(one=one, zero=zero)
 
     def shift_left(self, count=1, *, circular=True):
         count = 0 if not isinstance(count, int) or count < 0 else count
