@@ -1,5 +1,5 @@
 import unittest
-from lpminimk3.graphics import Text, ScrollDirection
+from lpminimk3.graphics import Text, ScrollDirection, FlipAxis
 from lpminimk3.colors import ColorPalette
 from tests._vlpminimk3 import create_virtual_launchpad
 
@@ -526,6 +526,68 @@ class TestText(unittest.TestCase):
 
         with self.assertRaises(Exception):
             self.lp.grid.render(Text('Apple').scroll(period=.00002, timeout=.00001))  # noqa
+
+    def test_flip(self):
+        text = Text('A').flip()
+        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
+                              0, 0, 0, 1, 1, 1, 1, 0,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 1, 1, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 0, 0, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().bits),
+                             list(Text('A').flip().flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('x').bits),
+                             list(Text('A').flip().flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().bits),
+                             list(Text('A').flip(FlipAxis.X).bits),
+                             'Bit mismatch.')
+        text = Text('A').flip('y')
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 1, 1, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              0, 1, 1, 1, 1, 0, 0, 0,
+                              0, 0, 1, 1, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('y').bits),
+                             list(Text('A').flip().flip('y').bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('y').bits),
+                             list(Text('A').flip('y').flip('y').bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('y').bits),
+                             list(Text('A').flip(FlipAxis.Y).bits),
+                             'Bit mismatch.')
+        text = Text('A').flip('xy')
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 1, 1, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 0, 1, 1, 1, 1, 0,
+                              0, 0, 0, 0, 1, 1, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('xy').bits),
+                             list(Text('A').flip('x').flip('xy').bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('xy').bits),
+                             list(Text('A').flip('y').flip('xy').bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip('xy').bits),
+                             list(Text('A').flip(FlipAxis.XY).bits),
+                             'Bit mismatch.')
 
 
 class TestTextWhiteBox(unittest.TestCase):

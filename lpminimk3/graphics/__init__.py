@@ -1,5 +1,6 @@
 from ._utils import Renderable,\
                     ScrollDirection,\
+                    FlipAxis,\
                     String as _String,\
                     TextColor as _TextColor,\
                     TextScroll as _TextScroll
@@ -69,7 +70,7 @@ class Text(Renderable):
             raise ValueError("'count' must be 'int'.")
         if count > 0:
             self._string.shift_right(count=count, circular=circular)
-        else:
+        elif count < 0:
             self._string.shift_left(count=int(abs(count)), circular=circular)
         return self
 
@@ -90,4 +91,8 @@ class Text(Renderable):
                                                direction,
                                                timeout=timeout,
                                                count=count)
+        return self
+
+    def flip(self, axis=FlipAxis.X):
+        self._string.flip_axis = axis
         return self
