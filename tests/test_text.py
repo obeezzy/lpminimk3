@@ -1,5 +1,5 @@
 import unittest
-from lpminimk3.graphics import Text
+from lpminimk3.graphics import Text, ScrollDirection
 from lpminimk3.colors import ColorPalette
 from tests._vlpminimk3 import create_virtual_launchpad
 
@@ -26,21 +26,12 @@ class TestText(unittest.TestCase):
                               0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
-        text = Text('')
-        self.assertEqual(str(text), '', 'Text mismatch.')
-        self.assertEqual(len(text), 0, 'Text length mismatch.')
-        self.assertEqual(text.word_count, 8, 'Word count mismatch.')
-        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+
+        self.assertListEqual(list(Text().bits),
+                             list(Text('').bits),
+                             'Bit mismatch.')
+
         text = Text('A')
         self.assertEqual(str(text), 'A', 'Text mismatch.')
         self.assertEqual(len(text), 1, 'Text length mismatch.')
@@ -54,7 +45,7 @@ class TestText(unittest.TestCase):
                               1, 1, 0, 0, 1, 1, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
         text = Text('Apple')
         self.assertEqual(str(text), 'Apple', 'Text mismatch.')
         self.assertEqual(len(text), 5, 'Text length mismatch.')
@@ -116,6 +107,12 @@ class TestText(unittest.TestCase):
         text.fg_color = 'violet0'
         text.fg_color = 'white0'
 
+        text.fg_color.set(1)
+        text.fg_color.set(ColorPalette.Red.SHADE_1)
+        text.fg_color.set('red')
+        self.assertIsNotNone(text.fg_color.set('blue').fg_color,
+                             'Unable to retrieve fg_color.')
+
         with self.assertRaises(ValueError):
             text.fg_color = '1r'
         with self.assertRaises(ValueError):
@@ -175,6 +172,12 @@ class TestText(unittest.TestCase):
         text.bg_color = 'violet0'
         text.bg_color = 'white0'
 
+        text.bg_color.set(1)
+        text.bg_color.set(ColorPalette.Red.SHADE_1)
+        text.bg_color.set('red')
+        self.assertIsNotNone(text.bg_color.set('blue').bg_color,
+                             'Unable to retrieve bg_color.')
+
         with self.assertRaises(ValueError):
             text.bg_color = '1r'
         with self.assertRaises(ValueError):
@@ -199,7 +202,7 @@ class TestText(unittest.TestCase):
                               1, 0, 0, 1, 1, 0, 0, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
         text.shift(-1)
         self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
                               1, 1, 1, 0, 0, 0, 0, 1,
@@ -210,40 +213,16 @@ class TestText(unittest.TestCase):
                               0, 0, 1, 1, 0, 0, 1, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
-        text = Text('A').shift(-1).shift(-1)
-        self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
-                              1, 1, 1, 0, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              1, 1, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
-        text = Text('A').shift(-2)
-        self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
-                              1, 1, 1, 0, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              1, 1, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
-        text = Text('A').shift(-2, circular=True)
-        self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
-                              1, 1, 1, 0, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              1, 1, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('A').shift(-1).shift(-1).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('A').shift(-2).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('A').shift(-2, circular=True).bits),
+                             'Bit mismatch.')
         text = Text('A').shift(-2, circular=False)
         self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
                               1, 1, 1, 0, 0, 0, 0, 0,
@@ -254,7 +233,7 @@ class TestText(unittest.TestCase):
                               0, 0, 1, 1, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
 
     def test_shift_left_string(self):
         text = Text('Apple').shift(-1)
@@ -267,7 +246,7 @@ class TestText(unittest.TestCase):
                               1, 0, 0, 1, 1, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 1],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
         text.shift(-1)
         self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
                               1, 1, 1, 0, 0, 0, 0, 0,
@@ -278,29 +257,16 @@ class TestText(unittest.TestCase):
                               0, 0, 1, 1, 0, 0, 0, 1,
                               0, 0, 0, 0, 0, 0, 1, 1],
                              list(text.bits),
-                             'Text mismatch.')
-        text = Text('Apple').shift(-1).shift(-1)
-        self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
-                              1, 1, 1, 0, 0, 0, 0, 0,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 0, 1,
-                              1, 1, 1, 1, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 0, 1,
-                              0, 0, 0, 0, 0, 0, 1, 1],
-                             list(text.bits),
-                             'Text mismatch.')
-        text = Text('Apple').shift(-2)
-        self.assertListEqual([1, 1, 0, 0, 0, 0, 0, 0,
-                              1, 1, 1, 0, 0, 0, 0, 0,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 0, 1,
-                              1, 1, 1, 1, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 0, 1,
-                              0, 0, 1, 1, 0, 0, 0, 1,
-                              0, 0, 0, 0, 0, 0, 1, 1],
-                             list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('Apple').shift(-1).shift(-1).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('Apple').shift(-2).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('Apple').shift(-2, circular=True).bits),
+                             'Bit mismatch.')
         text = Text('Apple').shift(-7 * len('Apple'), circular=True)
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 1,
                               0, 0, 0, 0, 0, 0, 1, 1,
@@ -311,7 +277,7 @@ class TestText(unittest.TestCase):
                               1, 1, 0, 0, 0, 1, 1, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
         text = Text('Apple').shift(-7 * len('Apple'), circular=False)
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0,
@@ -322,7 +288,7 @@ class TestText(unittest.TestCase):
                               1, 1, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
 
     def test_shift_right_character(self):
         text = Text('A').shift()
@@ -335,7 +301,7 @@ class TestText(unittest.TestCase):
                               0, 1, 1, 0, 0, 1, 1, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
         text.shift(1)
         self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
                               0, 0, 0, 1, 1, 1, 1, 0,
@@ -346,40 +312,16 @@ class TestText(unittest.TestCase):
                               0, 0, 1, 1, 0, 0, 1, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
-        text = Text('A').shift(1).shift(1)
-        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
-                              0, 0, 0, 1, 1, 1, 1, 0,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 1, 1, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
-        text = Text('A').shift(2)
-        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
-                              0, 0, 0, 1, 1, 1, 1, 0,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 1, 1, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
-        text = Text('A').shift(3, circular=True)
-        self.assertListEqual([0, 0, 0, 0, 0, 1, 1, 0,
-                              1, 0, 0, 0, 1, 1, 1, 1,
-                              1, 0, 0, 1, 1, 0, 0, 1,
-                              1, 0, 0, 1, 1, 0, 0, 1,
-                              1, 0, 0, 1, 1, 1, 1, 1,
-                              1, 0, 0, 1, 1, 0, 0, 1,
-                              0, 0, 0, 1, 1, 0, 0, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('A').shift(1).shift(1).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('A').shift(2).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('A').shift(2, circular=True).bits),
+                             'Bit mismatch.')
         text = Text('A').shift(3, circular=False)
         self.assertListEqual([0, 0, 0, 0, 0, 1, 1, 0,
                               0, 0, 0, 0, 1, 1, 1, 1,
@@ -390,7 +332,7 @@ class TestText(unittest.TestCase):
                               0, 0, 0, 1, 1, 0, 0, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
 
     def test_shift_right_string(self):
         text = Text('Avenger').shift()
@@ -403,8 +345,8 @@ class TestText(unittest.TestCase):
                               0, 1, 1, 0, 0, 1, 1, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
-        text.shift(1)
+                             'Bit mismatch.')
+        text = text.shift(1)
         self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
                               0, 0, 0, 1, 1, 1, 1, 0,
                               0, 0, 1, 1, 0, 0, 1, 1,
@@ -414,29 +356,16 @@ class TestText(unittest.TestCase):
                               0, 0, 1, 1, 0, 0, 1, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
-        text = Text('Avenger').shift().shift()
-        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
-                              0, 0, 0, 1, 1, 1, 1, 0,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              1, 0, 1, 1, 0, 0, 1, 1,
-                              1, 0, 1, 1, 1, 1, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
-        text = Text('Avenger').shift(2)
-        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
-                              0, 0, 0, 1, 1, 1, 1, 0,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              1, 0, 1, 1, 0, 0, 1, 1,
-                              1, 0, 1, 1, 1, 1, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 1, 1, 0, 0, 1, 1,
-                              0, 0, 0, 0, 0, 0, 0, 0],
-                             list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('Avenger').shift(1).shift(1).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('Avenger').shift(2).bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(text.bits),
+                             list(Text('Avenger').shift(2, circular=True).bits),  # noqa
+                             'Bit mismatch.')
         text = Text('Avenger').shift(len('Avenger'), circular=True)  # noqa
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0,
@@ -447,7 +376,7 @@ class TestText(unittest.TestCase):
                               1, 1, 1, 0, 0, 0, 0, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
         text = Text('Avenger').shift(len('Avenger'), circular=False)  # noqa
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0,
@@ -458,7 +387,7 @@ class TestText(unittest.TestCase):
                               0, 0, 0, 0, 0, 0, 0, 1,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
 
     def test_scroll(self):
         text = Text('Apple').scroll(count=1, period=.0001)
@@ -472,9 +401,16 @@ class TestText(unittest.TestCase):
                               1, 1, 0, 0, 1, 1, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
 
     def test_rotate(self):
+        class Circle:
+            FIRST_QUADRANT = 90 * 4
+            SECOND_QUADRANT = 90 * 5
+            THIRD_QUADRANT = 90 * 6
+            FOURTH_QUADRANT = -90 * 5
+            FULL_ANGLE = 360
+
         text = Text('A').rotate(0)
         self.assertListEqual([0, 0, 1, 1, 0, 0, 0, 0,
                               0, 1, 1, 1, 1, 0, 0, 0,
@@ -485,44 +421,105 @@ class TestText(unittest.TestCase):
                               1, 1, 0, 0, 1, 1, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        for angle in range(Circle.FIRST_QUADRANT,
+                           Circle.FULL_ANGLE * 10,
+                           Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+        for angle in range(-Circle.FIRST_QUADRANT,
+                           -Circle.FULL_ANGLE * 10,
+                           -Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+
         text = Text('A').rotate(90)
-        self.assertListEqual([0, 0, 1, 1, 0, 0, 0, 0,
-                              0, 1, 1, 1, 1, 0, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 1, 1, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
+        self.assertListEqual([0, 1, 1, 1, 1, 1, 0, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 0, 0, 1, 0, 0, 1, 1,
+                              0, 0, 0, 1, 0, 0, 1, 1,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 1, 1, 1, 1, 1, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        for angle in range(Circle.SECOND_QUADRANT,
+                           Circle.FULL_ANGLE * 10,
+                           Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+
         text = Text('A').rotate(180)
-        self.assertListEqual([0, 0, 1, 1, 0, 0, 0, 0,
-                              0, 1, 1, 1, 1, 0, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 1, 1, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0],
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 1, 1, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 0, 1, 1, 1, 1, 0,
+                              0, 0, 0, 0, 1, 1, 0, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        for angle in range(Circle.THIRD_QUADRANT,
+                           Circle.FULL_ANGLE * 10,
+                           Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+        for angle in range(Circle.THIRD_QUADRANT,
+                           -Circle.FULL_ANGLE * 10,
+                           -Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+
         text = Text('A').rotate(270)
-        self.assertListEqual([0, 0, 1, 1, 0, 0, 0, 0,
-                              0, 1, 1, 1, 1, 0, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 1, 1, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              1, 1, 0, 0, 1, 1, 0, 0,
-                              0, 0, 0, 0, 0, 0, 0, 0],
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 1, 1, 1, 1, 1, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              1, 1, 0, 0, 1, 0, 0, 0,
+                              1, 1, 0, 0, 1, 0, 0, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 0, 1, 1, 1, 1, 1, 0],
                              list(text.bits),
-                             'Text mismatch.')
+                             'Bit mismatch.')
+        for angle in range(Circle.FOURTH_QUADRANT,
+                           Circle.FULL_ANGLE * 10,
+                           Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+        for angle in range(Circle.FOURTH_QUADRANT,
+                           -Circle.FULL_ANGLE * 10,
+                           -Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
+
+        with self.assertRaises(Exception):
+            Text('A').rotate(1).print()
+        with self.assertRaises(Exception):
+            self.lp.grid.render(Text('A').rotate(1))
+        with self.assertRaises(Exception):
+            self.lp.grid.render(Text('A').rotate(830))
+        with self.assertRaises(Exception):
+            self.lp.grid.render(Text('A').rotate(-91))
 
     def test_render(self):
         self.lp.grid.render(Text('Apple'))
-        self.lp.grid.render(Text('Apple').scroll(count=1, period=.0001))
+        self.lp.grid.render(Text('Apple').scroll(period=.00001, timeout=.0001))
+        self.lp.grid.render(Text('Apple').scroll(direction='left', period=.00001, timeout=.0001))  # noqa
+        self.lp.grid.render(Text('Apple').scroll(direction='right', period=.00001, timeout=.0001))  # noqa
+        self.lp.grid.render(Text('Apple').scroll(direction=ScrollDirection.LEFT, period=.00001, timeout=.0001))  # noqa
+        self.lp.grid.render(Text('Apple').scroll(direction=ScrollDirection.RIGHT, period=.00001, timeout=.0001))  # noqa
+
+        with self.assertRaises(Exception):
+            self.lp.grid.render(Text('Apple').scroll(period=.00002, timeout=.00001))  # noqa
 
 
 class TestTextWhiteBox(unittest.TestCase):

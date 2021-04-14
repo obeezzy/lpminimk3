@@ -3,6 +3,7 @@ from abc import ABC
 import json
 import jsonschema
 import time
+import math
 from functools import reduce
 from ..colors import ColorShade, ColorShadeStore, RgbColor
 from ..midi_messages import Constants,\
@@ -74,6 +75,75 @@ class GlyphDictionary:
             current_dir = os.path.dirname(__file__)
             return os.path.join(current_dir, filename)
         return filename
+
+
+class RawBitmapMatrix:
+    def __init__(self, raw_bitmap):
+        self._raw_bitmap = raw_bitmap
+        self._raw_matrix = self._load(raw_bitmap)
+
+    def __repr__(self):
+        return ('RawBitmapMatrix('
+                f'bit={self._raw_matrix})')
+
+    def bit(self, x, y):
+        return self._raw_matrix[y][x]
+
+    def rotated_range(self, angle):
+        angle = self._normalize_angle(angle)
+        if angle == 0:
+            for bit in self._raw_bitmap:
+                yield bit
+        else:
+            angle = self._flip_angle(angle)
+            angle_rad = math.radians(angle)
+            for index, bit in enumerate(self._raw_bitmap):
+                x = int(index / self._raw_bitmap.word_count)
+                y = int(index % self._raw_bitmap.word_count)
+                max_x = max_y = self._raw_bitmap.word_count - 1
+                rotated_x = round((y * math.sin(angle_rad)) + (x * math.cos(angle_rad)))  # noqa
+                rotated_y = round((y * math.cos(angle_rad)) - (x * math.sin(angle_rad)))  # noqa
+                if angle == 90:
+                    rotated_y = min(max_x + rotated_y, max_y)  # noqa
+                elif angle == 180:
+                    rotated_y = min(max_y + rotated_y, max_y)  # noqa
+                    rotated_x = min(max_x + rotated_x, max_x)  # noqa
+                elif angle == 270:
+                    rotated_x = min(max_x + rotated_x, max_x)  # noqa
+                yield self.bit(rotated_x, rotated_y)
+
+    def _blank_matrix(self):
+        matrix = []
+        for _ in range(self._raw_bitmap.word_count):
+            matrix.append([])
+            for _ in range(self._raw_bitmap.word_count):
+                matrix[-1].append(0)
+        return matrix
+
+    def _load(self, raw_bitmap):
+        matrix = self._blank_matrix()
+        for index, bit in enumerate(raw_bitmap):
+            x = int(index % raw_bitmap.word_count)
+            y = int(index / raw_bitmap.word_count)
+            matrix[x][y] = bit
+
+        return matrix
+
+    def _normalize_angle(self, angle):
+        if angle and (angle % 90) == 0 and abs(angle) > 270:
+            return angle % 360
+        assert (round(abs(angle)) in (0, 90, 180, 270)), \
+               'Angle must be a multiple of 90.'
+        return angle
+
+    def _flip_angle(self, angle):
+        if angle == -90 or angle == 270:
+            return 90
+        elif angle == -180:
+            return 180
+        elif angle == 90 or angle == -270:
+            return 270
+        return angle
 
 
 class RawBitmap:
@@ -599,8 +669,13 @@ class String(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
-        for bit in self.character_to_render.raw_bitmap:
-            yield bit
+        if self._angle:
+            matrix = RawBitmapMatrix(self.character_to_render.raw_bitmap)
+            for bit in matrix.rotated_range(self._angle):
+                yield bit
+        else:
+            for bit in self.character_to_render.raw_bitmap:
+                yield bit
 
     @Renderable.word_count.getter
     def word_count(self):
@@ -728,7 +803,8 @@ class String(Renderable):
         return glyph_dicts
 
     def _print_in_console(self, one='X', zero=' '):
-        for index, bit in enumerate(self.character_to_render.raw_bitmap,
+        matrix = RawBitmapMatrix(self.character_to_render.raw_bitmap)
+        for index, bit in enumerate(matrix.rotated_range(self._angle),
                                     start=1):
             if bit:
                 print(one, end='')
