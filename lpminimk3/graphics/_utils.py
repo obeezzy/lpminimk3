@@ -52,6 +52,10 @@ class GlyphDictionary:
     def filename(self):
         return self._filename
 
+    @property
+    def data(self):
+        return self._data
+
     def _load(self, filename):
         data = None
         filename = self._determine_abspath(filename)
@@ -513,9 +517,19 @@ class Character(Renderable):
     def fg_color(self):
         return self._fg_color
 
+    @fg_color.setter
+    def fg_color(self, color):
+        assert isinstance(color, TextColor)
+        self._fg_color = color
+
     @property
     def bg_color(self):
         return self._bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        assert isinstance(color, TextColor)
+        self._bg_color = color
 
     @property
     def carry(self):
@@ -562,14 +576,12 @@ class String(Renderable):
         assert isinstance(fg_color, TextColor)
         assert isinstance(bg_color, TextColor)
 
-        if not isinstance(text, str):
+        if text and not isinstance(text, str):
             raise TypeError("text must be of type 'str'.")
-        if not len(text):
-            raise ValueError('text cannot be empty.')
 
-        self._glyph_dicts = self._create_glyph_dicts()
+        glyph_dicts = self._create_glyph_dicts()
         characters = self._create_characters(text,
-                                             self._glyph_dicts,
+                                             glyph_dicts,
                                              fg_color,
                                              bg_color)
         self._text = text
@@ -598,9 +610,19 @@ class String(Renderable):
     def fg_color(self):
         return self.character_to_render.fg_color
 
+    @fg_color.setter
+    def fg_color(self, color):
+        assert isinstance(color, TextColor)
+        self.character_to_render.fg_color = color
+
     @property
     def bg_color(self):
         return self.character_to_render.bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        assert isinstance(color, TextColor)
+        self.character_to_render.bg_color = color
 
     @property
     def characters(self):
@@ -684,6 +706,7 @@ class String(Renderable):
 
     def _create_characters(self, text, dicts, fg_color, bg_color):
         characters = []
+        text = '\u0000' if not text else text
         for glyph in text:
             for glyph_dict in dicts:
                 if glyph in glyph_dict:
@@ -709,6 +732,8 @@ class String(Renderable):
                                     start=1):
             if bit:
                 print(one, end='')
+            elif 'LOGLEVEL' in os.environ:
+                print('.', end='')
             else:
                 print(zero, end='')
             if index % self.character_to_render.word_count == 0:
