@@ -51,15 +51,8 @@ class _MatrixTransform:
         self._layout = layout
         self._led_mode = led_mode
 
-    def _flip_angle(self, angle):
-        if angle == -90 or angle == 270:
-            return 90
-        elif angle == 90 or angle == -270:
-            return 270
-        return angle
-
     def rotated_led_range(self, angle):
-        assert (round(abs(angle)) in (90, 180, 270)), 'Angle must be +/-90, +/-180 or +/-270.' # noqa
+        angle = self._normalize_angle(angle)
         angle = self._flip_angle(angle)
         angle_rad = math.radians(angle)
         for led in self._matrix.led_range(layout=self._layout,
@@ -77,6 +70,22 @@ class _MatrixTransform:
                                    y=rotated_y,
                                    layout=self._layout,
                                    mode=self._led_mode)
+
+    def _flip_angle(self, angle):
+        if angle == -90 or angle == 270:
+            return 90
+        elif angle == -180:
+            return 180
+        elif angle == 90 or angle == -270:
+            return 270
+        return angle
+
+    def _normalize_angle(self, angle):
+        if angle and (angle % 90) == 0 and abs(angle) > 270:
+            return angle % 360
+        assert (round(abs(angle)) in (0, 90, 180, 270)), \
+               'Angle must be a multiple of 90.'
+        return angle
 
 
 class _MatrixCoordinate:

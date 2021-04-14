@@ -82,8 +82,9 @@ class Text(Renderable):
                direction=ScrollDirection.LEFT,
                count=None,
                timeout=None):
-        if timeout and timeout < period:
-            raise ValueError("'timeout' must be greater than the period.")
+        if timeout and timeout <= period:
+            raise ValueError("'timeout' must be greater than "
+                             "or equal to the period.")
         self._string.text_scroll = _TextScroll(self._text,
                                                period,
                                                direction,
