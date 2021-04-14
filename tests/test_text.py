@@ -452,6 +452,12 @@ class TestText(unittest.TestCase):
             self.assertListEqual(list(Text('A').rotate(angle).bits),
                                  list(text.bits),
                                  'Bit mismatch.')
+        for angle in range(Circle.SECOND_QUADRANT,
+                           -Circle.FULL_ANGLE * 10,
+                           -Circle.FULL_ANGLE):
+            self.assertListEqual(list(Text('A').rotate(angle).bits),
+                                 list(text.bits),
+                                 'Bit mismatch.')
 
         text = Text('A').rotate(180)
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
