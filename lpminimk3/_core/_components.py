@@ -45,13 +45,19 @@ class Matrix(ABC):
         renderable.render(self)
 
 
+class FlipAxis:
+    X = 'x'
+    Y = 'y'
+    XY = 'xy'
+
+
 class _MatrixTransform:
     def __init__(self, matrix, layout, led_mode):
         self._matrix = matrix
         self._layout = layout
         self._led_mode = led_mode
 
-    def rotated_led_range(self, angle):
+    def rotated_led_range(self, angle, *, flip_axis=''):
         angle = self._normalize_angle(angle)
         angle = self._flip_angle(angle)
         angle_rad = math.radians(angle)
@@ -66,10 +72,40 @@ class _MatrixTransform:
                 rotated_x = min(self._matrix.max_x + rotated_x, self._matrix.max_x)  # noqa
             elif angle == 270:
                 rotated_x = min(self._matrix.max_x + rotated_x, self._matrix.max_x)  # noqa
-            yield self._matrix.led(x=rotated_x,
-                                   y=rotated_y,
+            if flip_axis:
+                flipped_x = (self._flip_xy(rotated_x)
+                             if FlipAxis.X in flip_axis
+                             else rotated_x)
+                flipped_y = (self._flip_xy(rotated_y)
+                             if FlipAxis.Y in flip_axis
+                             else rotated_y)
+                yield self._matrix.led(x=flipped_x,
+                                       y=flipped_y,
+                                       layout=self._layout,
+                                       mode=self._led_mode)
+            else:
+                yield self._matrix.led(x=rotated_x,
+                                       y=rotated_y,
+                                       layout=self._layout,
+                                       mode=self._led_mode)
+
+    def flipped_led_range(self, axis):
+        for led in self._matrix.led_range(layout=self._layout,
+                                          mode=self._led_mode):
+            flipped_x = (self._flip_xy(led.x)
+                         if FlipAxis.X in axis
+                         else led.x)
+            flipped_y = (self._flip_xy(led.y)
+                         if FlipAxis.Y in axis
+                         else led.y)
+            yield self._matrix.led(x=flipped_x,
+                                   y=flipped_y,
                                    layout=self._layout,
                                    mode=self._led_mode)
+
+    def _flip_xy(self, value):
+        max_value = self._matrix.width - 1
+        return max_value - value
 
     def _flip_angle(self, angle):
         if angle == -90 or angle == 270:
@@ -833,7 +869,11 @@ class Panel(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *, layout=PROG, mode=Led.STATIC, rotation=0):
+    def led_range(self, *,
+                  layout=PROG,
+                  mode=Led.STATIC,
+                  rotation=0,
+                  flip_axis=''):
         """
         Returns an immutable sequence of LEDs.
 
@@ -846,11 +886,13 @@ class Panel(Matrix):
         Yields:
             Led: Sequence of LEDs
         """
-        if rotation and not isinstance(rotation, int):
-            raise ValueError("'rotation' must be of type 'int'.")
-        elif rotation:
-            for led_id in _MatrixTransform(self, layout, mode).rotated_led_range(rotation):  # noqa
-                yield self.led(led_id, layout=layout, mode=mode)
+        if rotation:
+            for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation,  # noqa
+                                                                              flip_axis=flip_axis):  # noqa
+                yield led
+        elif not rotation and flip_axis:
+            for led in _MatrixTransform(self, layout, mode).flipped_led_range(flip_axis):  # noqa
+                yield led
         else:
             for led_id in range(self.max_id):
                 yield self.led(led_id, layout=layout, mode=mode)
@@ -997,7 +1039,11 @@ class Grid(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *, layout=PROG, mode=Led.STATIC, rotation=0):
+    def led_range(self, *,
+                  layout=PROG,
+                  mode=Led.STATIC,
+                  rotation=0,
+                  flip_axis=''):
         """
         Returns an immutable sequence of LEDs.
 
@@ -1012,8 +1058,15 @@ class Grid(Matrix):
         """
         if rotation and not isinstance(rotation, int):
             raise ValueError("'rotation' must be of type 'int'.")
-        elif rotation:
-            for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation):  # noqa
+        if flip_axis and not isinstance(flip_axis, str):
+            raise ValueError("'rotation' must be of type 'int'.")
+
+        if rotation:
+            for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation,  # noqa
+                                                                              flip_axis=flip_axis):  # noqa
+                yield led
+        elif not rotation and flip_axis:
+            for led in _MatrixTransform(self, layout, mode).flipped_led_range(flip_axis):  # noqa
                 yield led
         else:
             for led_id in range(self.max_id):

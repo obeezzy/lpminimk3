@@ -91,8 +91,11 @@ class RawBitmapMatrix:
 
     def rotated_range(self, angle, *, flip_axis=''):
         angle = self._normalize_angle(angle)
-        if angle == 0:
+        if not angle and not flip_axis:
             for bit in self._raw_bitmap:
+                yield bit
+        elif not angle and flip_axis:
+            for bit in self.flipped_range(flip_axis):
                 yield bit
         else:
             angle = self._flip_angle(angle)
@@ -113,10 +116,10 @@ class RawBitmapMatrix:
                 if flip_axis:
                     flipped_x = (self._flip_xy(rotated_x)
                                  if FlipAxis.Y in flip_axis
-                                 else x)
+                                 else rotated_x)
                     flipped_y = (self._flip_xy(rotated_y)
                                  if FlipAxis.X in flip_axis
-                                 else y)
+                                 else rotated_y)
                     yield self.bit(flipped_x, flipped_y)
                 else:
                     yield self.bit(rotated_x, rotated_y)
@@ -157,9 +160,9 @@ class RawBitmapMatrix:
                'Angle must be a multiple of 90.'
         return angle
 
-    def _flip_xy(self, point):
-        max_point = self._raw_bitmap.word_count - 1
-        return max_point - point
+    def _flip_xy(self, value):
+        max_value = self._raw_bitmap.word_count - 1
+        return max_value - value
 
     def _flip_angle(self, angle):
         if angle == -90 or angle == 270:
@@ -380,7 +383,8 @@ class TextScroll:
                         string.shift_left()
                     CharacterRenderer(string.character_to_render,
                                       matrix,
-                                      angle=string.angle).render()
+                                      angle=string.angle,
+                                      flip_axis=string.flip_axis).render()
                     time.sleep(self._period)
                     time_left = (max(time_left - self._period, 0)
                                  if time_left != -1
@@ -513,16 +517,22 @@ class CharacterTransform:
 
 
 class CharacterRenderer:
-    def __init__(self, character, matrix, *, angle=0):
+    def __init__(self,
+                 character,
+                 matrix, *,
+                 angle=0,
+                 flip_axis=''):
         self._raw_bitmap = character.raw_bitmap
         self._matrix = matrix
         self._fg_color = character.fg_color
         self._bg_color = character.bg_color
         self._angle = angle
+        self._flip_axis = flip_axis
 
     def render(self):
         colorspec_fragments = []
-        for led, bit in zip(self._matrix.led_range(rotation=self._angle),
+        for led, bit in zip(self._matrix.led_range(rotation=self._angle,
+                                                   flip_axis=self._flip_axis),
                             self._raw_bitmap):
             bit_config = self._raw_bitmap.config[led.name]
             lighting_type = bit_config.lighting_type
@@ -588,6 +598,7 @@ class Character(Renderable):
                                         else None)
         self._offset = Offset(*offset) if offset else Offset()
         self._angle = 0
+        self._flip_axis = ''
 
     def __repr__(self):
         return ("Character("
@@ -649,7 +660,8 @@ class Character(Renderable):
     def render(self, matrix):
         CharacterRenderer(self,
                           matrix,
-                          angle=self._angle).render()
+                          angle=self._angle,
+                          flip_axis=self._flip_axis).render()
 
     def print(self):
         print(self.raw_bitmap)
@@ -774,7 +786,8 @@ class String(Renderable):
         else:
             CharacterRenderer(self.character_to_render,
                               matrix,
-                              angle=self._angle).render()
+                              angle=self.angle,
+                              flip_axis=self.flip_axis).render()
 
     def print(self, *,
               one='X',
