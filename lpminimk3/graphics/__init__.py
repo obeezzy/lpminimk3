@@ -8,7 +8,7 @@ from ..colors import ColorPalette as _ColorPalette
 
 class Text(Renderable):
     def __init__(self,
-                 text, *,
+                 text='', *,
                  fg_color=_ColorPalette.Red.SHADE_4,
                  bg_color=None):
         if isinstance(text, Text):
@@ -64,14 +64,13 @@ class Text(Renderable):
     def print(self, one='X', zero=' '):
         self._string.print(one=one, zero=zero)
 
-    def shift_left(self, count=1, *, circular=True):
-        count = 0 if not isinstance(count, int) or count < 0 else count
-        self._string.shift_left(count=count, circular=circular)
-        return self
-
-    def shift_right(self, count=1, *, circular=True):
-        count = 0 if not isinstance(count, int) or count < 0 else count
-        self._string.shift_right(count=count, circular=circular)
+    def shift(self, count=1, *, circular=True):
+        if not isinstance(count, int):
+            raise ValueError("'count' must be 'int'.")
+        if count > 0:
+            self._string.shift_right(count=count, circular=circular)
+        else:
+            self._string.shift_left(count=int(abs(count)), circular=circular)
         return self
 
     def rotate(self, angle):
