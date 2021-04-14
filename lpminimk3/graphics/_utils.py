@@ -89,7 +89,7 @@ class RawBitmapMatrix:
     def bit(self, x, y):
         return self._raw_matrix[y][x]
 
-    def rotated_range(self, angle):
+    def rotated_range(self, angle, *, flip_axis=''):
         angle = self._normalize_angle(angle)
         if angle == 0:
             for bit in self._raw_bitmap:
@@ -110,7 +110,28 @@ class RawBitmapMatrix:
                     rotated_x = min(max_x + rotated_x, max_x)  # noqa
                 elif angle == 270:
                     rotated_x = min(max_x + rotated_x, max_x)  # noqa
-                yield self.bit(rotated_x, rotated_y)
+                if flip_axis:
+                    flipped_x = (self._flip_xy(rotated_x)
+                                 if FlipAxis.Y in flip_axis
+                                 else x)
+                    flipped_y = (self._flip_xy(rotated_y)
+                                 if FlipAxis.X in flip_axis
+                                 else y)
+                    yield self.bit(flipped_x, flipped_y)
+                else:
+                    yield self.bit(rotated_x, rotated_y)
+
+    def flipped_range(self, axis):
+        for index, bit in enumerate(self._raw_bitmap):
+            x = int(index / self._raw_bitmap.word_count)
+            y = int(index % self._raw_bitmap.word_count)
+            flipped_x = (self._flip_xy(x)
+                         if FlipAxis.Y in axis
+                         else x)
+            flipped_y = (self._flip_xy(y)
+                         if FlipAxis.X in axis
+                         else y)
+            yield self.bit(flipped_x, flipped_y)
 
     def _blank_matrix(self):
         matrix = []
@@ -135,6 +156,10 @@ class RawBitmapMatrix:
         assert (round(abs(angle)) in (0, 90, 180, 270)), \
                'Angle must be a multiple of 90.'
         return angle
+
+    def _flip_xy(self, point):
+        max_point = self._raw_bitmap.word_count - 1
+        return max_point - point
 
     def _flip_angle(self, angle):
         if angle == -90 or angle == 270:
@@ -405,6 +430,12 @@ class ScrollDirection:
     RIGHT = 'right'
 
 
+class FlipAxis:
+    X = 'x'
+    Y = 'y'
+    XY = 'xy'
+
+
 class CharacterTransform:
     def __init__(self, character, bitmap_data):
         self._character = character
@@ -658,6 +689,7 @@ class String(Renderable):
         self._characters = list(characters)
         self._angle = 0
         self._text_scroll = None
+        self._flip_axis = ''
 
     def __repr__(self):
         return (f"String('{self}')")
@@ -669,9 +701,14 @@ class String(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
-        if self._angle:
+        if self.angle:
             matrix = RawBitmapMatrix(self.character_to_render.raw_bitmap)
-            for bit in matrix.rotated_range(self._angle):
+            for bit in matrix.rotated_range(self.angle,
+                                            flip_axis=self.flip_axis):
+                yield bit
+        elif self.flip_axis:
+            matrix = RawBitmapMatrix(self.character_to_render.raw_bitmap)
+            for bit in matrix.flipped_range(self._flip_axis):
                 yield bit
         else:
             for bit in self.character_to_render.raw_bitmap:
@@ -710,6 +747,16 @@ class String(Renderable):
     @property
     def angle(self):
         return self._angle
+
+    @property
+    def flip_axis(self):
+        return self._flip_axis
+
+    @flip_axis.setter
+    def flip_axis(self, flip_axis):
+        assert isinstance(flip_axis, str)
+        assert flip_axis in FlipAxis.XY
+        self._flip_axis = flip_axis
 
     @property
     def text_scroll(self):
@@ -804,13 +851,22 @@ class String(Renderable):
 
     def _print_in_console(self, one='X', zero=' '):
         matrix = RawBitmapMatrix(self.character_to_render.raw_bitmap)
-        for index, bit in enumerate(matrix.rotated_range(self._angle),
-                                    start=1):
-            if bit:
-                print(one, end='')
-            elif 'LOGLEVEL' in os.environ:
-                print('.', end='')
-            else:
-                print(zero, end='')
-            if index % self.character_to_render.word_count == 0:
-                print('\n', end='')
+        if self.flip_axis and not self.angle:
+            for index, bit in enumerate(matrix.flipped_range(self.flip_axis),   # noqa
+                                        start=1):  # noqa
+                self._print_bit(bit, index, one=one, zero=zero)
+        else:
+            for index, bit in enumerate(matrix.rotated_range(self._angle,
+                                                             flip_axis=self.flip_axis),  # noqa
+                                        start=1):
+                self._print_bit(bit, index, one=one, zero=zero)
+
+    def _print_bit(self, bit, index, *, one, zero):
+        if bit:
+            print(one, end='')
+        elif 'LOGLEVEL' in os.environ:
+            print('.', end='')
+        else:
+            print(zero, end='')
+        if index % self.character_to_render.word_count == 0:
+            print('\n', end='')
