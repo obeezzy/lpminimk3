@@ -589,7 +589,19 @@ class TestText(unittest.TestCase):
                              'Bit mismatch.')
 
     def test_rotate_flip_x(self):
-        text = Text('A').flip().rotate(90)
+        text = Text('A').flip(FlipAxis.X).rotate(0)
+        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
+                              0, 0, 0, 1, 1, 1, 1, 0,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 1, 1, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 0, 0, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.X).rotate(90)
         self.assertListEqual([0, 0, 1, 1, 1, 1, 1, 0,
                               0, 1, 1, 1, 1, 1, 1, 0,
                               1, 1, 0, 0, 1, 0, 0, 0,
@@ -607,7 +619,7 @@ class TestText(unittest.TestCase):
                              list(Text('A').flip().rotate(-270).bits),
                              'Bit mismatch.')
 
-        text = Text('A').flip().rotate(180)
+        text = Text('A').flip(FlipAxis.X).rotate(180)
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
                               1, 1, 0, 0, 1, 1, 0, 0,
                               1, 1, 0, 0, 1, 1, 0, 0,
@@ -625,7 +637,7 @@ class TestText(unittest.TestCase):
                              list(Text('A').flip().rotate(-180).bits),
                              'Bit mismatch.')
 
-        text = Text('A').flip().rotate(270)
+        text = Text('A').flip(FlipAxis.X).rotate(270)
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0,
                               0, 1, 1, 1, 1, 1, 0, 0,
@@ -634,6 +646,73 @@ class TestText(unittest.TestCase):
                               0, 0, 0, 1, 0, 0, 1, 1,
                               0, 1, 1, 1, 1, 1, 1, 0,
                               0, 1, 1, 1, 1, 1, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(270).bits),
+                             list(Text('A').rotate(270).flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(270).bits),
+                             list(Text('A').flip().rotate(-90).bits),
+                             'Bit mismatch.')
+
+    def test_rotate_flip_y(self):
+        text = Text('A').flip(FlipAxis.Y).rotate(0)
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 1, 1, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              0, 1, 1, 1, 1, 0, 0, 0,
+                              0, 0, 1, 1, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.Y).rotate(90)
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 1, 1, 1, 1, 1, 0, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 0, 0, 1, 0, 0, 1, 1,
+                              0, 0, 0, 1, 0, 0, 1, 1,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 1, 1, 1, 1, 1, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(90).bits),
+                             list(Text('A').rotate(90).flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(90).bits),
+                             list(Text('A').flip().rotate(-270).bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.Y).rotate(180)
+        self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
+                              0, 0, 0, 1, 1, 1, 1, 0,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 1, 1, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 0, 0, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(180).bits),
+                             list(Text('A').rotate(180).flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(180).bits),
+                             list(Text('A').flip().rotate(-180).bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.Y).rotate(270)
+        self.assertListEqual([0, 0, 1, 1, 1, 1, 1, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              1, 1, 0, 0, 1, 0, 0, 0,
+                              1, 1, 0, 0, 1, 0, 0, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 0, 1, 1, 1, 1, 1, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
                              'Bit mismatch.')
         self.assertListEqual(list(Text('A').flip().rotate(270).bits),
