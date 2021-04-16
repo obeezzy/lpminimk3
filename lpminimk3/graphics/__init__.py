@@ -96,3 +96,7 @@ class Text(Renderable):
     def flip(self, axis=FlipAxis.X):
         self._string.flip_axis = axis
         return self
+
+    def swap_colors(self):
+        self._string.fg_color, self._string.bg_color = self._string.bg_color, self._string.fg_color  # noqa
+        return self

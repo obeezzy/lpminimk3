@@ -792,6 +792,27 @@ class TestText(unittest.TestCase):
                              list(Text('A').flip().rotate(-90).bits),
                              'Bit mismatch.')
 
+    def test_swap_colors(self):
+        text = Text('A',
+                    fg_color=ColorPalette.Red.SHADE_1,
+                    bg_color=ColorPalette.White.SHADE_1)
+
+        self.assertEqual(text.fg_color.color_id,
+                         ColorPalette.Red.SHADE_1.color_id,
+                         'Color mismatch.')
+        self.assertEqual(text.bg_color.color_id,
+                         ColorPalette.White.SHADE_1.color_id,
+                         'Color mismatch.')
+
+        text.swap_colors()
+
+        self.assertEqual(text.fg_color.color_id,
+                         ColorPalette.White.SHADE_1.color_id,
+                         'Color mismatch.')
+        self.assertEqual(text.bg_color.color_id,
+                         ColorPalette.Red.SHADE_1.color_id,
+                         'Color mismatch.')
+
 
 class TestTextWhiteBox(unittest.TestCase):
     def test_shift_left_carry(self):
