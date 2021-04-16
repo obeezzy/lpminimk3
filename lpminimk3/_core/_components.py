@@ -58,6 +58,7 @@ class _MatrixTransform:
         self._led_mode = led_mode
 
     def rotated_led_range(self, angle, *, flip_axis=''):
+        assert angle, 'Angle cannot be zero.'
         angle = self._normalize_angle(angle)
         angle = self._flip_angle(angle)
         angle_rad = math.radians(angle)
@@ -73,10 +74,10 @@ class _MatrixTransform:
             elif angle == 270:
                 rotated_x = min(self._matrix.max_x + rotated_x, self._matrix.max_x)  # noqa
             if flip_axis:
-                flipped_x = (self._flip_xy(rotated_x)
+                flipped_x = (self._flip_axis(rotated_x)
                              if FlipAxis.X in flip_axis
                              else rotated_x)
-                flipped_y = (self._flip_xy(rotated_y)
+                flipped_y = (self._flip_axis(rotated_y)
                              if FlipAxis.Y in flip_axis
                              else rotated_y)
                 yield self._matrix.led(x=flipped_x,
@@ -92,10 +93,10 @@ class _MatrixTransform:
     def flipped_led_range(self, axis):
         for led in self._matrix.led_range(layout=self._layout,
                                           mode=self._led_mode):
-            flipped_x = (self._flip_xy(led.x)
+            flipped_x = (self._flip_axis(led.x)
                          if FlipAxis.X in axis
                          else led.x)
-            flipped_y = (self._flip_xy(led.y)
+            flipped_y = (self._flip_axis(led.y)
                          if FlipAxis.Y in axis
                          else led.y)
             yield self._matrix.led(x=flipped_x,
@@ -103,7 +104,7 @@ class _MatrixTransform:
                                    layout=self._layout,
                                    mode=self._led_mode)
 
-    def _flip_xy(self, value):
+    def _flip_axis(self, value):
         max_value = self._matrix.width - 1
         return max_value - value
 
