@@ -391,7 +391,6 @@ class TestText(unittest.TestCase):
 
     def test_scroll(self):
         text = Text('Apple').scroll(count=1, period=.0001)
-        self.lp.grid.render(text)
         self.assertListEqual([0, 0, 1, 1, 0, 0, 0, 0,
                               0, 1, 1, 1, 1, 0, 0, 0,
                               1, 1, 0, 0, 1, 1, 0, 0,
@@ -510,11 +509,11 @@ class TestText(unittest.TestCase):
         with self.assertRaises(Exception):
             Text('A').rotate(1).print()
         with self.assertRaises(Exception):
-            self.lp.grid.render(Text('A').rotate(1))
+            Text('A').rotate(-1).print()
         with self.assertRaises(Exception):
-            self.lp.grid.render(Text('A').rotate(830))
+            Text('A').rotate(830).print()
         with self.assertRaises(Exception):
-            self.lp.grid.render(Text('A').rotate(-91))
+            Text('A').rotate(-91).print()
 
     def test_render(self):
         self.lp.grid.render(Text('Apple'))
