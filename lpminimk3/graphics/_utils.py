@@ -90,48 +90,49 @@ class RawBitmapMatrix:
         return self._raw_matrix[y][x]
 
     def rotated_range(self, angle, *, flip_axis=''):
+        assert angle, 'Angle cannot be zero.'
         angle = self._normalize_angle(angle)
-        if not angle and not flip_axis:
-            for bit in self._raw_bitmap:
-                yield bit
-        elif not angle and flip_axis:
-            for bit in self.flipped_range(flip_axis):
-                yield bit
-        else:
-            angle = self._flip_angle(angle)
-            angle_rad = math.radians(angle)
-            for index, bit in enumerate(self._raw_bitmap):
-                x = int(index / self._raw_bitmap.word_count)
-                y = int(index % self._raw_bitmap.word_count)
-                max_x = max_y = self._raw_bitmap.word_count - 1
-                rotated_x = round((y * math.sin(angle_rad)) + (x * math.cos(angle_rad)))  # noqa
-                rotated_y = round((y * math.cos(angle_rad)) - (x * math.sin(angle_rad)))  # noqa
-                if angle == 90:
-                    rotated_y = min(max_x + rotated_y, max_y)  # noqa
-                elif angle == 180:
-                    rotated_y = min(max_y + rotated_y, max_y)  # noqa
-                    rotated_x = min(max_x + rotated_x, max_x)  # noqa
-                elif angle == 270:
-                    rotated_x = min(max_x + rotated_x, max_x)  # noqa
-                if flip_axis:
-                    flipped_x = (self._flip_xy(rotated_x)
-                                 if FlipAxis.Y in flip_axis
-                                 else rotated_x)
-                    flipped_y = (self._flip_xy(rotated_y)
-                                 if FlipAxis.X in flip_axis
-                                 else rotated_y)
-                    yield self.bit(flipped_x, flipped_y)
-                else:
-                    yield self.bit(rotated_x, rotated_y)
+        angle = self._flip_angle(angle)
+        angle_rad = math.radians(angle)
+        for index, bit in enumerate(self._raw_bitmap):
+            x = int(index / self._raw_bitmap.word_count)
+            y = int(index % self._raw_bitmap.word_count)
+            max_x = max_y = self._raw_bitmap.word_count - 1
+            rotated_x = round((y * math.sin(angle_rad)) + (x * math.cos(angle_rad)))  # noqa
+            rotated_y = round((y * math.cos(angle_rad)) - (x * math.sin(angle_rad)))  # noqa
+            x_flip_required = y_flip_required = False
+            if angle == 90:
+                rotated_y = min(max_y + rotated_y, max_y)
+                x_flip_required = (FlipAxis.X in flip_axis)
+                y_flip_required = (FlipAxis.Y in flip_axis)
+            elif angle == 180:
+                rotated_y = min(max_y + rotated_y, max_y)
+                rotated_x = min(max_x + rotated_x, max_x)
+                x_flip_required = FlipAxis.Y in flip_axis
+                y_flip_required = FlipAxis.X in flip_axis
+            elif angle == 270:
+                rotated_x = min(max_x + rotated_x, max_x)
+                x_flip_required = (FlipAxis.X in flip_axis)
+                y_flip_required = (FlipAxis.Y in flip_axis)
+            if flip_axis:
+                flipped_x = (self._flip_axis(rotated_x)
+                             if x_flip_required
+                             else rotated_x)
+                flipped_y = (self._flip_axis(rotated_y)
+                             if y_flip_required
+                             else rotated_y)
+                yield self.bit(flipped_x, flipped_y)
+            else:
+                yield self.bit(rotated_x, rotated_y)
 
     def flipped_range(self, axis):
         for index, bit in enumerate(self._raw_bitmap):
             x = int(index / self._raw_bitmap.word_count)
             y = int(index % self._raw_bitmap.word_count)
-            flipped_x = (self._flip_xy(x)
+            flipped_x = (self._flip_axis(x)
                          if FlipAxis.Y in axis
                          else x)
-            flipped_y = (self._flip_xy(y)
+            flipped_y = (self._flip_axis(y)
                          if FlipAxis.X in axis
                          else y)
             yield self.bit(flipped_x, flipped_y)
@@ -160,7 +161,7 @@ class RawBitmapMatrix:
                'Angle must be a multiple of 90.'
         return angle
 
-    def _flip_xy(self, value):
+    def _flip_axis(self, value):
         max_value = self._raw_bitmap.word_count - 1
         return max_value - value
 
