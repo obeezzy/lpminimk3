@@ -214,8 +214,7 @@ class MidiPort:
             raise RuntimeError('Failed to send message.')
 
     def poll_for_event(self, *, timeout=5, match=None, read_delay=.001):
-        if not self._midi_in:
-            return
+        assert self._midi_in
         event = None
         polling = True
         elapsed = 0 if timeout else -1
