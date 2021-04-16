@@ -526,6 +526,9 @@ class TestText(unittest.TestCase):
         with self.assertRaises(Exception):
             self.lp.grid.render(Text('Apple').scroll(period=.00002, timeout=.00001))  # noqa
 
+    def test_print(self):
+        Text('A').print()
+
     def test_flip(self):
         text = Text('A').flip()
         self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
