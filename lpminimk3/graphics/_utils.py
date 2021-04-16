@@ -343,22 +343,18 @@ class TextColor:
             self._color_id = self._determine_color_id(value)
 
     def _determine_color_id(self, value):
-        color_id = -1
-        if isinstance(value, ColorShade):
-            color_id = value.color_id
-        else:
-            color_id = (value
-                        if ColorShade.is_valid_id(value)
-                        else -1)
-            if color_id < 0:
-                color_shade = ColorShadeStore().find(value)
-                color_id = (color_shade.color_id
-                            if color_shade
-                            else color_id)
-            if color_id < 0:
-                raise ValueError(f'Color ID values must be between '
-                                 f'{ColorShade.MIN_COLOR_ID} and '
-                                 f'{ColorShade.MAX_COLOR_ID}.')
+        color_id = (value
+                    if ColorShade.is_valid_id(value)
+                    else -1)
+        if color_id < 0:
+            color_shade = ColorShadeStore().find(value)
+            color_id = (color_shade.color_id
+                        if color_shade
+                        else color_id)
+        if color_id < 0:
+            raise ValueError(f'Color ID values must be between '
+                             f'{ColorShade.MIN_COLOR_ID} and '
+                             f'{ColorShade.MAX_COLOR_ID}.')
         return color_id
 
 

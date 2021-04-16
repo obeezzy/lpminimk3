@@ -347,6 +347,8 @@ class ColorShadeStore:
         Searches for color shade `value` and returns the
         `ColorShade` if found, otherwise returns `None`.
         """
+        if isinstance(value, ColorShade):
+            return value
         return self._find_shade(*self._parse(value))
 
     def _find_shade(self, color, color_shade_id=1):
@@ -363,18 +365,6 @@ class ColorShadeStore:
             color_shade = color_shades_in_group['SHADE_1']
 
         return color_shade
-
-    def _find_shade_id(self, color_shade):
-        if not isinstance(color_shade, ColorShade):
-            raise RuntimeError(f"Expected ColorShade, got '{color_shade}'.")
-        color_shades_in_group = ColorPalette.__dict__[color_shade.color_group.capitalize()].__dict__  # noqa
-        color_shade_id = 1
-        for shade_name in color_shades_in_group:
-            match = re.match('SHADE_([0-9]+)', shade_name)
-            if match:
-                color_shade_id = int(match.group(1))
-
-        return color_shade_id
 
     def _color_from_symbol(self, symbol):
         return ColorShadeStore.COLOR_GROUPS[ColorShadeStore.COLOR_GROUP_SYMBOLS.index(symbol)]  # noqa
@@ -406,8 +396,5 @@ class ColorShadeStore:
             elif value.lower() in ColorShadeStore.COLOR_GROUP_SYMBOLS:
                 color = self._color_from_symbol(value.lower())
                 color_shade_id = 1
-        elif isinstance(value, ColorShade):
-            color = value.color_group
-            color_shade_id = self._find_shade_id(value)
 
         return (color, color_shade_id)
