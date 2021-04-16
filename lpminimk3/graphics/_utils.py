@@ -875,7 +875,8 @@ class String(Renderable):
                                         start=1):
                 self._print_bit(bit, index, one=one, zero=zero)
         else:
-            for index, bit in enumerate(self.character_to_render.raw_bitmap):
+            for index, bit in enumerate(self.character_to_render.raw_bitmap,
+                                        start=1):
                 self._print_bit(bit, index, one=one, zero=zero)
 
     def _print_bit(self, bit, index, *, one, zero):
