@@ -375,28 +375,25 @@ class TextScroll:
         self._count = -1 if not count else count
 
     def render(self, string, matrix):
-        try:
-            time_left = self._timeout
-            rotations_left = self._count
-            while time_left and rotations_left:
-                for _ in range(len(self._text) * matrix.width):
-                    if self._direction == ScrollDirection.RIGHT:
-                        string.shift_right()
-                    else:
-                        string.shift_left()
-                    CharacterRenderer(string.character_to_render,
-                                      matrix,
-                                      angle=string.angle,
-                                      flip_axis=string.flip_axis).render()
-                    time.sleep(self._period)
-                    time_left = (max(time_left - self._period, 0)
-                                 if time_left != -1
-                                 else time_left)
-                rotations_left = (max(rotations_left - 1, 0)
-                                  if rotations_left != -1
-                                  else rotations_left)
-        except KeyboardInterrupt:
-            pass
+        time_left = self._timeout
+        rotations_left = self._count
+        while time_left and rotations_left:
+            for _ in range(len(self._text) * matrix.width):
+                if self._direction == ScrollDirection.RIGHT:
+                    string.shift_right()
+                else:
+                    string.shift_left()
+                CharacterRenderer(string.character_to_render,
+                                  matrix,
+                                  angle=string.angle,
+                                  flip_axis=string.flip_axis).render()
+                time.sleep(self._period)
+                time_left = (max(time_left - self._period, 0)
+                             if time_left != -1
+                             else time_left)
+            rotations_left = (max(rotations_left - 1, 0)
+                              if rotations_left != -1
+                              else rotations_left)
 
     def print(self, *,
               string,
@@ -404,32 +401,29 @@ class TextScroll:
               zero):
         time_left = self._timeout
         rotations_left = self._count
-        try:
-            while time_left and rotations_left:
-                for _ in range(len(self._text) * string.character_to_render.word_count):  # noqa
-                    if self._direction == ScrollDirection.RIGHT:
-                        string.shift_right()
+        while time_left and rotations_left:
+            for _ in range(len(self._text) * string.character_to_render.word_count):  # noqa
+                if self._direction == ScrollDirection.RIGHT:
+                    string.shift_right()
+                else:
+                    string.shift_left()
+                for index, bit in enumerate(string.character_to_render.raw_bitmap,  # noqa
+                                            start=1):
+                    if bit:
+                        print(one, end='')
                     else:
-                        string.shift_left()
-                    for index, bit in enumerate(string.character_to_render.raw_bitmap,  # noqa
-                                                start=1):
-                        if bit:
-                            print(one, end='')
-                        else:
-                            print(zero, end='')
-                        if index % string.character_to_render.word_count == 0:
-                            print('\n', end='')
-                    time.sleep(self._period)
-                    time_left = (max(time_left - self._period, 0)
-                                 if time_left != -1
-                                 else time_left)
-                    os.system('clear')
-                    print('\r', end='')
-                rotations_left = (max(rotations_left - 1, 0)
-                                  if rotations_left != -1
-                                  else rotations_left)
-        except KeyboardInterrupt:
-            pass
+                        print(zero, end='')
+                    if index % string.character_to_render.word_count == 0:
+                        print('\n', end='')
+                time.sleep(self._period)
+                time_left = (max(time_left - self._period, 0)
+                             if time_left != -1
+                             else time_left)
+                os.system('clear')
+                print('\r', end='')
+            rotations_left = (max(rotations_left - 1, 0)
+                              if rotations_left != -1
+                              else rotations_left)
 
 
 class ScrollDirection:
