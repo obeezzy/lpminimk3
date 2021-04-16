@@ -526,6 +526,9 @@ class TestText(unittest.TestCase):
         with self.assertRaises(Exception):
             self.lp.grid.render(Text('Apple').scroll(period=.00002, timeout=.00001))  # noqa
 
+    def test_print(self):
+        Text('A').print()
+
     def test_flip(self):
         text = Text('A').flip()
         self.assertListEqual([0, 0, 0, 0, 1, 1, 0, 0,
@@ -711,6 +714,73 @@ class TestText(unittest.TestCase):
                               1, 1, 0, 0, 1, 0, 0, 0,
                               0, 1, 1, 1, 1, 1, 1, 0,
                               0, 0, 1, 1, 1, 1, 1, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(270).bits),
+                             list(Text('A').rotate(270).flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(270).bits),
+                             list(Text('A').flip().rotate(-90).bits),
+                             'Bit mismatch.')
+
+    def test_rotate_flip_xy(self):
+        text = Text('A').flip(FlipAxis.XY).rotate(0)
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 1, 1, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 1, 1, 0, 0, 1, 1,
+                              0, 0, 0, 1, 1, 1, 1, 0,
+                              0, 0, 0, 0, 1, 1, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.XY).rotate(90)
+        self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0,
+                              0, 0, 1, 1, 1, 1, 1, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              1, 1, 0, 0, 1, 0, 0, 0,
+                              1, 1, 0, 0, 1, 0, 0, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 0, 1, 1, 1, 1, 1, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(90).bits),
+                             list(Text('A').rotate(90).flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(90).bits),
+                             list(Text('A').flip().rotate(-270).bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.XY).rotate(180)
+        self.assertListEqual([0, 0, 1, 1, 0, 0, 0, 0,
+                              0, 1, 1, 1, 1, 0, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 1, 1, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              1, 1, 0, 0, 1, 1, 0, 0,
+                              0, 0, 0, 0, 0, 0, 0, 0],
+                             list(text.bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(180).bits),
+                             list(Text('A').rotate(180).flip().bits),
+                             'Bit mismatch.')
+        self.assertListEqual(list(Text('A').flip().rotate(180).bits),
+                             list(Text('A').flip().rotate(-180).bits),
+                             'Bit mismatch.')
+
+        text = Text('A').flip(FlipAxis.XY).rotate(270)
+        self.assertListEqual([0, 1, 1, 1, 1, 1, 0, 0,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 0, 0, 1, 0, 0, 1, 1,
+                              0, 0, 0, 1, 0, 0, 1, 1,
+                              0, 1, 1, 1, 1, 1, 1, 0,
+                              0, 1, 1, 1, 1, 1, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 0, 0, 0, 0, 0, 0],
                              list(text.bits),
