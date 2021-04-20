@@ -1,2 +1,2 @@
-recursive-include graphics/glyphs *.json
-recursive-include graphics/schema *.json
+recursive-include lpminimk3/graphics/glyphs *.json
+recursive-include lpminimk3/graphics/schema *.json
