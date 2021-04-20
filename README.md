@@ -22,6 +22,7 @@ Make sure your Launchpad is connected to your computer.
 
 ### In script
 ```python
+Control LEDs individually:
 """
 Display a random array of colors for 5 seconds.
 """
@@ -43,7 +44,25 @@ time.sleep(5)  # Keep LEDs on for a while
 for led in lp.panel.led_range():
     del led.color  # Turn off LED
 ```
+Render text on Launchpad's surface:
+```python
+"""
+Scroll text from right to left along the Launchpad's surface.
+"""
 
+from lpminimk3 import Mode, find_launchpads
+from lpminimk3.graphics import Text
+
+lp = find_launchpads()[0]  # Get the first available launchpad
+lp.open()  # Open device for reading and writing on MIDI interface (by default)
+
+lp.mode = Mode.PROG  # Switch to the programmer mode
+
+print('Watch text scroll across the Launchpad\'s surface.\n'
+      'Press Ctrl+C to quit.\n')
+
+lp.grid.render(Text(' Hello, world!').scroll())
+```
 See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/examples).
 
 ### In shell
@@ -92,6 +111,25 @@ ButtonEvent(button='up', type='release', deltatime=0.0)
 Pass button names as arguments to wait for specific button events:
 ```bash
 >>> lp.panel.buttons('up', '0x0', 'stop').poll_for_event()
+```
+Render `A` on Launchpad's surface:
+```bash
+>>> lp.grid.render(Text('A'))
+```
+Print `A` in console:
+```bash
+>>> Text('A').print()
+  XX    
+ XXXX   
+XX  XX  
+XX  XX  
+XXXXXX  
+XX  XX  
+XX  XX  
+```
+Scroll `Hello, world!` on Launchpad's surface once:
+```bash
+>>> lp.grid.render(Text(' Hello, world!').scroll(count=1))
 ```
 
 
