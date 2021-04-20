@@ -1,5 +1,5 @@
 """
-Scroll text from right to left along the Launchpad's surface.
+Scroll text from right to left across the Launchpad's surface.
 """
 
 from lpminimk3 import Mode, find_launchpads
