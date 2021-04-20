@@ -61,7 +61,7 @@ lp.mode = Mode.PROG  # Switch to the programmer mode
 print('Watch text scroll across the Launchpad\'s surface.\n'
       'Press Ctrl+C to quit.\n')
 
-lp.grid.render(Text(' Hello, world!').scroll())
+lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text indefinitely
 ```
 See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/examples).
 
