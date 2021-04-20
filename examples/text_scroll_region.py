@@ -5,7 +5,7 @@ lighting specific regions.
 
 from lpminimk3 import Mode, find_launchpads
 from lpminimk3.graphics import Text
-from lpminimk3.regions import Labeled
+from lpminimk3.region import Labeled
 import random
 
 
