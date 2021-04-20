@@ -74,12 +74,12 @@ $ python
 >>> lp.open()
 ```
 Query the device to ensure we can read and write to it:
-```bash
+```python
 >>> lp.device_inquiry()  # Query device
 MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 ```
 Switch to `programmer` mode to start manipulating button LEDs.
-```bash
+```python
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
 >>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
@@ -97,7 +97,7 @@ Note in the above snippet that `lp.grid` only contains the __*grid*__ buttons
 (including the __*logo*__ LED at the top right corner).  
 
 Wait for and respond to button presses and releases:
-```bash
+```python
 >>> ev = lp.panel.buttons().poll_for_event()  # Block until any button is pressed/released
 >>> ev
 ButtonEvent(button='7x5', type='press', deltatime=0.0)
@@ -109,11 +109,11 @@ Or only button releases instead:
 ButtonEvent(button='up', type='release', deltatime=0.0)
 ```
 Pass button names as arguments to wait for specific button events:
-```bash
+```python
 >>> lp.panel.buttons('up', '0x0', 'stop').poll_for_event()
 ```
 Render `A` on Launchpad's surface:
-```bash
+```python
 >>> lp.grid.render(Text('A'))
 ```
 Print `A` in console:
