@@ -885,10 +885,10 @@ class String(Renderable):
 
     def _print_bit(self, bit, index, *, one, zero):
         if bit:
-            print(one, end='')
+            print(one[0], end='')
         elif 'LOGLEVEL' in os.environ:
             print('.', end='')
         else:
-            print(zero, end='')
+            print(zero[0], end='')
         if index % self.character_to_render.word_count == 0:
             print('\n', end='')

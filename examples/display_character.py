@@ -37,7 +37,7 @@ def main():
 
     print('Press a key on your keyboard to display a character on your Launchpad.\n'  # noqa
           'Press Ctrl+C to quit.\n')
-    render_character(lp)
+    render_character(lp)  # Render character on Launchpad's surface
 
 
 if __name__ == '__main__':

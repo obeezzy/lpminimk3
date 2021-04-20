@@ -8,6 +8,34 @@ from ..colors import ColorPalette as _ColorPalette
 
 
 class Text(Renderable):
+    """
+    Text renderable on the Launchpad's surface. The text
+    rendered can be transformed by calling any of the
+    transformation methods of this class.
+
+
+    EXAMPLES
+    Render text on Launchpad's surface:
+        lp.grid.render(Text('A'))
+
+    Print the text in the console:
+        Text('A').print()
+
+    Scroll text and render text on Launchpad's surface:
+        lp.grid.render(Text(' Hello, world!').scroll())
+
+    Scroll text and render text in the console:
+        Text(' Hello, world!').print()
+
+    Set the foreground color to "blue", rotate the text
+    anticlockwise by 90 degrees, flip the text on its 'X'
+    axis and scroll once:
+        lp.grid.render(Text(' Hello, world!')
+                       .fg_color.set('blue')
+                       .rotate(-90)
+                       .flip()
+                       .scroll(count=1))
+    """
     def __init__(self,
                  text='', *,
                  fg_color=_ColorPalette.Red.SHADE_4,
@@ -37,14 +65,23 @@ class Text(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
+        """
+        Text as bits (i.e. 0s and 1s).
+        """
         return self._string.bits
 
     @Renderable.word_count.getter
     def word_count(self):
+        """
+        Number of (bit)words.
+        """
         return self._string.word_count
 
     @property
     def fg_color(self):
+        """
+        Foreground color.
+        """
         return self._string.fg_color
 
     @fg_color.setter
@@ -53,19 +90,47 @@ class Text(Renderable):
 
     @property
     def bg_color(self):
+        """
+        Background color.
+        """
         return self._string.bg_color
 
     @bg_color.setter
     def bg_color(self, color):
         self._string.bg_color = _TextColor(self, color)
 
-    def render(self, matrix):
-        self._string.render(matrix)
-
     def print(self, one='X', zero=' '):
+        """
+        Prints text to the screen as bits, used to give a preview of
+        how text would be rendered on the Launchpad's surface.
+
+        Keyword Args:
+            one (str): Character to represent bit 1.
+            zero (str): Character to represent bit 0.
+
+        Returns:
+            Text: `Text` reference.
+        """
         self._string.print(one=one, zero=zero)
 
     def shift(self, count=1, *, circular=True):
+        """
+        Shifts text to the left if `count` is positive, or to the
+        right if `count` is negative.
+
+        Args:
+            count (int): Number of times to shift.
+
+        Keyword Args:
+            circular (bool): If True, enable text wrapping; else
+                diable text wrapping.
+
+        Returns:
+            Text: `Text` reference.
+
+        Raises:
+            ValueError: When invalid value is set.
+        """
         if not isinstance(count, int):
             raise ValueError("'count' must be 'int'.")
         if count > 0:
@@ -75,6 +140,18 @@ class Text(Renderable):
         return self
 
     def rotate(self, angle):
+        """
+        Rotates rendered text by `angle` degrees. All values
+        must be a multiples of 90.
+
+        Args:
+            angle (int): Angle of rotation in degrees.
+                A negative `angle` rotates Text in an anticlockwise
+                direction; a positive `angle` clockwise.
+
+        Returns:
+            Text: `Text` reference.
+        """
         self._string.rotate(angle)
         return self
 
@@ -84,6 +161,34 @@ class Text(Renderable):
                cycle_func=None,
                count=None,
                timeout=None):
+        """
+        Scrolls rendered text, shifting every `period` seconds in the
+        `direction` direction; scrolls indefinitely if `count` is not
+        set.
+
+        Keyword Args:
+            period (float): Delay before every text render call.
+            direction (str): Direction of scroll, either left or right.
+                (See :class:`ScrollDirection`.)
+            cycle_func (callable): Function to be called right after
+                text render call but before period delay. The function
+                signature is:
+                    cycle_func(fraction, launchpad)
+                where `fraction` is the fraction of the scroll (ranging
+                from 0 to 1) and `launchpad` is the Launchpad reference.
+            count (int): Number of complete scrolls. Scrolls
+                indefinitely if `count` and `timeout` are not set.
+            timeout (float): Duration in seconds for scroll. Scrolls
+                indefinitely if `count` and `timeout` are not set.
+                If both `timeout` and `count` are set, the scroll will
+                end depending on which value is reached first.
+
+        Returns:
+            Text: `Text` reference.
+
+        Raises:
+            ValueError: When invalid value is set.
+        """
         if timeout and timeout <= period:
             raise ValueError("'timeout' must be greater than "
                              "or equal to the period.")
@@ -98,9 +203,31 @@ class Text(Renderable):
         return self
 
     def flip(self, axis=FlipAxis.X):
+        """
+        Flips text on `axis` axis.
+
+        Args:
+            axis (str): Axis to flip on (X, Y or both).
+                (See :class:`FlipAxis`.)
+
+        Returns:
+            Text: `Text` reference.
+        """
         self._string.flip_axis = axis
         return self
 
     def swap_colors(self):
+        """
+        Swaps the foreground and background colors.
+
+        Returns:
+            Text: `Text` reference.
+        """
         self._string.fg_color, self._string.bg_color = self._string.bg_color, self._string.fg_color  # noqa
         return self
+
+    def render(self, matrix):
+        """
+        Renders text on matrix `matrix`. Used for internal purposes only.
+        """
+        self._string.render(matrix)

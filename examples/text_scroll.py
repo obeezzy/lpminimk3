@@ -15,7 +15,7 @@ def main():
     print('Watch text scroll across the Launchpad\'s surface.\n'  # noqa
           'Press Ctrl+C to quit.\n')
 
-    lp.grid.render(Text('Hello, world! ').scroll())
+    lp.grid.render(Text(' Hello, world!').scroll())
 
 
 if __name__ == '__main__':
