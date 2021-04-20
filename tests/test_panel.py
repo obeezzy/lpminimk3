@@ -2,6 +2,7 @@ import unittest
 from lpminimk3.__init__ import ButtonFace, Panel, ButtonEvent
 from lpminimk3.colors import ColorPalette,\
                              ColorShadeStore
+from lpminimk3.regions import Labeled
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
 
@@ -179,6 +180,12 @@ class TestLed(unittest.TestCase):
     def test_led_range(self):
         self.lp.open()
         for led in self.lp.panel.led_range():
+            for color_index in range(128):
+                led.color = color_index
+
+    def test_led_range_labeled_region(self):
+        self.lp.open()
+        for led in self.lp.panel.led_range(region=Labeled()):
             for color_index in range(128):
                 led.color = color_index
 
