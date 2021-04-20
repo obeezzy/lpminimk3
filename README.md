@@ -21,8 +21,8 @@ $ pip install lpminimk3
 Make sure your Launchpad is connected to your computer.
 
 ### In script
-```python
 Control LEDs individually:
+```python
 """
 Display a random array of colors for 5 seconds.
 """
