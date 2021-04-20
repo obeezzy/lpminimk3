@@ -189,6 +189,27 @@ class TestLed(unittest.TestCase):
             for color_index in range(128):
                 led.color = color_index
 
+    def test_labeled_region_button_names(self):
+        self.assertCountEqual(['up',
+                               'down',
+                               'left',
+                               'right',
+                               'session',
+                               'drums',
+                               'keys',
+                               'user',
+                               'logo',
+                               'scene_launch_1',
+                               'scene_launch_2',
+                               'scene_launch_3',
+                               'scene_launch_4',
+                               'scene_launch_5',
+                               'scene_launch_6',
+                               'scene_launch_7',
+                               'stop_solo_mute'],
+                              Labeled().button_names,
+                              'Button name mismatch.')
+
     def test_id_by_xy(self):
         self.lp.open()
         self.assertEqual(self.lp.panel.led(0, 0).id, 1, 'ID mismatch.')  # noqa
