@@ -2,7 +2,7 @@ import unittest
 from lpminimk3.__init__ import ButtonFace, Panel, ButtonEvent
 from lpminimk3.colors import ColorPalette,\
                              ColorShadeStore
-from lpminimk3.regions import Labeled
+from lpminimk3.region import Labeled
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
 
