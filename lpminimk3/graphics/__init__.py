@@ -81,14 +81,18 @@ class Text(Renderable):
     def scroll(self, *,
                period=.05,
                direction=ScrollDirection.LEFT,
+               cycle_func=None,
                count=None,
                timeout=None):
         if timeout and timeout <= period:
             raise ValueError("'timeout' must be greater than "
                              "or equal to the period.")
+        if cycle_func and not callable(cycle_func):
+            raise ValueError("'cycle_func' must be callable.")
         self._string.text_scroll = _TextScroll(self._text,
                                                period,
                                                direction,
+                                               cycle_func=cycle_func,
                                                timeout=timeout,
                                                count=count)
         return self
