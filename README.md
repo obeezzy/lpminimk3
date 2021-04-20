@@ -21,6 +21,7 @@ $ pip install lpminimk3
 Make sure your Launchpad is connected to your computer.
 
 ### In script
+Control LEDs individually:
 ```python
 """
 Display a random array of colors for 5 seconds.
@@ -43,7 +44,25 @@ time.sleep(5)  # Keep LEDs on for a while
 for led in lp.panel.led_range():
     del led.color  # Turn off LED
 ```
+Render text on Launchpad's surface:
+```python
+"""
+Scroll text from right to left along the Launchpad's surface.
+"""
 
+from lpminimk3 import Mode, find_launchpads
+from lpminimk3.graphics import Text
+
+lp = find_launchpads()[0]  # Get the first available launchpad
+lp.open()  # Open device for reading and writing on MIDI interface (by default)
+
+lp.mode = Mode.PROG  # Switch to the programmer mode
+
+print('Watch text scroll across the Launchpad\'s surface.\n'
+      'Press Ctrl+C to quit.\n')
+
+lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text indefinitely
+```
 See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/examples).
 
 ### In shell
@@ -55,12 +74,12 @@ $ python
 >>> lp.open()
 ```
 Query the device to ensure we can read and write to it:
-```bash
+```python
 >>> lp.device_inquiry()  # Query device
 MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 ```
 Switch to `programmer` mode to start manipulating button LEDs.
-```bash
+```python
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
 >>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
@@ -78,20 +97,39 @@ Note in the above snippet that `lp.grid` only contains the __*grid*__ buttons
 (including the __*logo*__ LED at the top right corner).  
 
 Wait for and respond to button presses and releases:
-```bash
+```python
 >>> ev = lp.panel.buttons().poll_for_event()  # Block until any button is pressed/released
 >>> ev
 ButtonEvent(button='7x5', type='press', deltatime=0.0)
 ```
 Or only button releases instead:
-```bash
+```python
 >>> ev = lp.panel.buttons().poll_for_event(type='release')  # Block until released
 >>> ev
 ButtonEvent(button='up', type='release', deltatime=0.0)
 ```
 Pass button names as arguments to wait for specific button events:
-```bash
+```python
 >>> lp.panel.buttons('up', '0x0', 'stop').poll_for_event()
+```
+Render `A` on Launchpad's surface:
+```python
+>>> lp.grid.render(Text('A'))
+```
+Print `A` in console:
+```python
+>>> Text('A').print()
+  XX    
+ XXXX   
+XX  XX  
+XX  XX  
+XXXXXX  
+XX  XX  
+XX  XX  
+```
+Scroll `Hello, world!` on Launchpad's surface once:
+```python
+>>> lp.grid.render(Text(' Hello, world!').scroll(count=1))
 ```
 
 

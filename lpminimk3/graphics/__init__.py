@@ -218,7 +218,7 @@ class Text(Renderable):
 
     def swap_colors(self):
         """
-        Swaps the foreground and background colors.
+        Swaps foreground and background colors.
 
         Returns:
             Text: `Text` reference.
