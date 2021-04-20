@@ -2,6 +2,7 @@ import unittest
 from lpminimk3.__init__ import ButtonFace, Panel, ButtonEvent
 from lpminimk3.colors import ColorPalette,\
                              ColorShadeStore
+from lpminimk3.regions import Labeled
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
 
@@ -181,6 +182,33 @@ class TestLed(unittest.TestCase):
         for led in self.lp.panel.led_range():
             for color_index in range(128):
                 led.color = color_index
+
+    def test_led_range_labeled_region(self):
+        self.lp.open()
+        for led in self.lp.panel.led_range(region=Labeled()):
+            for color_index in range(128):
+                led.color = color_index
+
+    def test_labeled_region_button_names(self):
+        self.assertCountEqual(['up',
+                               'down',
+                               'left',
+                               'right',
+                               'session',
+                               'drums',
+                               'keys',
+                               'user',
+                               'logo',
+                               'scene_launch_1',
+                               'scene_launch_2',
+                               'scene_launch_3',
+                               'scene_launch_4',
+                               'scene_launch_5',
+                               'scene_launch_6',
+                               'scene_launch_7',
+                               'stop_solo_mute'],
+                              Labeled().button_names,
+                              'Button name mismatch.')
 
     def test_id_by_xy(self):
         self.lp.open()

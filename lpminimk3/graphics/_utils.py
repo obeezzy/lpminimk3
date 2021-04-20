@@ -364,21 +364,27 @@ class TextScroll:
                  period,
                  direction,
                  *,
+                 cycle_func,
                  timeout,
                  count):
         if timeout:
             assert period < timeout
+        if cycle_func:
+            assert callable(cycle_func)
+
         self._text = text
         self._period = period
         self._direction = direction
+        self._cycle_func = cycle_func
         self._timeout = -1 if not timeout else timeout
         self._count = -1 if not count else count
 
     def render(self, string, matrix):
         time_left = self._timeout
         rotations_left = self._count
+        text_width = len(self._text) * matrix.width
         while time_left and rotations_left:
-            for _ in range(len(self._text) * matrix.width):
+            for _ in range(text_width):
                 if self._direction == ScrollDirection.RIGHT:
                     string.shift_right()
                 else:
@@ -387,6 +393,8 @@ class TextScroll:
                                   matrix,
                                   angle=string.angle,
                                   flip_axis=string.flip_axis).render()
+                if self._cycle_func:
+                    self._cycle_func(_/text_width, matrix.launchpad)
                 time.sleep(self._period)
                 time_left = (max(time_left - self._period, 0)
                              if time_left != -1

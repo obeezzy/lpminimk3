@@ -12,6 +12,7 @@ from ..midi_messages import Colorspec,\
                             Lighting
 from ..match import ButtonMatch
 from ._utils import ButtonEvent
+from ..regions import Region
 
 
 class Matrix(ABC):
@@ -250,12 +251,10 @@ class _MatrixCoordinate:
         return button_names[y][x]
 
     def _determine_bounds(self, button_names):
-        if len(button_names) > 0:
-            matrix_width = len(button_names[0])
-            matrix_height = len(button_names)
-            return matrix_width, matrix_height
-        else:
-            raise RuntimeError('Empty button name list.')
+        assert len(button_names) > 0
+        matrix_width = len(button_names[0])
+        matrix_height = len(button_names)
+        return matrix_width, matrix_height
 
 
 class _LedColor:
@@ -870,11 +869,13 @@ class Panel(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *,
+    # FIXME: Too complex
+    def led_range(self, *,  # noqa
                   layout=PROG,
                   mode=Led.STATIC,
                   rotation=0,
-                  flip_axis=''):
+                  flip_axis='',
+                  region=None):
         """
         Returns an immutable sequence of LEDs.
 
@@ -887,7 +888,17 @@ class Panel(Matrix):
         Yields:
             Led: Sequence of LEDs
         """
-        if rotation:
+        if region and not isinstance(region, Region):
+            raise TypeError("'region' must be of type 'Region'.")
+        elif rotation and not isinstance(rotation, int):
+            raise TypeError("'rotation' must be of type 'int'.")
+        elif flip_axis and not isinstance(flip_axis, str):
+            raise TypeError("'flip_axis' must be of type 'str'.")
+
+        if region:
+            for name in region.button_names:
+                yield self.led(name=name, layout=layout, mode=mode)
+        elif rotation:
             for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation,  # noqa
                                                                               flip_axis=flip_axis):  # noqa
                 yield led
@@ -1040,11 +1051,13 @@ class Grid(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *,
+    # FIXME: Too complex
+    def led_range(self, *,  # noqa
                   layout=PROG,
                   mode=Led.STATIC,
                   rotation=0,
-                  flip_axis=''):
+                  flip_axis='',
+                  region=None):
         """
         Returns an immutable sequence of LEDs.
 
@@ -1057,12 +1070,17 @@ class Grid(Matrix):
         Yields:
             Led: Sequence of LEDs
         """
-        if rotation and not isinstance(rotation, int):
-            raise ValueError("'rotation' must be of type 'int'.")
-        if flip_axis and not isinstance(flip_axis, str):
-            raise ValueError("'rotation' must be of type 'int'.")
+        if region and not isinstance(region, Region):
+            raise TypeError("'region' must be of type 'Region'.")
+        elif rotation and not isinstance(rotation, int):
+            raise TypeError("'rotation' must be of type 'int'.")
+        elif flip_axis and not isinstance(flip_axis, str):
+            raise TypeError("'flip_axis' must be of type 'str'.")
 
-        if rotation:
+        if region:
+            for name in region.button_names:
+                yield self.led(name=name, layout=layout, mode=mode)
+        elif rotation:
             for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation,  # noqa
                                                                               flip_axis=flip_axis):  # noqa
                 yield led
