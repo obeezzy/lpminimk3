@@ -103,7 +103,7 @@ Wait for and respond to button presses and releases:
 ButtonEvent(button='7x5', type='press', deltatime=0.0)
 ```
 Or only button releases instead:
-```bash
+```python
 >>> ev = lp.panel.buttons().poll_for_event(type='release')  # Block until released
 >>> ev
 ButtonEvent(button='up', type='release', deltatime=0.0)
@@ -117,7 +117,7 @@ Render `A` on Launchpad's surface:
 >>> lp.grid.render(Text('A'))
 ```
 Print `A` in console:
-```bash
+```python
 >>> Text('A').print()
   XX    
  XXXX   
@@ -128,7 +128,7 @@ XX  XX
 XX  XX  
 ```
 Scroll `Hello, world!` on Launchpad's surface once:
-```bash
+```python
 >>> lp.grid.render(Text(' Hello, world!').scroll(count=1))
 ```
 
