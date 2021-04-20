@@ -15,7 +15,7 @@ def handle_event(button_event):
         button_event.button.led.color = 0  # Turn LED off once button is released  # noqa
         print(f"Button '{button_event.button.name}' released.")
     else:
-        sys.exit()
+        sys.exit()  # Exit on KeyboardInterrupt
 
 
 def main():

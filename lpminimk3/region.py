@@ -10,6 +10,9 @@ class Region(ABC):
     A collection of LEDs on a matrix.
     """
 
+    def __len__(self):
+        return len(self.button_names)
+
     @property
     def button_names(self):
         """
