@@ -1,0 +1,2 @@
+recursive-include graphics/glyphs *.json
+recursive-include graphics/schema *.json
