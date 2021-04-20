@@ -134,6 +134,11 @@ Scroll `Hello, world!` on Launchpad's surface once:
 
 
 ## Release History
+* [0.4.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.0)
+    * Add `lpminimk3.graphics` module
+    * Introduce text rendering, printing, scrolling and transformations
+    * Add `Region`, for representing a group of LEDs
+    * Add and update examples
 * [0.3.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.3.0)
     * Change `ButtonEvent.event_type` to `ButtonEvent.type`
 * [0.2.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.1)
