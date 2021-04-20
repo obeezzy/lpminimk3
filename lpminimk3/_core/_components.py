@@ -12,7 +12,7 @@ from ..midi_messages import Colorspec,\
                             Lighting
 from ..match import ButtonMatch
 from ._utils import ButtonEvent
-from ..regions import Region
+from ..region import Region
 
 
 class Matrix(ABC):
