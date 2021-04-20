@@ -869,7 +869,8 @@ class Panel(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *,
+    # FIXME: Too complex
+    def led_range(self, *,  # noqa
                   layout=PROG,
                   mode=Led.STATIC,
                   rotation=0,
@@ -889,9 +890,9 @@ class Panel(Matrix):
         """
         if region and not isinstance(region, Region):
             raise TypeError("'region' must be of type 'Region'.")
-        if rotation and not isinstance(rotation, int):
+        elif rotation and not isinstance(rotation, int):
             raise TypeError("'rotation' must be of type 'int'.")
-        if flip_axis and not isinstance(flip_axis, str):
+        elif flip_axis and not isinstance(flip_axis, str):
             raise TypeError("'flip_axis' must be of type 'str'.")
 
         if region:
@@ -1050,7 +1051,8 @@ class Grid(Matrix):
                    x=x, y=y,
                    name=name, mode=mode)
 
-    def led_range(self, *,
+    # FIXME: Too complex
+    def led_range(self, *,  # noqa
                   layout=PROG,
                   mode=Led.STATIC,
                   rotation=0,
@@ -1070,15 +1072,15 @@ class Grid(Matrix):
         """
         if region and not isinstance(region, Region):
             raise TypeError("'region' must be of type 'Region'.")
-        if rotation and not isinstance(rotation, int):
+        elif rotation and not isinstance(rotation, int):
             raise TypeError("'rotation' must be of type 'int'.")
-        if flip_axis and not isinstance(flip_axis, str):
+        elif flip_axis and not isinstance(flip_axis, str):
             raise TypeError("'flip_axis' must be of type 'str'.")
 
         if region:
             for name in region.button_names:
                 yield self.led(name=name, layout=layout, mode=mode)
-        if rotation:
+        elif rotation:
             for led in _MatrixTransform(self, layout, mode).rotated_led_range(rotation,  # noqa
                                                                               flip_axis=flip_axis):  # noqa
                 yield led
