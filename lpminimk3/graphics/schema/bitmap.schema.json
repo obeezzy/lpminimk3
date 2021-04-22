@@ -1,0 +1,128 @@
+{
+   "title": "Bitmap Document",
+   "description": "Document containing bitmap rendering data",
+   "type": "object",
+   "required": [ "title", "bitmap", "version" ],
+   "properties": {
+      "title": {
+         "description": "Title",
+         "type": "string"
+      },
+      "description": {
+         "description": "Description",
+         "type": "string"
+      },
+      "bitmap": {
+         "description": "Bitmap",
+         "type": "object",
+         "required": [ "data" ],
+         "properties": {
+             "data": {
+                "description": "Bitmap data",
+                "type": "array",
+                "minItems": 8,
+                "maxItems": 9,
+                "items": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 511
+                }
+             },
+             "config": {
+                "description": "Bit config",
+                "type": "object",
+                "minProperties": 0,
+                "maxProperties": 81,
+                "additionalProperties": false,
+                "patternProperties": {
+                    "^(up|down|left|right|session|drums|keys|user|logo|scene_launch_[1-7]|stop|mute|solo|stop_solo_mute|[0-9]x[0-9])$": {
+                         "description": "Button name",
+                         "type": "object",
+                         "properties": {
+                             "lighting_type": {
+                                 "description": "Lighting type",
+                                 "type": "string",
+                                 "pattern": "^(static|flash|pulse|rgb)$"
+                             },
+                             "lighting_data": {
+                                 "description": "Lighting data",
+                                 "type": "object",
+                                 "additionalProperties": false,
+                                 "properties": {
+                                     "on_state": {
+                                         "description": "On state",
+                                         "type": "object",
+                                         "additionalProperties": false,
+                                         "properties": {
+                                             "color": {
+                                                 "id": {
+                                                     "type": "integer",
+                                                     "minimum": 0,
+                                                     "maximum": 127
+                                                 },
+                                                 "rgb": {
+                                                    "type": "array",
+                                                    "minItems": 3,
+                                                    "maxItems": 3,
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "minimum": 0,
+                                                        "maximum": 127
+                                                    }
+                                                 }
+                                             }
+                                         }
+                                     },
+                                     "off_state": {
+                                         "description": "OFF state",
+                                         "type": "object",
+                                         "additionalProperties": false,
+                                         "properties": {
+                                             "color": {
+                                                 "id": {
+                                                     "type": "integer",
+                                                     "minimum": 0,
+                                                     "maximum": 127
+                                                 },
+                                                 "rgb": {
+                                                    "type": "array",
+                                                    "minItems": 3,
+                                                    "maxItems": 3,
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "minimum": 0,
+                                                        "maximum": 127
+                                                    }
+                                                 }
+                                             }
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                }
+             }
+         }
+      },
+      "version": {
+         "description": "Version",
+         "type":"string",
+         "pattern": "^([0-9]+\\.[0-9]+)$"
+      },
+      "metadata": {
+         "description": "Metadata",
+         "type": "object",
+         "properties": {
+             "url": {
+                 "description": "URL for more info",
+                 "type": "string"
+             },
+             "author": {
+                 "description": "Author",
+                 "type": "string"
+             }
+         }
+      }
+   }
+}

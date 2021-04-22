@@ -1,14 +1,15 @@
 import os
 from abc import ABC
-import json
-import jsonschema
 import time
 import math
 from functools import reduce
 from ..colors import ColorShade, ColorShadeStore, RgbColor
-from ..midi_messages import Constants,\
-                            Colorspec,\
-                            ColorspecFragment
+from ..midi_messages import Colorspec,\
+                            ColorspecFragment,\
+                            Constants
+from ._parser import GlyphDictionary,\
+                     BitmapDocument,\
+                     BitmapConfig
 
 
 class Renderable(ABC):
@@ -24,57 +25,65 @@ class Renderable(ABC):
         pass
 
 
-class GlyphDictionary:
-    def __init__(self, json_filename, schema_filename):
-        self._filename = self._determine_abspath(json_filename)
-        self._data = self._load(json_filename)
-        schema = self._load(schema_filename)
-        self._validate(self._data, schema)
+class BitmapRenderer:
+    def __init__(self,
+                 raw_bitmap,
+                 matrix, *,
+                 fg_color,
+                 bg_color):
+        self._raw_bitmap = raw_bitmap
+        self._matrix = matrix
+        self._fg_color = fg_color
+        self._bg_color = bg_color
+        self._angle = 0
+        self._flip_axis = 'x'
 
-    def __iter__(self):
-        for glyph, bitmap_data in self._data.items():
-            yield glyph, bitmap_data
+    def render(self):
+        colorspec_fragments = []
+        for led, bit in zip(self._matrix.led_range(rotation=self._angle,
+                                                   flip_axis=self._flip_axis),
+                            self._raw_bitmap):
+            bit_config = self._raw_bitmap.config[led.name]
+            lighting_type = bit_config.lighting_type
+            led_index = led.midi_value
+            lighting_data = self._determine_lighting_data(bit_config,
+                                                          bit,
+                                                          self._fg_color,
+                                                          self._bg_color)
+            fragment = ColorspecFragment(lighting_type,
+                                         led_index,
+                                         *lighting_data)
+            colorspec_fragments.append(fragment)
+        payload = Colorspec(*colorspec_fragments)
+        self._matrix.launchpad.send_message(payload)
 
-    def __contains__(self, unicode):
-        return unicode in self._data['glyphs']
-
-    def __getitem__(self, unicode):
-        return self._data['glyphs'][unicode]
-
-    def __repr__(self):
-        return f"GlyphDictionary(filename='{self.filename}')"
-
-    def __str__(self):
-        return (str(self._data['glyphs'])
-                if self._data
-                else '')
-
-    @property
-    def filename(self):
-        return self._filename
-
-    @property
-    def data(self):
-        return self._data
-
-    def _load(self, filename):
-        data = None
-        filename = self._determine_abspath(filename)
-        with open(filename) as f:
-            data = json.load(f)
-        return data
-
-    def _validate(self, data, schema):
-        try:
-            jsonschema.validate(instance=data, schema=schema)
-        except jsonschema.exceptions.ValidationError:
-            raise ValueError('Invalid JSON file format.')
-
-    def _determine_abspath(self, filename):
-        if not os.path.isabs(filename):
-            current_dir = os.path.dirname(__file__)
-            return os.path.join(current_dir, filename)
-        return filename
+    def _determine_lighting_data(self, config, bit, fg_color, bg_color):
+        lighting_data = []
+        if config.lighting_type == Constants.LightingType.FLASH:
+            lighting_data = ([config.lighting_data.on_state.color.id]
+                             if bit
+                             else [config.lighting_data.off_state.color.id])
+        elif config.lighting_type == Constants.LightingType.PULSE:
+            lighting_data = ([config.lighting_data.on_state.color.id]
+                             if bit
+                             else [config.lighting_data.off_state.color.id])
+        elif config.lighting_type == Constants.LightingType.RGB:
+            lighting_data = (config.lighting_data.on_state.color.rgb
+                             if bit
+                             else config.lighting_data.off_state.color.rgb)
+        else:
+            on_state = ([config.lighting_data.on_state.color.id]
+                        if config.lighting_data
+                        else [fg_color.color_id])
+            off_state = ([config.lighting_data.off_state.color.id]
+                         if config.lighting_data
+                         else ([0]
+                               if not bg_color
+                               else [bg_color.color_id]))
+            lighting_data = (on_state
+                             if bit
+                             else off_state)
+        return lighting_data
 
 
 class RawBitmapMatrix:
@@ -177,8 +186,7 @@ class RawBitmapMatrix:
 
 class RawBitmap:
     def __init__(self, bitmap_data, config_data=None):
-        if not isinstance(bitmap_data, list):
-            raise TypeError("bitmap_data must be of type 'list'.")
+        assert isinstance(bitmap_data, list)
         self._data = bitmap_data
         self._config = BitmapConfig(config_data)
 
@@ -238,83 +246,14 @@ class Offset:
         return self._y
 
 
-class LightingConfig:
-    DEFAULT_ON_STATE = 1
-    DEFAULT_OFF_STATE = 0
-
-    def __init__(self, lighting_type, *, on_state=None, off_state=None):
-        self._lighting_type = lighting_type
-        self._on_state = on_state
-        self._off_state = off_state
-
-    def __repr__(self):
-        return f"LightingConfig('{self._name}')"
-
-    def __str__(self):
-        return self._data
-
-    @property
-    def on_state(self):
-        return (self._on_state
-                if self._on_state
-                else [LightingConfig.DEFAULT_ON_STATE])
-
-    @property
-    def off_state(self):
-        return (self._off_state
-                if self._off_state
-                else [LightingConfig.DEFAULT_OFF_STATE])
-
-
-class BitConfig:
-    def __init__(self, name=None, config_data=None):
-        self._name = name
-        self._data = config_data
-
-    def __repr__(self):
-        return f"BitConfig(name='{self._name}')"
-
-    def __str__(self):
-        return self._data
-
-    @property
-    def lighting_type(self):
-        return (self._data['lighting_type']
-                if self._data and 'lighting_type' in self._data
-                else Constants.LightingType.STATIC)
-
-    @property
-    def name(self):
-        return (self._name
-                if self._name
-                else 'default')
-
-    @property
-    def lighting_data(self):
-        if self._data:
-            return LightingConfig(self.lighting_type,
-                                  **self._data.get('lighting_data'))
-        return None
-
-
-class BitmapConfig:
-    def __init__(self, config_data):
-        self._data = config_data
-
-    def __getitem__(self, name):
-        if self._data and name in self._data:
-            return self._data[name]
-        return BitConfig()
-
-
-class TextColor:
+class RenderableColor:
     def __init__(self, renderable, value):
         self._renderable = renderable
         self._value = value
         self._validate(value)
 
     def __repr__(self):
-        return f'TextColor({self._value})'
+        return f'RenderableColor({self._value})'
 
     @property
     def color_id(self):
@@ -555,15 +494,15 @@ class CharacterRenderer:
 
     def _determine_lighting_data(self, config, bit, fg_color, bg_color):
         lighting_data = []
-        if config.lighting_type == 'flash':
+        if config.lighting_type == Constants.LightingType.FLASH:
             lighting_data = (config.lighting_data.on_state
                              if bit
                              else config.lighting_data.off_state)
-        elif config.lighting_type == 'pulse':
+        elif config.lighting_type == Constants.LightingType.PULSE:
             lighting_data = (config.lighting_data.on_state
                              if bit
                              else config.lighting_data.off_state)
-        elif config.lighting_type == 'rgb':
+        elif config.lighting_type == Constants.LightingType.RGB:
             lighting_data = (config.lighting_data.on_state
                              if bit
                              else config.lighting_data.off_state)
@@ -590,8 +529,8 @@ class Character(Renderable):
                  carry=None,
                  transformed_bitmap_data=None,
                  offset=None):
-        assert isinstance(fg_color, TextColor)
-        assert isinstance(bg_color, TextColor)
+        assert isinstance(fg_color, RenderableColor)
+        assert isinstance(bg_color, RenderableColor)
 
         self._glyph = glyph
         self._raw_bitmap = RawBitmap(bitmap_data)
@@ -601,7 +540,9 @@ class Character(Renderable):
         self._raw_bitmap_transformed = (RawBitmap(transformed_bitmap_data)
                                         if transformed_bitmap_data
                                         else None)
-        self._offset = Offset(*offset) if offset else Offset()
+        self._offset = (Offset(*offset)
+                        if offset
+                        else Offset())
         self._angle = 0
         self._flip_axis = ''
 
@@ -636,7 +577,7 @@ class Character(Renderable):
 
     @fg_color.setter
     def fg_color(self, color):
-        assert isinstance(color, TextColor)
+        assert isinstance(color, RenderableColor)
         self._fg_color = color
 
     @property
@@ -645,7 +586,7 @@ class Character(Renderable):
 
     @bg_color.setter
     def bg_color(self, color):
-        assert isinstance(color, TextColor)
+        assert isinstance(color, RenderableColor)
         self._bg_color = color
 
     @property
@@ -691,8 +632,8 @@ class Character(Renderable):
 
 class String(Renderable):
     def __init__(self, text, *, fg_color, bg_color):
-        assert isinstance(fg_color, TextColor)
-        assert isinstance(bg_color, TextColor)
+        assert isinstance(fg_color, RenderableColor)
+        assert isinstance(bg_color, RenderableColor)
 
         if text and not isinstance(text, str):
             raise TypeError("text must be of type 'str'.")
@@ -741,7 +682,7 @@ class String(Renderable):
 
     @fg_color.setter
     def fg_color(self, color):
-        assert isinstance(color, TextColor)
+        assert isinstance(color, RenderableColor)
         self.character_to_render.fg_color = color
 
     @property
@@ -750,7 +691,7 @@ class String(Renderable):
 
     @bg_color.setter
     def bg_color(self, color):
-        assert isinstance(color, TextColor)
+        assert isinstance(color, RenderableColor)
         self.character_to_render.bg_color = color
 
     @property
@@ -863,8 +804,7 @@ class String(Renderable):
         glyph_dict_dir = os.path.join(current_dir, 'glyphs')
         for filename in os.listdir(glyph_dict_dir):
             if filename.endswith('.glyph.json'):
-                glyph_dicts.append(GlyphDictionary(os.path.join(glyph_dict_dir, filename),  # noqa
-                                   './schema/glyph.schema.json'))
+                glyph_dicts.append(GlyphDictionary(os.path.join(glyph_dict_dir, filename)))  # noqa
         return glyph_dicts
 
     def _print_in_console(self, one='X', zero=' '):
@@ -891,4 +831,83 @@ class String(Renderable):
         else:
             print(zero[0], end='')
         if index % self.character_to_render.word_count == 0:
+            print('\n', end='')
+
+
+class BitmapPrivate(Renderable):
+    def __init__(self,
+                 filename, *,
+                 fg_color,
+                 bg_color):
+        assert isinstance(filename, str)
+        assert isinstance(fg_color, RenderableColor)
+        assert isinstance(bg_color, RenderableColor)
+        self._bitmap_document = BitmapDocument(filename)
+        self._raw_bitmap = RawBitmap(self._bitmap_document.bitmap_data,
+                                     self._bitmap_document.bitmap_config)
+        self._fg_color = fg_color
+        self._bg_color = bg_color
+
+    def __repr__(self):
+        return (f"BitmapPrivate('{self}')")
+
+    def __str__(self):
+        return repr(self)
+
+    @Renderable.bits.getter
+    def bits(self):
+        for bit in self.raw_bitmap:
+            yield bit
+
+    @Renderable.word_count.getter
+    def word_count(self):
+        return self._raw_bitmap.word_count
+
+    @property
+    def filename(self):
+        return self._bitmap_document.filename
+
+    @property
+    def raw_bitmap(self):
+        return self._raw_bitmap
+
+    @property
+    def fg_color(self):
+        return self._fg_color
+
+    @fg_color.setter
+    def fg_color(self, color):
+        assert isinstance(color, RenderableColor)
+        self._fg_color = color
+
+    @property
+    def bg_color(self):
+        return self._bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        assert isinstance(color, RenderableColor)
+        self._bg_color = color
+
+    def render(self, matrix):
+        BitmapRenderer(self.raw_bitmap,
+                       matrix,
+                       fg_color=self.fg_color,
+                       bg_color=self.bg_color).render()
+
+    def print(self, *,
+              one='X',
+              zero=' '):
+        for index, bit in enumerate(self.raw_bitmap,
+                                    start=1):
+            self._print_bit(bit, index, one=one, zero=zero)
+
+    def _print_bit(self, bit, index, *, one, zero):
+        if bit:
+            print(one[0], end='')
+        elif 'LOGLEVEL' in os.environ:
+            print('.', end='')
+        else:
+            print(zero[0], end='')
+        if index % self.raw_bitmap.word_count == 0:
             print('\n', end='')
