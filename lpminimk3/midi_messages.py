@@ -102,7 +102,7 @@ class Colorspec(MidiMessage):
         self._fragments.append(fragment)
 
     def __repr__(self):
-        return f"Colorspec('{str(self._fragments)}')"
+        return f'Colorspec({self.data})'
 
 
 class Lighting(MidiMessage):

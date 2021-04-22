@@ -1,9 +1,11 @@
+import os
 from ._utils import Renderable,\
                     ScrollDirection,\
                     FlipAxis,\
                     String as _String,\
-                    TextColor as _TextColor,\
-                    TextScroll as _TextScroll
+                    RenderableColor as _RenderableColor,\
+                    TextScroll as _TextScroll,\
+                    BitmapPrivate as _BitmapPrivate
 from ..colors import ColorPalette as _ColorPalette
 
 
@@ -49,10 +51,10 @@ class Text(Renderable):
 
         self._text = text
         self._string = _String(text,
-                               fg_color=_TextColor(self,
-                                                   fg_color),
-                               bg_color=_TextColor(self,
-                                                   bg_color))
+                               fg_color=_RenderableColor(self,
+                                                         fg_color),
+                               bg_color=_RenderableColor(self,
+                                                         bg_color))
 
     def __repr__(self):
         return f"Text('{self._text}')"
@@ -86,7 +88,7 @@ class Text(Renderable):
 
     @fg_color.setter
     def fg_color(self, color):
-        self._string.fg_color = _TextColor(self, color)
+        self._string.fg_color = _RenderableColor(self, color)
 
     @property
     def bg_color(self):
@@ -97,7 +99,7 @@ class Text(Renderable):
 
     @bg_color.setter
     def bg_color(self, color):
-        self._string.bg_color = _TextColor(self, color)
+        self._string.bg_color = _RenderableColor(self, color)
 
     def print(self, one='X', zero=' '):
         """
@@ -231,3 +233,66 @@ class Text(Renderable):
         Renders text on matrix `matrix`. Used for internal purposes only.
         """
         self._string.render(matrix)
+
+
+class Bitmap(Renderable):
+    def __init__(self,
+                 filename, *,
+                 fg_color=None,
+                 bg_color=None):
+        if not isinstance(filename, str):
+            raise TypeError('Must be of type str.')
+        if not filename:
+            raise ValueError('No filename set.')
+        self._bitmap = _BitmapPrivate(filename,
+                                      fg_color=_RenderableColor(self,
+                                                                fg_color),
+                                      bg_color=_RenderableColor(self,
+                                                                bg_color))
+
+    def __repr__(self):
+        return ("Bitmap("
+                f"filename='{os.path.basename(self.filename)}')")
+
+    def __str__(self):
+        return repr(self)
+
+    @Renderable.bits.getter
+    def bits(self):
+        return self._bitmap.bits
+
+    @Renderable.word_count.getter
+    def word_count(self):
+        return self._bitmap.word_count
+
+    @property
+    def filename(self):
+        return self._bitmap.filename
+
+    @property
+    def fg_color(self):
+        return self._bitmap.fg_color
+
+    @fg_color.setter
+    def fg_color(self, color):
+        self._bitmap.fg_color = _RenderableColor(self, color)
+
+    @property
+    def bg_color(self):
+        return self._bitmap.bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        self._bitmap.bg_color = _RenderableColor(self, color)
+
+    def render(self, matrix):
+        self._bitmap.render(matrix)
+
+    def print(self, *,
+              one='X',
+              zero=' '):
+        self._bitmap.print(one=one, zero=zero)
+
+    def swap_colors(self):
+        self._bitmap.fg_color, self._bitmap.bg_color = self._bitmap.bg_color, self._bitmap.fg_color  # noqa
+        return self
