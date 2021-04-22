@@ -29,7 +29,7 @@ class TestBitmap(unittest.TestCase):
 
     def test_fg_color(self):
         bitmap = Bitmap(Bitmaps.SMILEY)
-        self.assertIsNotNone(bitmap.fg_color, 'Text color is None.')
+        self.assertIsNotNone(bitmap.fg_color, 'Bitmap color is None.')
         bitmap.fg_color = 0
         bitmap.fg_color = ColorPalette.Red.SHADE_1
         bitmap.fg_color = ColorPalette.Orange.SHADE_1
@@ -94,7 +94,7 @@ class TestBitmap(unittest.TestCase):
 
     def test_bg_color(self):
         bitmap = Bitmap(Bitmaps.SMILEY)
-        self.assertIsNotNone(bitmap.bg_color, 'Text color is None.')
+        self.assertIsNotNone(bitmap.bg_color, 'Bitmap color is None.')
         bitmap.bg_color = 0
         bitmap.bg_color = ColorPalette.Red.SHADE_1
         bitmap.bg_color = ColorPalette.Orange.SHADE_1
@@ -164,23 +164,23 @@ class TestBitmap(unittest.TestCase):
         Bitmap(Bitmaps.SMILEY).print()
 
     def test_swap_colors(self):
-        text = Bitmap(Bitmaps.SMILEY,
-                      fg_color=ColorPalette.Red.SHADE_1,
-                      bg_color=ColorPalette.White.SHADE_1)
+        bitmap = Bitmap(Bitmaps.SMILEY,
+                        fg_color=ColorPalette.Red.SHADE_1,
+                        bg_color=ColorPalette.White.SHADE_1)
 
-        self.assertEqual(text.fg_color.color_id,
+        self.assertEqual(bitmap.fg_color.color_id,
                          ColorPalette.Red.SHADE_1.color_id,
                          'Color mismatch.')
-        self.assertEqual(text.bg_color.color_id,
+        self.assertEqual(bitmap.bg_color.color_id,
                          ColorPalette.White.SHADE_1.color_id,
                          'Color mismatch.')
 
-        text.swap_colors()
+        bitmap.swap_colors()
 
-        self.assertEqual(text.fg_color.color_id,
+        self.assertEqual(bitmap.fg_color.color_id,
                          ColorPalette.White.SHADE_1.color_id,
                          'Color mismatch.')
-        self.assertEqual(text.bg_color.color_id,
+        self.assertEqual(bitmap.bg_color.color_id,
                          ColorPalette.Red.SHADE_1.color_id,
                          'Color mismatch.')
 
