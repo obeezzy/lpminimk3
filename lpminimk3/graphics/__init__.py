@@ -271,7 +271,7 @@ class Bitmap(Renderable):
 
     @property
     def fg_color(self):
-        return self.fg_color
+        return self._bitmap.fg_color
 
     @fg_color.setter
     def fg_color(self, color):
