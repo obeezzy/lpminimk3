@@ -534,9 +534,9 @@ class _WindowsMidiPortParser:
     def extract_names(system_port_name):
         m1 = re.search('^(.+)\\s\\d+$', system_port_name)
         m2 = re.search('\\((.+)\\)', system_port_name)
-        client_name = m1.group(1) if m1 else None
+        client_name = m1.group(1) if m1 else ''
         client_name = (m2.group(1)
-                       if client_name is None and m2
+                       if client_name == '' and m2
                        else client_name)
         port_name = system_port_name
         return client_name, port_name
