@@ -3,7 +3,9 @@ Utility classes for Launchpad Mini MK3.
 """
 
 import enum
+import platform
 import time
+import re
 from . import _logging
 from ..match import Match
 
@@ -496,6 +498,19 @@ class SystemMidiPortParser:
 
     @staticmethod
     def extract_names(system_port_name):
+        if platform.system() == 'Windows':
+            return _WindowsMidiPortParser.extract_names(system_port_name)
+        return _LinuxMidiPortParser.extract_names(system_port_name)
+
+    @staticmethod
+    def extract_numbers(system_port_name):
+        if platform.system() == 'Windows':
+            return _WindowsMidiPortParser.extract_numbers(system_port_name)
+        return _LinuxMidiPortParser.extract_numbers(system_port_name)
+
+class _LinuxMidiPortParser:
+    @staticmethod
+    def extract_names(system_port_name):
         client_name = ''
         port_name = ''
         tokens = system_port_name.split(' ')[::-1]
@@ -510,4 +525,22 @@ class SystemMidiPortParser:
     def extract_numbers(system_port_name):
         client_number = int(system_port_name.split(' ')[::-1][0].split(':')[0])
         port_number = int(system_port_name.split(' ')[::-1][0].split(':')[1])
+        return client_number, port_number
+
+class _WindowsMidiPortParser:
+    @staticmethod
+    def extract_names(system_port_name):
+        m1 = re.search('^(.+)\\s\\d+$', system_port_name)
+        m2 = re.search('\((.+)\)', system_port_name)
+        client_name = m1.group(1) if m1 else None
+        client_name = (m2.group(1)
+                        if client_name is None
+                        else client_name)
+        port_name = system_port_name
+        return client_name, port_name
+
+    @staticmethod
+    def extract_numbers(system_port_name):
+        client_number = 1  # FIXME: Should be determined from the system
+        port_number = int(system_port_name.split(' ')[::-1][0])
         return client_number, port_number
