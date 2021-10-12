@@ -536,7 +536,7 @@ class _WindowsMidiPortParser:
         m2 = re.search('\\((.+)\\)', system_port_name)
         client_name = m1.group(1) if m1 else None
         client_name = (m2.group(1)
-                       if client_name is None
+                       if client_name is None and m2
                        else client_name)
         port_name = system_port_name
         return client_name, port_name
