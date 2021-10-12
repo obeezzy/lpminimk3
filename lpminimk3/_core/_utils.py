@@ -508,6 +508,7 @@ class SystemMidiPortParser:
             return _WindowsMidiPortParser.extract_numbers(system_port_name)
         return _LinuxMidiPortParser.extract_numbers(system_port_name)
 
+
 class _LinuxMidiPortParser:
     @staticmethod
     def extract_names(system_port_name):
@@ -527,15 +528,16 @@ class _LinuxMidiPortParser:
         port_number = int(system_port_name.split(' ')[::-1][0].split(':')[1])
         return client_number, port_number
 
+
 class _WindowsMidiPortParser:
     @staticmethod
     def extract_names(system_port_name):
         m1 = re.search('^(.+)\\s\\d+$', system_port_name)
-        m2 = re.search('\((.+)\)', system_port_name)
+        m2 = re.search('\\((.+)\\)', system_port_name)
         client_name = m1.group(1) if m1 else None
         client_name = (m2.group(1)
-                        if client_name is None
-                        else client_name)
+                       if client_name is None
+                       else client_name)
         port_name = system_port_name
         return client_name, port_name
 
