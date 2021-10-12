@@ -181,14 +181,19 @@ class MidiPort:
                 self._midi_out.open_virtual_port(self._system_port_name)
             else:
                 self._midi_out.open_port(self.port_index, MidiPort.OUT)
-            self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
+            if platform.system() != 'Windows':
+                self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
         elif (self._direction == MidiPort.IN
                 and not self._midi_in.is_port_open()):
             if self._virtual:
                 self._midi_in.open_virtual_port(self._system_port_name)
             else:
                 self._midi_in.open_port(self.port_index, MidiPort.IN)
-            self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
+            if platform.system() != 'Windows':
+                self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
         if self.is_open():
@@ -500,16 +505,16 @@ class SystemMidiPortParser:
     def extract_names(system_port_name):
         if platform.system() == 'Windows':
             return _WindowsMidiPortParser.extract_names(system_port_name)
-        return _LinuxMidiPortParser.extract_names(system_port_name)
+        return _UnixMidiPortParser.extract_names(system_port_name)
 
     @staticmethod
     def extract_numbers(system_port_name):
         if platform.system() == 'Windows':
             return _WindowsMidiPortParser.extract_numbers(system_port_name)
-        return _LinuxMidiPortParser.extract_numbers(system_port_name)
+        return _UnixMidiPortParser.extract_numbers(system_port_name)
 
 
-class _LinuxMidiPortParser:
+class _UnixMidiPortParser:
     @staticmethod
     def extract_names(system_port_name):
         client_name = ''
