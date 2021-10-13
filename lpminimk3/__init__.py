@@ -273,7 +273,7 @@ def find_launchpads():
     out_ports = midi_out.get_ports()
     midi_in = _MidiIn()
     in_ports = midi_in.get_ports()
-    launchpad_port_prefixes = ['Launchpad Mini MK3 MIDI']
+    launchpad_port_prefixes = ['Launchpad Mini MK3 MIDI', 'LPMiniMK3 MIDI']
 
     found_launchpad_out_ports = [port for port in out_ports
                                  if any(launchpad in port

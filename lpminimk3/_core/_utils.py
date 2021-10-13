@@ -3,7 +3,9 @@ Utility classes for Launchpad Mini MK3.
 """
 
 import enum
+import platform
 import time
+import re
 from . import _logging
 from ..match import Match
 
@@ -179,14 +181,19 @@ class MidiPort:
                 self._midi_out.open_virtual_port(self._system_port_name)
             else:
                 self._midi_out.open_port(self.port_index, MidiPort.OUT)
-            self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
+            if platform.system() != 'Windows':
+                self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
         elif (self._direction == MidiPort.IN
                 and not self._midi_in.is_port_open()):
             if self._virtual:
                 self._midi_in.open_virtual_port(self._system_port_name)
             else:
                 self._midi_in.open_port(self.port_index, MidiPort.IN)
-            self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
+            if platform.system() != 'Windows':
+                self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
         if self.is_open():
@@ -496,6 +503,20 @@ class SystemMidiPortParser:
 
     @staticmethod
     def extract_names(system_port_name):
+        if platform.system() == 'Windows':
+            return _WindowsMidiPortParser.extract_names(system_port_name)
+        return _UnixMidiPortParser.extract_names(system_port_name)
+
+    @staticmethod
+    def extract_numbers(system_port_name):
+        if platform.system() == 'Windows':
+            return _WindowsMidiPortParser.extract_numbers(system_port_name)
+        return _UnixMidiPortParser.extract_numbers(system_port_name)
+
+
+class _UnixMidiPortParser:
+    @staticmethod
+    def extract_names(system_port_name):
         client_name = ''
         port_name = ''
         tokens = system_port_name.split(' ')[::-1]
@@ -510,4 +531,23 @@ class SystemMidiPortParser:
     def extract_numbers(system_port_name):
         client_number = int(system_port_name.split(' ')[::-1][0].split(':')[0])
         port_number = int(system_port_name.split(' ')[::-1][0].split(':')[1])
+        return client_number, port_number
+
+
+class _WindowsMidiPortParser:
+    @staticmethod
+    def extract_names(system_port_name):
+        m1 = re.search('^(.+)\\s\\d+$', system_port_name)
+        m2 = re.search('\\((.+)\\)', system_port_name)
+        client_name = m1.group(1) if m1 else ''
+        client_name = (m2.group(1)
+                       if client_name == '' and m2
+                       else client_name)
+        port_name = system_port_name
+        return client_name, port_name
+
+    @staticmethod
+    def extract_numbers(system_port_name):
+        client_number = 1  # FIXME: Should be determined from the system
+        port_number = int(system_port_name.split(' ')[::-1][0])
         return client_number, port_number
