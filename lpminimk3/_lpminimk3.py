@@ -2,7 +2,7 @@
 Software representation of the Launchpad Mini MK3.
 """
 
-from rtmidi import MidiOut as _MidiOut, MidiIn as _MidiIn
+from rtmidi import MidiOut, MidiIn
 from ._core.components import Grid, Panel
 from ._core.utils import SystemMidiPortParser, \
                           MidiPort, MidiClient, \
@@ -268,9 +268,9 @@ def find_launchpads():
     Returns:
         list of LaunchpadMiniMk3: List of found devices.
     """
-    midi_out = _MidiOut()
+    midi_out = MidiOut()
     out_ports = midi_out.get_ports()
-    midi_in = _MidiIn()
+    midi_in = MidiIn()
     in_ports = midi_in.get_ports()
     launchpad_port_prefixes = ['Launchpad Mini MK3 MIDI', 'LPMiniMK3 MIDI']
 
