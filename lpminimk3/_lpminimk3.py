@@ -291,9 +291,9 @@ def find_launchpads():
         midi_client = MidiClient(client_name, client_number)
         port_index = out_ports.index(system_port_name)
         midi_port = MidiPort(port_name, port_number,
-                              port_index, system_port_name,
-                              direction=MidiPort.OUT,
-                              midi_out=midi_out)
+                             port_index, system_port_name,
+                             direction=MidiPort.OUT,
+                             midi_out=midi_out)
         midi_client.append_out_port(midi_port)
 
         if midi_client.client_number not in found_midi_clients:
@@ -310,9 +310,9 @@ def find_launchpads():
         port_index = in_ports.index(system_port_name)
         midi_client = MidiClient(client_name, client_number)
         midi_port = MidiPort(port_name, port_number,
-                              port_index, system_port_name,
-                              midi_in=midi_in,
-                              direction=MidiPort.IN)
+                             port_index, system_port_name,
+                             midi_in=midi_in,
+                             direction=MidiPort.IN)
         midi_client.append_in_port(midi_port)
 
         if midi_client.client_number not in found_midi_clients:
