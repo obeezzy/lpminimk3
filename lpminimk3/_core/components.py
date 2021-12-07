@@ -11,7 +11,7 @@ from ..midi_messages import Colorspec,\
                             Constants,\
                             Lighting
 from ..match import ButtonMatch
-from ._utils import ButtonEvent
+from .utils import ButtonEvent
 from ..region import Region
 
 
