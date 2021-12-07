@@ -1,5 +1,5 @@
 import unittest
-from lpminimk3._core._utils import Interface, Mode, Layout
+from lpminimk3._core.utils import Interface, Mode, Layout
 from lpminimk3.midi_messages import SysExMessages
 from tests._vlpminimk3 import DUMMY_MIDI_MESSAGE,\
                               DUMMY_MIDI_EVENT,\

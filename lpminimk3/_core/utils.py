@@ -6,10 +6,10 @@ import enum
 import platform
 import time
 import re
-from . import _logging
+from . import logging
 from ..match import Match
 
-logger = _logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 _MIDI_MESSAGE_LENGTH = 9
 

@@ -1,11 +1,11 @@
 import os
-from ._utils import Renderable,\
-                    ScrollDirection,\
-                    FlipAxis,\
-                    String as _String,\
-                    RenderableColor as _RenderableColor,\
-                    TextScroll as _TextScroll,\
-                    BitmapPrivate as _BitmapPrivate
+from .utils import Renderable,\
+                   ScrollDirection,\
+                   FlipAxis,\
+                   String as _String,\
+                   RenderableColor as _RenderableColor,\
+                   TextScroll as _TextScroll,\
+                   BitmapPrivate as _BitmapPrivate
 from ..colors import ColorPalette as _ColorPalette
 
 
