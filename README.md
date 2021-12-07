@@ -134,6 +134,8 @@ Scroll `Hello, world!` on Launchpad's surface once:
 
 
 ## Release History
+* [0.4.3](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.3)
+    * Add initial support for Windows
 * [0.4.2](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.2)
     * Correct `MANIFEST.in`
 * [0.4.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.1)
