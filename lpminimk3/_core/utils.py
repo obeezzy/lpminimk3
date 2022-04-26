@@ -3,9 +3,9 @@ Utility classes for Launchpad Mini MK3.
 """
 
 import enum
-import platform
 import time
 import re
+from collections import namedtuple
 from . import logging
 from ..match import Match
 
@@ -182,18 +182,12 @@ class MidiPort:
             else:
                 self._midi_out.open_port(self.port_index, MidiPort.OUT)
 
-            if platform.system() != 'Windows':
-                self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
-
         elif (self._direction == MidiPort.IN
                 and not self._midi_in.is_port_open()):
             if self._virtual:
                 self._midi_in.open_virtual_port(self._system_port_name)
             else:
                 self._midi_in.open_port(self.port_index, MidiPort.IN)
-
-            if platform.system() != 'Windows':
-                self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
         if self.is_open():
@@ -422,25 +416,29 @@ class MidiClient:
 
     @property
     def daw_out_port(self):
-        daw_ports = list(filter(lambda port: '1' in port.port_name,
+        daw_ports = list(filter(lambda port: re.search(r'1|DA',
+                                port.port_name),
                                 self._out_ports))
         return daw_ports[0] if len(daw_ports) > 0 else None
 
     @property
     def daw_in_port(self):
-        daw_ports = list(filter(lambda port: '1' in port.port_name,
+        daw_ports = list(filter(lambda port: re.search(r'1|DA',
+                                port.port_name),
                                 self._in_ports))
         return daw_ports[0] if len(daw_ports) > 0 else None
 
     @property
     def midi_out_port(self):
-        midi_ports = list(filter(lambda port: '2' in port.port_name,
+        midi_ports = list(filter(lambda port: re.search(r'2|MI',
+                                 port.port_name),
                                  self._out_ports))
         return midi_ports[0] if len(midi_ports) > 0 else None
 
     @property
     def midi_in_port(self):
-        midi_ports = list(filter(lambda port: '2' in port.port_name,
+        midi_ports = list(filter(lambda port: re.search(r'2|MI',
+                                 port.port_name),
                                  self._in_ports))
         return midi_ports[0] if len(midi_ports) > 0 else None
 
@@ -501,53 +499,80 @@ class SystemMidiPortParser:
     System-specific way of parsing MIDI port names.
     """
 
-    @staticmethod
-    def extract_names(system_port_name):
-        if platform.system() == 'Windows':
-            return _WindowsMidiPortParser.extract_names(system_port_name)
-        return _UnixMidiPortParser.extract_names(system_port_name)
+    def __init__(self, in_ports, out_ports):
+        lp_in_ports = list(filter(lambda port: re.search(r'Mini\s*MK3',
+                                                         port,
+                                                         re.IGNORECASE),
+                                  in_ports))
+        lp_out_ports = list(filter(lambda port: re.search(r'Mini\s*MK3',
+                                                          port,
+                                                          re.IGNORECASE),
+                                   out_ports))
+        self._found_clients = []
+        self._parse(lp_in_ports,
+                    in_ports,
+                    MidiPort.IN)
+        self._parse(lp_out_ports,
+                    out_ports,
+                    MidiPort.OUT)
 
-    @staticmethod
-    def extract_numbers(system_port_name):
-        if platform.system() == 'Windows':
-            return _WindowsMidiPortParser.extract_numbers(system_port_name)
-        return _UnixMidiPortParser.extract_numbers(system_port_name)
+    def _parse(self, lp_ports, ports, direction):
+        ClientData = namedtuple('ClientData',
+                                ['client_name',
+                                 'client_number',
+                                 'ports'])
+        PortData = namedtuple('PortData',
+                              ['port_name',
+                               'port_number',
+                               'port_index',
+                               'system_port_name',
+                               'direction'])
+        for index, system_port_name in enumerate(lp_ports):
+            linux_match = re.match(r'(.+):(.+)\s(\d+):(\d+)$', system_port_name)  # noqa
+            windows_match = re.match(r'^(.+)\s\d+$', system_port_name)
+            windows_match2 = re.match(r'(.+)\s\((.+)\)\s\d+$', system_port_name)  # noqa
+            mac_match = re.match(r'(.+\sMK3)\s(.+)$', system_port_name)
 
+            client_name = ''
+            port_name = ''
+            client_number = int(index + 1)
+            port_number = int(index + 1)
 
-class _UnixMidiPortParser:
-    @staticmethod
-    def extract_names(system_port_name):
-        client_name = ''
-        port_name = ''
-        tokens = system_port_name.split(' ')[::-1]
-        tokens.pop(0)  # Remove port pair e.g. '36:0'
-        name_pair = ' '.join(tokens[::-1])
-        if len(name_pair.split(':')) == 2:
-            client_name = name_pair.split(':')[0]
-            port_name = name_pair.split(':')[1]
-        return client_name, port_name
+            if linux_match:
+                client_name = linux_match.group(1)
+                port_name = linux_match.group(2)
+                client_number = int(linux_match.group(3))
+                port_number = int(linux_match.group(4))
+            elif windows_match and not windows_match2:
+                client_name = windows_match.group(1)
+                port_name = system_port_name
+            elif windows_match2:
+                client_name = windows_match2.group(2)
+                port_name = system_port_name
+            elif mac_match:
+                client_name = mac_match.group(1)
+                port_name = system_port_name
 
-    @staticmethod
-    def extract_numbers(system_port_name):
-        client_number = int(system_port_name.split(' ')[::-1][0].split(':')[0])
-        port_number = int(system_port_name.split(' ')[::-1][0].split(':')[1])
-        return client_number, port_number
+            port_index = ports.index(system_port_name)
+            port_data = PortData(port_name,
+                                 port_number,
+                                 port_index,
+                                 system_port_name,
+                                 direction)
+            existing_client_data = list(filter(lambda c: c.client_name == client_name,  # noqa
+                                        self._found_clients))
+            existing_client_data = (existing_client_data[0]
+                                    if len(existing_client_data) > 0
+                                    else None)
+            if not existing_client_data:
+                client_data = ClientData(client_name,
+                                         client_number,
+                                         [])
+                client_data.ports.append(port_data)
+                self._found_clients.append(client_data)
+            else:
+                existing_client_data.ports.append(port_data)
 
-
-class _WindowsMidiPortParser:
-    @staticmethod
-    def extract_names(system_port_name):
-        m1 = re.search('^(.+)\\s\\d+$', system_port_name)
-        m2 = re.search('\\((.+)\\)', system_port_name)
-        client_name = m1.group(1) if m1 else ''
-        client_name = (m2.group(1)
-                       if client_name == '' and m2
-                       else client_name)
-        port_name = system_port_name
-        return client_name, port_name
-
-    @staticmethod
-    def extract_numbers(system_port_name):
-        client_number = 1  # FIXME: Should be determined from the system
-        port_number = int(system_port_name.split(' ')[::-1][0])
-        return client_number, port_number
+    @property
+    def found_clients(self):
+        return self._found_clients
