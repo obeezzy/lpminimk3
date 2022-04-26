@@ -285,13 +285,13 @@ def find_launchpads():
                                  port_data.port_index,
                                  port_data.system_port_name,
                                  direction=(MidiPort.OUT
-                                            if port_data.direction.lower() == MidiPort.OUT.lower()  # noqa
-                                            else MidiPort.IN.lower()),
+                                            if port_data.direction == MidiPort.OUT  # noqa
+                                            else MidiPort.IN),
                                  midi_out=midi_out,
                                  midi_in=midi_in)
-            if port_data.direction.lower() == MidiPort.OUT.lower():
+            if port_data.direction == MidiPort.OUT:
                 midi_client.append_out_port(midi_port)
-            elif port_data.direction.lower() == MidiPort.IN.lower():
+            elif port_data.direction == MidiPort.IN:
                 midi_client.append_in_port(midi_port)
 
         found_launchpads.append(LaunchpadMiniMk3(midi_client))
