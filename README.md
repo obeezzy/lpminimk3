@@ -15,6 +15,10 @@ To install the most stable version of this package, run:
 ```bash
 $ pip install lpminimk3
 ```
+To test the installation, connect your Launchpad to your computer and run:
+```bash
+$ python -m lpminimk3.examples.hello
+```
 
 
 ## Usage example
@@ -88,6 +92,8 @@ Switch to `programmer` mode to start manipulating button LEDs.
 >>> lp.panel.led('stop').color = 'w1'  # Set 'Stop/Solo/Mute' LED color to first shade of white
 >>> lp.panel.led('mute').color = 'o3'  # Set 'Stop/Solo/Mute' LED color to third shade of orange
 >>> lp.panel.led('mute').color = 'r0'  # Invalid but okay, will default to 'r1'
+>>> lp.panel.led('scene_launch_1').color = '#ff0000'  # Set color to red using hex
+>>> lp.panel.led('scene_launch_2').color = (0, 0, 255)  # Set color to blue using rgb
 >>> lp.panel.led('mute').color = 0  # Turn off LED
 >>> lp.panel.led('logo').reset()  # Another way to turn off LED
 >>> del lp.panel.led('stop').color  # Another way to turn off LED
@@ -134,6 +140,11 @@ Scroll `Hello, world!` on Launchpad's surface once:
 
 
 ## Release History
+* [0.4.4](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.4)
+    * Add initial support for Mac
+    * Add hex and RGB support
+    * Expose examples from root package
+    * Refactor port parsing logic
 * [0.4.3](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.3)
     * Add initial support for Windows
 * [0.4.2](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.2)

@@ -72,6 +72,9 @@ class TestBitmap(unittest.TestCase):
         bitmap.fg_color = 'blue0'
         bitmap.fg_color = 'violet0'
         bitmap.fg_color = 'white0'
+        bitmap.fg_color = '#fff'
+        bitmap.fg_color = '#ff0000'
+        bitmap.fg_color = (0, 0, 255)
 
         bitmap.fg_color.set(1)
         bitmap.fg_color.set(ColorPalette.Red.SHADE_1)
@@ -85,8 +88,14 @@ class TestBitmap(unittest.TestCase):
             bitmap.fg_color = 're'
         with self.assertRaises(ValueError):
             bitmap.fg_color = 'gree3'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             bitmap.fg_color = (0, 0)
+        with self.assertRaises(ValueError):
+            bitmap.fg_color = (-1, 0, -1)
+        with self.assertRaises(ValueError):
+            bitmap.fg_color = (257, 277, 99)
+        with self.assertRaises(ValueError):
+            bitmap.fg_color = '#ga1'
         with self.assertRaises(ValueError):
             bitmap.fg_color = 'blue-0'
         with self.assertRaises(ValueError):
@@ -137,6 +146,9 @@ class TestBitmap(unittest.TestCase):
         bitmap.bg_color = 'blue0'
         bitmap.bg_color = 'violet0'
         bitmap.bg_color = 'white0'
+        bitmap.fg_color = '#fff'
+        bitmap.fg_color = '#ff0000'
+        bitmap.fg_color = (0, 0, 255)
 
         bitmap.bg_color.set(1)
         bitmap.bg_color.set(ColorPalette.Red.SHADE_1)
@@ -150,8 +162,14 @@ class TestBitmap(unittest.TestCase):
             bitmap.bg_color = 're'
         with self.assertRaises(ValueError):
             bitmap.bg_color = 'gree3'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             bitmap.bg_color = (0, 0)
+        with self.assertRaises(ValueError):
+            bitmap.bg_color = (-1, 0, -1)
+        with self.assertRaises(ValueError):
+            bitmap.bg_color = (257, 277, 99)
+        with self.assertRaises(ValueError):
+            bitmap.bg_color = '#ga1'
         with self.assertRaises(ValueError):
             bitmap.bg_color = 'blue-0'
         with self.assertRaises(ValueError):

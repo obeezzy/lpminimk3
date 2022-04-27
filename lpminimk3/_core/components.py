@@ -5,7 +5,7 @@ Software representation of physical components for Launchpad Mini MK3.
 import math
 import re
 from abc import ABC
-from ..colors import ColorShade, ColorShadeStore, RgbColor
+from ..colors._colors import ColorShade, ColorShadeStore, RgbColor
 from ..midi_messages import Colorspec,\
                             ColorspecFragment,\
                             Constants,\
@@ -277,8 +277,10 @@ class _LedColor:
                                                        midi_value)
         elif (not isinstance(value, ColorShade)
                 and not isinstance(value, str)
-                and not isinstance(value, int)):
-            raise TypeError('Must be of type ColorShade or str or int.')
+                and not isinstance(value, int)
+                and not isinstance(value, (tuple, list))):
+            raise TypeError('Must be of type ColorShade or str '
+                            'or int or tuple or list.')
         elif ((isinstance(value, str)
                 and not ColorShadeStore().contains(value)
                 and not RgbColor.is_valid(value))
