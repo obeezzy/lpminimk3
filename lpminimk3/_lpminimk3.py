@@ -272,57 +272,28 @@ def find_launchpads():
     out_ports = midi_out.get_ports()
     midi_in = MidiIn()
     in_ports = midi_in.get_ports()
-    launchpad_port_prefixes = ['Launchpad Mini MK3 MIDI', 'LPMiniMK3 MIDI']
-
-    found_launchpad_out_ports = [port for port in out_ports
-                                 if any(launchpad in port
-                                        for launchpad
-                                        in launchpad_port_prefixes)]
-    found_launchpad_in_ports = [port for port in in_ports
-                                if any(launchpad in port
-                                       for launchpad
-                                       in launchpad_port_prefixes)]
-    found_midi_clients = {}
-    for system_port_name in found_launchpad_out_ports:
-        client_name, port_name = SystemMidiPortParser\
-                                    .extract_names(system_port_name)
-        client_number, port_number = SystemMidiPortParser\
-            .extract_numbers(system_port_name)
-        midi_client = MidiClient(client_name, client_number)
-        port_index = out_ports.index(system_port_name)
-        midi_port = MidiPort(port_name, port_number,
-                             port_index, system_port_name,
-                             direction=MidiPort.OUT,
-                             midi_out=midi_out)
-        midi_client.append_out_port(midi_port)
-
-        if midi_client.client_number not in found_midi_clients:
-            found_midi_clients[midi_client.client_number] = midi_client
-        else:
-            existing_midi_client = found_midi_clients[midi_client.client_number]  # noqa
-            existing_midi_client.append_out_port(midi_port)
-
-    for system_port_name in found_launchpad_in_ports:
-        client_name, port_name = SystemMidiPortParser\
-                                    .extract_names(system_port_name)
-        client_number, port_number = SystemMidiPortParser\
-            .extract_numbers(system_port_name)
-        port_index = in_ports.index(system_port_name)
-        midi_client = MidiClient(client_name, client_number)
-        midi_port = MidiPort(port_name, port_number,
-                             port_index, system_port_name,
-                             midi_in=midi_in,
-                             direction=MidiPort.IN)
-        midi_client.append_in_port(midi_port)
-
-        if midi_client.client_number not in found_midi_clients:
-            found_midi_clients[midi_client.client_number] = midi_client
-        else:
-            existing_midi_client = found_midi_clients[midi_client.client_number]  # noqa
-            existing_midi_client.append_in_port(midi_port)
+    parser = SystemMidiPortParser(in_ports, out_ports)
 
     found_launchpads = []
-    for client_number, found_client in found_midi_clients.items():
-        found_launchpads.append(LaunchpadMiniMk3(found_client))
+    for client_data in parser.found_clients:
+        midi_client = MidiClient(client_data.client_name,
+                                 client_data.client_number)
+
+        for port_data in client_data.ports:
+            midi_port = MidiPort(port_data.port_name,
+                                 port_data.port_number,
+                                 port_data.port_index,
+                                 port_data.system_port_name,
+                                 direction=(MidiPort.OUT
+                                            if port_data.direction == MidiPort.OUT  # noqa
+                                            else MidiPort.IN),
+                                 midi_out=midi_out,
+                                 midi_in=midi_in)
+            if port_data.direction == MidiPort.OUT:
+                midi_client.append_out_port(midi_port)
+            elif port_data.direction == MidiPort.IN:
+                midi_client.append_in_port(midi_port)
+
+        found_launchpads.append(LaunchpadMiniMk3(midi_client))
 
     return found_launchpads
