@@ -67,7 +67,7 @@ print('Watch text scroll across the Launchpad\'s surface.\n'
 
 lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text indefinitely
 ```
-See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/examples).
+See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/lpminimk3/examples).
 
 ### In shell
 Start by finding a connected device and opening the device for reading and writing:
@@ -140,6 +140,8 @@ Scroll `Hello, world!` on Launchpad's surface once:
 
 
 ## Release History
+* [0.4.5](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.5)
+    * Correct issue with examples deployment
 * [0.4.4](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.4)
     * Add initial support for Mac
     * Add hex and RGB support

@@ -10,7 +10,7 @@ README = (ROOT_DIR / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="lpminimk3",
-    version="0.4.4",
+    version="0.4.5",
     description="Python API for the Novation Launchpad Mini MK3",
     long_description=README,
     long_description_content_type="text/markdown",
@@ -25,5 +25,5 @@ setup(
     ],
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
-    install_requires=["python-rtmidi"],
+    install_requires=["python-rtmidi", "jsonschema"],
 )
