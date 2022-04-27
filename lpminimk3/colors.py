@@ -324,8 +324,8 @@ class ColorShadeStore:
     """
     COLOR_GROUPS = ['red', 'orange', 'yellow', 'green',
                     'blue', 'violet', 'white']
-    COLOR_GROUP_SYMBOLS = ['r', 'o', 'y', 'g',
-                           'b', 'v', 'w']
+    COLOR_GROUP_SYMBOLS = list(map(lambda color: color[0],
+                                   COLOR_GROUPS))
 
     def __iter__(self):
         for color_group in ColorShadeStore.COLOR_GROUPS:

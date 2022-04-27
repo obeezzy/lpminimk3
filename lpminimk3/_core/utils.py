@@ -11,7 +11,7 @@ from ..match import Match
 
 logger = logging.getLogger(__name__)
 
-_MIDI_MESSAGE_LENGTH = 9
+MIDI_MESSAGE_LENGTH = 9
 
 
 class MidiEvent:
@@ -258,9 +258,9 @@ class Interface:
         MIDI = 0x01
 
     def __init__(self, midi_event):
-        if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
+        if len(midi_event.message) != MIDI_MESSAGE_LENGTH:
             raise RuntimeError('Unexpected MIDI message length; '
-                               f'expected {_MIDI_MESSAGE_LENGTH}, '
+                               f'expected {MIDI_MESSAGE_LENGTH}, '
                                f'got {len(midi_event.message)}.')
         self._midi_event = midi_event
         midi_value = midi_event.message[Interface.READBACK_POSITION]
@@ -299,9 +299,9 @@ class Mode:
         PROG = 0x01
 
     def __init__(self, midi_event):
-        if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
+        if len(midi_event.message) != MIDI_MESSAGE_LENGTH:
             raise RuntimeError('Unexpected MIDI message length; '
-                               f'expected {_MIDI_MESSAGE_LENGTH}, '
+                               f'expected {MIDI_MESSAGE_LENGTH}, '
                                f'got {midi_event.message}.')
         self._midi_event = midi_event
         midi_value = midi_event.message[Mode.READBACK_POSITION]
@@ -348,9 +348,9 @@ class Layout:
         PROG = 0x7f
 
     def __init__(self, midi_event):
-        if len(midi_event.message) != _MIDI_MESSAGE_LENGTH:
+        if len(midi_event.message) != MIDI_MESSAGE_LENGTH:
             raise RuntimeError('Unexpected MIDI message length; '
-                               f'expected {_MIDI_MESSAGE_LENGTH}, '
+                               f'expected {MIDI_MESSAGE_LENGTH}, '
                                f'got {len(midi_event.message)}.')
         self._midi_event = midi_event
         midi_value = midi_event.message[Layout.READBACK_POSITION]

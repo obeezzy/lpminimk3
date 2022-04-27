@@ -51,7 +51,8 @@ class TestMk3(unittest.TestCase):
         self.lp.send_message(DUMMY_MIDI_MESSAGE,
                              interface=Interface.DAW)
         self.assertEqual(self.lp.daw_out_port.sent_message,
-                         DUMMY_MIDI_MESSAGE, 'MIDI message mismatch.')
+                         DUMMY_MIDI_MESSAGE,
+                         'MIDI message mismatch.')
 
         self.lp.send_message(DUMMY_MIDI_MESSAGE, interface='midi')
         self.assertEqual(self.lp.midi_out_port.sent_message,
@@ -204,9 +205,9 @@ class TestMk3(unittest.TestCase):
                          'Layout mismatch.')
 
         with self.assertRaises(ValueError):
-            self.lp.mode = ''
+            self.lp.layout = ''
         with self.assertRaises(ValueError):
-            self.lp.mode = 's'
+            self.lp.layout = 's'
 
     def test_device_inquiry(self):
         self.lp.open()
