@@ -9,6 +9,7 @@ class RgbColor:
     """
     An RGB color.
     """
+    _RGB_LENGTH = 3
     _MIN_HEX_LENGTH = 4
     _MAX_HEX_LENGTH = 7
     _MIN_COLOR_VALUE = 0
@@ -16,8 +17,7 @@ class RgbColor:
 
     def __init__(self, value):
         if (not isinstance(value, str)
-            and not isinstance(value, tuple)
-                and not isinstance(value, list)):
+                and not isinstance(value, (tuple, list))):
             raise RuntimeError('RGB color must be str or tuple or list.')
         if (isinstance(value, str)
             and len(value) != RgbColor._MIN_HEX_LENGTH
@@ -38,13 +38,12 @@ class RgbColor:
         if isinstance(value, str):
             match = re.match('^#(?:[0-9a-fA-F]{3}){1,2}$', value)
             return True if match else False
-        elif isinstance(value, tuple) or isinstance(value, list):
-            valid_values = []
-            for rgb_value in value:
-                if rgb_value >= RgbColor._MIN_COLOR_VALUE \
-                        and rgb_value <= RgbColor._MAX_COLOR_VALUE:
-                    valid_values.append(rgb_value)
-            return len(valid_values) == len(value) and len(value) <= 3
+        elif isinstance(value, (tuple, list)):
+            valid_values = list(filter(lambda rgb_value: min(RgbColor._MAX_COLOR_VALUE,  # noqa
+                                                             max(rgb_value, RgbColor._MIN_COLOR_VALUE)) == rgb_value,  # noqa
+                                       value))
+            return (len(valid_values) == len(value)
+                    and len(value) == RgbColor._RGB_LENGTH)
         return False
 
     @property
@@ -59,32 +58,40 @@ class RgbColor:
         """
         Red value
         """
-        return self._r
+        return self._r >> 2
 
     @property
     def g(self):
         """
         Green value
         """
-        return self._g
+        return self._g >> 2
 
     @property
     def b(self):
         """
         Blue value
         """
-        return self._b
+        return self._b >> 2
 
     def _parse(self, value):
-        if isinstance(value, str) and len(value) == RgbColor._MIN_HEX_LENGTH:
+        if (isinstance(value, str)
+                and len(value) == RgbColor._MIN_HEX_LENGTH):
             self._r = int(value[1], 16)
             self._g = int(value[2], 16)
             self._b = int(value[3], 16)
             self._value = value
-        elif isinstance(value, str) and len(value) == RgbColor._MAX_HEX_LENGTH:
+        elif (isinstance(value, str)
+                and len(value) == RgbColor._MAX_HEX_LENGTH):
             self._r = int(value[1:3], 16)
             self._g = int(value[3:5], 16)
             self._b = int(value[5:7], 16)
+            self._value = value
+        elif (isinstance(value, (tuple, list))
+                and len(value) == RgbColor._RGB_LENGTH):
+            self._r = value[0]
+            self._g = value[1]
+            self._b = value[2]
             self._value = value
 
 

@@ -1,7 +1,7 @@
 import unittest
 from lpminimk3.__init__ import ButtonFace, Panel, ButtonEvent
-from lpminimk3.colors import ColorPalette,\
-                             ColorShadeStore
+from lpminimk3.colors._colors import ColorPalette,\
+                                     ColorShadeStore
 from lpminimk3.region import Labeled
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
@@ -158,6 +158,9 @@ class TestLed(unittest.TestCase):
         self.lp.panel.led('up').color = 'blue0'
         self.lp.panel.led('up').color = 'violet0'
         self.lp.panel.led('up').color = 'white0'
+        self.lp.panel.led('up').color = '#fff'
+        self.lp.panel.led('up').color = '#ff0000'
+        self.lp.panel.led('up').color = (0, 0, 255)
 
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = '1r'
@@ -165,8 +168,14 @@ class TestLed(unittest.TestCase):
             self.lp.panel.led('up').color = 're'
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = 'gree3'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = (0, 0)
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = (-1, 0, -1)
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = (257, 277, 99)
+        with self.assertRaises(ValueError):
+            self.lp.grid.led('0x0').color = '#ga1'
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = 'blue-0'
         with self.assertRaises(ValueError):

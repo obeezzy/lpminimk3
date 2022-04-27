@@ -3,7 +3,7 @@ from abc import ABC
 import time
 import math
 from functools import reduce
-from ..colors import ColorShade, ColorShadeStore, RgbColor
+from ..colors._colors import ColorShade, ColorShadeStore, RgbColor
 from ..midi_messages import Colorspec,\
                             ColorspecFragment,\
                             Constants
