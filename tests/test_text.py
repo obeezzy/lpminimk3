@@ -106,6 +106,9 @@ class TestText(unittest.TestCase):
         text.fg_color = 'blue0'
         text.fg_color = 'violet0'
         text.fg_color = 'white0'
+        text.bg_color = '#fff'
+        text.bg_color = '#ff0000'
+        text.bg_color = (0, 0, 255)
 
         text.fg_color.set(1)
         text.fg_color.set(ColorPalette.Red.SHADE_1)
@@ -119,8 +122,14 @@ class TestText(unittest.TestCase):
             text.fg_color = 're'
         with self.assertRaises(ValueError):
             text.fg_color = 'gree3'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             text.fg_color = (0, 0)
+        with self.assertRaises(ValueError):
+            text.fg_color = (-1, 0, -1)
+        with self.assertRaises(ValueError):
+            text.fg_color = (257, 277, 99)
+        with self.assertRaises(ValueError):
+            text.fg_color = '#ga1'
         with self.assertRaises(ValueError):
             text.fg_color = 'blue-0'
         with self.assertRaises(ValueError):
@@ -171,6 +180,9 @@ class TestText(unittest.TestCase):
         text.bg_color = 'blue0'
         text.bg_color = 'violet0'
         text.bg_color = 'white0'
+        text.bg_color = '#fff'
+        text.bg_color = '#ff0000'
+        text.bg_color = (0, 0, 255)
 
         text.bg_color.set(1)
         text.bg_color.set(ColorPalette.Red.SHADE_1)
@@ -184,8 +196,14 @@ class TestText(unittest.TestCase):
             text.bg_color = 're'
         with self.assertRaises(ValueError):
             text.bg_color = 'gree3'
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             text.bg_color = (0, 0)
+        with self.assertRaises(ValueError):
+            text.bg_color = (-1, 0, -1)
+        with self.assertRaises(ValueError):
+            text.bg_color = (257, 277, 99)
+        with self.assertRaises(ValueError):
+            text.bg_color = '#ga1'
         with self.assertRaises(ValueError):
             text.bg_color = 'blue-0'
         with self.assertRaises(ValueError):

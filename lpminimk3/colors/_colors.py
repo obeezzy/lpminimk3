@@ -18,12 +18,12 @@ class RgbColor:
     def __init__(self, value):
         if (not isinstance(value, str)
                 and not isinstance(value, (tuple, list))):
-            raise RuntimeError('RGB color must be str or tuple or list.')
+            raise TypeError('RGB color must be str or tuple or list.')
         if (isinstance(value, str)
             and len(value) != RgbColor._MIN_HEX_LENGTH
                 and len(value) != RgbColor._MAX_HEX_LENGTH):
-            raise RuntimeError('Only hex values in the '
-                               '#rgb and #rrggbb formats are accepted.')
+            raise ValueError('Only hex values in the '
+                             '#rgb and #rrggbb formats are accepted.')
         self._parse(value)
 
     def __repr__(self):

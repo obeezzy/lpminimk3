@@ -268,8 +268,10 @@ class RenderableColor:
             self._color_id = 0
         elif (not isinstance(value, ColorShade)
                 and not isinstance(value, str)
-                and not isinstance(value, int)):
-            raise TypeError('Must be of type ColorShade or str or int.')
+                and not isinstance(value, int)
+                and not isinstance(value, (tuple, list))):
+            raise TypeError('Must be of type ColorShade '
+                            'or str or int or tuple or list.')
         elif ((isinstance(value, str)
                 and not ColorShadeStore().contains(value)
                 and not RgbColor.is_valid(value))
