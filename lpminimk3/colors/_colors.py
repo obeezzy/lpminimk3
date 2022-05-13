@@ -58,21 +58,21 @@ class RgbColor:
         """
         Red value
         """
-        return self._r >> 2
+        return self._r >> 1
 
     @property
     def g(self):
         """
         Green value
         """
-        return self._g >> 2
+        return self._g >> 1
 
     @property
     def b(self):
         """
         Blue value
         """
-        return self._b >> 2
+        return self._b >> 1
 
     def _parse(self, value):
         if (isinstance(value, str)
