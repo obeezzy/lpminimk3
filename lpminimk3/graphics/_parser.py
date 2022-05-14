@@ -111,6 +111,58 @@ class BitmapDocument:
         return filename
 
 
+class MovieDocument:
+    def __init__(self,
+                 json_filename, *,
+                 schema_filename='./schema/movie.schema.json'):
+        assert json_filename
+        self._filename = self._determine_abspath(json_filename)
+        self._data = self._load(json_filename)
+        schema = self._load(schema_filename)
+        self._validate(self._data, schema)
+
+    def __repr__(self):
+        return f"MovieDocument(filename='{self.filename}')"
+
+    def __str__(self):
+        return repr(self)
+
+    @property
+    def filename(self):
+        return self._filename
+
+    @property
+    def framerate(self):
+        return self._data['framerate']
+
+    @property
+    def frames(self):
+        return self._data['frames']
+
+    @property
+    def data(self):
+        return self._data
+
+    def _load(self, filename):
+        data = None
+        filename = self._determine_abspath(filename)
+        with open(filename) as f:
+            data = json.load(f)
+        return data
+
+    def _validate(self, data, schema):
+        try:
+            jsonschema.validate(instance=data, schema=schema)
+        except jsonschema.exceptions.ValidationError:
+            raise ValueError('Invalid JSON file format.')
+
+    def _determine_abspath(self, filename):
+        if not os.path.isabs(filename):
+            current_dir = os.path.dirname(__file__)
+            return os.path.join(current_dir, filename)
+        return filename
+
+
 class LightingType:
     FLASH = 'flash'
     PULSE = 'pulse'
@@ -210,7 +262,7 @@ class BitConfig:
         return f"BitConfig(name='{self._name}')"
 
     def __str__(self):
-        return self._data
+        return repr(self)
 
     @property
     def lighting_type(self):
@@ -245,3 +297,9 @@ class BitmapConfig:
             for button_name, data in config_data.items():
                 config_dict[button_name] = BitConfig(button_name, data)
         return config_dict
+
+    def __repr__(self):
+        return f"BitmapConfig('{str(self._data)}')"
+
+    def __str__(self):
+        return repr(self)

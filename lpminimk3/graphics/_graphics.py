@@ -5,7 +5,9 @@ from ._utils import Renderable,\
                     String,\
                     RenderableColor,\
                     TextScroll,\
-                    BitmapPrivate
+                    Framerate,\
+                    Bitmap as _Bitmap,\
+                    Movie as _Movie
 from ..colors import ColorPalette
 
 
@@ -244,11 +246,11 @@ class Bitmap(Renderable):
             raise TypeError('Must be of type str.')
         if not filename:
             raise ValueError('No filename set.')
-        self._bitmap = BitmapPrivate(filename,
-                                     fg_color=RenderableColor(self,
-                                                              fg_color),
-                                     bg_color=RenderableColor(self,
-                                                              bg_color))
+        self._bitmap = _Bitmap(filename,
+                               fg_color=RenderableColor(self,
+                                                        fg_color),
+                               bg_color=RenderableColor(self,
+                                                        bg_color))
 
     def __repr__(self):
         return ("Bitmap("
@@ -295,4 +297,86 @@ class Bitmap(Renderable):
 
     def swap_colors(self):
         self._bitmap.fg_color, self._bitmap.bg_color = self._bitmap.bg_color, self._bitmap.fg_color  # noqa
+        return self
+
+
+class Movie(Renderable):
+    def __init__(self,
+                 filename, *,
+                 fg_color=None,
+                 bg_color=None):
+        if not isinstance(filename, str):
+            raise TypeError('Must be of type str.')
+        if not filename:
+            raise ValueError('No filename set.')
+        self._movie = _Movie(filename,
+                             fg_color=RenderableColor(self,
+                                                      fg_color),
+                             bg_color=RenderableColor(self,
+                                                      bg_color))
+
+    def __repr__(self):
+        return ("Movie("
+                f"filename='{os.path.basename(self.filename)}')")
+
+    def __str__(self):
+        return repr(self)
+
+    @Renderable.bits.getter
+    def bits(self):
+        return self._movie.bits
+
+    @Renderable.word_count.getter
+    def word_count(self):
+        return self._movie.word_count
+
+    @property
+    def filename(self):
+        return self._movie.filename
+
+    @property
+    def fg_color(self):
+        return self._movie.fg_color
+
+    @fg_color.setter
+    def fg_color(self, color):
+        self._movie.fg_color = RenderableColor(self, color)
+
+    @property
+    def bg_color(self):
+        return self._movie.bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        self._movie.bg_color = RenderableColor(self, color)
+
+    @property
+    def framerate(self):
+        return Framerate(self, self._movie)
+
+    @property
+    def frames(self):
+        return self._movie.frames
+
+    @property
+    def position(self):
+        return self._movie.position
+
+    @position.setter
+    def position(self, position):
+        self._movie.position = position
+
+    def render(self, matrix):
+        self._movie.render(matrix)
+
+    def skip(self, frame_count=1):
+        return self._movie.skip(frame_count, ref=self)
+
+    def print(self, *,
+              one='X',
+              zero=' '):
+        self._movie.print(one=one, zero=zero)
+
+    def swap_colors(self):
+        self._movie.fg_color, self._movie.bg_color = self._movie.bg_color, self._movie.fg_color  # noqa
         return self
