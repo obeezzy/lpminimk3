@@ -1,14 +1,15 @@
 import os
-from ._utils import Renderable,\
-                    ScrollDirection,\
-                    FlipAxis,\
-                    String,\
-                    RenderableColor,\
-                    TextScroll,\
-                    Framerate,\
-                    Bitmap as _Bitmap,\
-                    Movie as _Movie
 from ..colors import ColorPalette
+from ._renderable import Renderable,\
+                         RenderableColor,\
+                         String,\
+                         TextScroll,\
+                         MovieRoll,\
+                         Bitmap as _Bitmap,\
+                         Movie as _Movie
+from ._utils import ScrollDirection,\
+                    FlipAxis,\
+                    Framerate
 
 
 class Text(Renderable):
@@ -359,6 +360,14 @@ class Movie(Renderable):
         return self._movie.frames
 
     @property
+    def first_frame(self):
+        return self._movie.first_frame
+
+    @property
+    def last_frame(self):
+        return self._movie.last_frame
+
+    @property
     def position(self):
         return self._movie.position
 
@@ -368,6 +377,17 @@ class Movie(Renderable):
 
     def render(self, matrix):
         self._movie.render(matrix)
+
+    def play(self, *,
+             count=None,
+             cycle_func=None):
+        if cycle_func and not callable(cycle_func):
+            raise ValueError("'cycle_func' must be callable.")
+        self._movie.roll = MovieRoll(self._movie,
+                                     int(self.framerate),
+                                     cycle_func=cycle_func,
+                                     count=count)
+        return self
 
     def skip(self, frame_count=1):
         return self._movie.skip(frame_count, ref=self)

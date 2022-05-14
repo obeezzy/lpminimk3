@@ -67,6 +67,50 @@ class RawBitmapRenderer:
         return lighting_data
 
 
+class TextRenderer:
+    def __init__(self,
+                 text,
+                 string,
+                 period,
+                 direction,
+                 matrix, *,
+                 timeout,
+                 count,
+                 cycle_func):
+        self._text = text
+        self._string = string
+        self._period = period
+        self._direction = direction
+        self._matrix = matrix
+        self._timeout = timeout
+        self._count = count
+        self._cycle_func = cycle_func
+
+    def render(self):
+        time_left = self._timeout
+        rotations_left = self._count
+        text_width = len(self._text) * self._matrix.width
+        while time_left and rotations_left:
+            for _ in range(text_width):
+                if self._direction == 'right':
+                    self._string.shift_right()
+                else:
+                    self._string.shift_left()
+                CharacterRenderer(self._string.character_to_render,
+                                  self._matrix,
+                                  angle=self._string.angle,
+                                  flip_axis=self._string.flip_axis).render()
+                if self._cycle_func:
+                    self._cycle_func(_/text_width, self._matrix.launchpad)
+                time.sleep(self._period)
+                time_left = (max(time_left - self._period, 0)
+                             if time_left != -1
+                             else time_left)
+            rotations_left = (max(rotations_left - 1, 0)
+                              if rotations_left != -1
+                              else rotations_left)
+
+
 class CharacterRenderer:
     def __init__(self,
                  character,
@@ -115,21 +159,23 @@ class MovieRenderer:
                  raw_bitmaps,
                  framerate,
                  matrix, *,
-                 fg_color,
-                 bg_color):
+                 count=None):
         self._raw_bitmaps = raw_bitmaps
         self._framerate = max(1, min(60, framerate))
         self._matrix = matrix
-        self._fg_color = fg_color
-        self._bg_color = bg_color
         self._angle = 0
         self._flip_axis = 'x'
+        self._count = -1 if not count else count
 
     def render(self):
-        for bitmap in self._raw_bitmaps:
-            renderer = RawBitmapRenderer(bitmap,
-                                         self._matrix,
-                                         fg_color=self._fg_color,
-                                         bg_color=self._bg_color)
-            renderer.render()
-            time.sleep(1 / self._framerate)
+        period = 1 / self._framerate
+        rotations_left = self._count
+        while rotations_left:
+            for bitmap in self._raw_bitmaps:
+                renderer = RawBitmapRenderer(bitmap,
+                                             self._matrix)
+                renderer.render()
+                time.sleep(period)
+            rotations_left = (max(rotations_left - 1, 0)
+                              if rotations_left != -1
+                              else rotations_left)
