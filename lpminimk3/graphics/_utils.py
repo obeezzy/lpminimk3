@@ -4,12 +4,14 @@ import time
 import math
 from functools import reduce
 from ..colors._colors import ColorShade, ColorShadeStore, RgbColor
-from ..midi_messages import Colorspec,\
-                            ColorspecFragment,\
-                            Constants
 from ._parser import GlyphDictionary,\
                      BitmapDocument,\
+                     MovieDocument,\
                      BitmapConfig
+from ._renderer import CharacterRenderer,\
+                       BitmapRenderer,\
+                       MovieRenderer,\
+                       FrameRenderer
 
 
 class Renderable(ABC):
@@ -23,67 +25,6 @@ class Renderable(ABC):
 
     def render(self, matrix):
         pass
-
-
-class BitmapRenderer:
-    def __init__(self,
-                 raw_bitmap,
-                 matrix, *,
-                 fg_color,
-                 bg_color):
-        self._raw_bitmap = raw_bitmap
-        self._matrix = matrix
-        self._fg_color = fg_color
-        self._bg_color = bg_color
-        self._angle = 0
-        self._flip_axis = 'x'
-
-    def render(self):
-        colorspec_fragments = []
-        for led, bit in zip(self._matrix.led_range(rotation=self._angle,
-                                                   flip_axis=self._flip_axis),
-                            self._raw_bitmap):
-            bit_config = self._raw_bitmap.config[led.name]
-            lighting_type = bit_config.lighting_type
-            led_index = led.midi_value
-            lighting_data = self._determine_lighting_data(bit_config,
-                                                          bit,
-                                                          self._fg_color,
-                                                          self._bg_color)
-            fragment = ColorspecFragment(lighting_type,
-                                         led_index,
-                                         *lighting_data)
-            colorspec_fragments.append(fragment)
-        payload = Colorspec(*colorspec_fragments)
-        self._matrix.launchpad.send_message(payload)
-
-    def _determine_lighting_data(self, config, bit, fg_color, bg_color):
-        lighting_data = []
-        if config.lighting_type == Constants.LightingType.FLASH:
-            lighting_data = ([config.lighting_data.on_state.color.id]
-                             if bit
-                             else [config.lighting_data.off_state.color.id])
-        elif config.lighting_type == Constants.LightingType.PULSE:
-            lighting_data = ([config.lighting_data.on_state.color.id]
-                             if bit
-                             else [config.lighting_data.off_state.color.id])
-        elif config.lighting_type == Constants.LightingType.RGB:
-            lighting_data = (config.lighting_data.on_state.color.rgb
-                             if bit
-                             else config.lighting_data.off_state.color.rgb)
-        else:
-            on_state = ([config.lighting_data.on_state.color.id]
-                        if config.lighting_data
-                        else [fg_color.color_id])
-            off_state = ([config.lighting_data.off_state.color.id]
-                         if config.lighting_data
-                         else ([0]
-                               if not bg_color
-                               else [bg_color.color_id]))
-            lighting_data = (on_state
-                             if bit
-                             else off_state)
-        return lighting_data
 
 
 class RawBitmapMatrix:
@@ -299,6 +240,27 @@ class RenderableColor:
         return color_id
 
 
+class Framerate:
+    def __init__(self,
+                 movie_ref,
+                 movie):
+        self._movie_ref = movie_ref
+        self._movie = movie
+
+    def set(self, framerate):
+        self._movie.framerate = framerate
+        return self._movie_ref
+
+    def __int__(self):
+        return self._movie.framerate
+
+    def __repr__(self):
+        return f"Framerate({self._movie.framerate})"
+
+    def __str__(self):
+        return repr(self)
+
+
 class TextScroll:
     def __init__(self,
                  text,
@@ -460,65 +422,6 @@ class CharacterTransform:
                                   offset=(self._character.offset.x - count,
                                           self._character.offset.y))
         return character
-
-
-class CharacterRenderer:
-    def __init__(self,
-                 character,
-                 matrix, *,
-                 angle=0,
-                 flip_axis=''):
-        self._raw_bitmap = character.raw_bitmap
-        self._matrix = matrix
-        self._fg_color = character.fg_color
-        self._bg_color = character.bg_color
-        self._angle = angle
-        self._flip_axis = flip_axis
-
-    def render(self):
-        colorspec_fragments = []
-        for led, bit in zip(self._matrix.led_range(rotation=self._angle,
-                                                   flip_axis=self._flip_axis),
-                            self._raw_bitmap):
-            bit_config = self._raw_bitmap.config[led.name]
-            lighting_type = bit_config.lighting_type
-            led_index = led.midi_value
-            lighting_data = self._determine_lighting_data(bit_config,
-                                                          bit,
-                                                          self._fg_color,
-                                                          self._bg_color)
-            fragment = ColorspecFragment(lighting_type,
-                                         led_index,
-                                         *lighting_data)
-            colorspec_fragments.append(fragment)
-        payload = Colorspec(*colorspec_fragments)
-        self._matrix.launchpad.send_message(payload)
-
-    def _determine_lighting_data(self, config, bit, fg_color, bg_color):
-        lighting_data = []
-        if config.lighting_type == Constants.LightingType.FLASH:
-            lighting_data = (config.lighting_data.on_state
-                             if bit
-                             else config.lighting_data.off_state)
-        elif config.lighting_type == Constants.LightingType.PULSE:
-            lighting_data = (config.lighting_data.on_state
-                             if bit
-                             else config.lighting_data.off_state)
-        elif config.lighting_type == Constants.LightingType.RGB:
-            lighting_data = (config.lighting_data.on_state
-                             if bit
-                             else config.lighting_data.off_state)
-        else:
-            on_state = (config.lighting_data.fg_color_id
-                        if config.lighting_data
-                        else [fg_color.color_id])
-            off_state = (config.lighting_data.bg_color_id
-                         if config.lighting_data
-                         else ([0] if not bg_color else [bg_color.color_id]))
-            lighting_data = (on_state
-                             if bit
-                             else off_state)
-        return lighting_data
 
 
 class Character(Renderable):
@@ -836,7 +739,7 @@ class String(Renderable):
             print('\n', end='')
 
 
-class BitmapPrivate(Renderable):
+class Bitmap(Renderable):
     def __init__(self,
                  filename, *,
                  fg_color,
@@ -851,7 +754,7 @@ class BitmapPrivate(Renderable):
         self._bg_color = bg_color
 
     def __repr__(self):
-        return (f"BitmapPrivate('{self}')")
+        return (f"Bitmap('{self}')")
 
     def __str__(self):
         return repr(self)
@@ -896,6 +799,179 @@ class BitmapPrivate(Renderable):
                        matrix,
                        fg_color=self.fg_color,
                        bg_color=self.bg_color).render()
+
+    def print(self, *,
+              one='X',
+              zero=' '):
+        for index, bit in enumerate(self.raw_bitmap,
+                                    start=1):
+            self._print_bit(bit, index, one=one, zero=zero)
+
+    def _print_bit(self, bit, index, *, one, zero):
+        if bit:
+            print(one[0], end='')
+        elif 'LOGLEVEL' in os.environ:
+            print('.', end='')
+        else:
+            print(zero[0], end='')
+        if index % self.raw_bitmap.word_count == 0:
+            print('\n', end='')
+
+
+class Movie(Renderable):
+    def __init__(self,
+                 filename, *,
+                 fg_color,
+                 bg_color):
+        assert isinstance(filename, str)
+        assert isinstance(fg_color, RenderableColor)
+        assert isinstance(bg_color, RenderableColor)
+        self._movie_document = MovieDocument(filename)
+        self._raw_bitmaps = list(map(lambda frame: RawBitmap(
+                                              frame["data"],
+                                              frame["config"]),  # noqa
+                                 self._movie_document.frames))
+        self._fg_color = fg_color
+        self._bg_color = bg_color
+        self._position = 0 if len(self._raw_bitmaps) > 0 else -1
+        self._framerate = self._movie_document.framerate
+
+    def __repr__(self):
+        return (f"Movie('{self}')")
+
+    def __str__(self):
+        return repr(self)
+
+    @Renderable.bits.getter
+    def bits(self):
+        if len(self._raw_bitmaps):
+            for bit in self._raw_bitmaps[self._position]:
+                yield bit
+        yield None
+
+    @Renderable.word_count.getter
+    def word_count(self):
+        return self._raw_bitmap.word_count
+
+    @property
+    def fg_color(self):
+        return self._fg_color
+
+    @fg_color.setter
+    def fg_color(self, color):
+        assert isinstance(color, RenderableColor)
+        self._fg_color = color
+
+    @property
+    def bg_color(self):
+        return self._bg_color
+
+    @bg_color.setter
+    def bg_color(self, color):
+        assert isinstance(color, RenderableColor)
+        self._bg_color = color
+
+    @property
+    def filename(self):
+        return self._movie_document.filename
+
+    @property
+    def framerate(self):
+        return self._framerate
+
+    @framerate.setter
+    def framerate(self, framerate):
+        self._framerate = framerate
+
+    @property
+    def raw_bitmaps(self):
+        return self._raw_bitmaps
+
+    @property
+    def frames(self):
+        return list(map(lambda bitmap: Frame(bitmap), self._raw_bitmaps))
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, position):
+        assert isinstance(position, int)
+        self._position = position
+
+    def render(self, matrix):
+        MovieRenderer(self._raw_bitmaps,
+                      self.framerate,
+                      matrix,
+                      fg_color=self._fg_color,
+                      bg_color=self._bg_color).render()
+
+    def skip(self, frame_count, *, ref):
+        assert isinstance(frame_count, int)
+        if not frame_count:
+            return
+        forward = frame_count > 0
+        new_position = frame_count + self.position
+        if forward:
+            if new_position < len(self.frames):
+                self.position = new_position
+        else:
+            if new_position >= 0:
+                self.position = new_position
+
+        return ref
+
+    def print(self, *,
+              one='X',
+              zero=' '):
+        if len(self._raw_bitmaps):
+            for index, bit in enumerate(self._raw_bitmaps[self._current_frame],
+                                        start=1):
+                self._print_bit(bit, index, one=one, zero=zero)
+
+    def _print_bit(self, bit, index, *, one, zero):
+        if bit:
+            print(one[0], end='')
+        elif 'LOGLEVEL' in os.environ:
+            print('.', end='')
+        else:
+            print(zero[0], end='')
+        if index % self._raw_bitmap.word_count == 0:
+            print('\n', end='')
+
+
+class Frame(Renderable):
+    def __init__(self, data):
+        assert (isinstance(data, dict)
+                or isinstance(data, RawBitmap))
+        self._raw_bitmap = (RawBitmap(data['data'],
+                                      data['config'])
+                            if isinstance(data, dict)
+                            else data)
+
+    def __repr__(self):
+        return (f"Frame('{repr(self._raw_bitmap.data)}')")
+
+    def __str__(self):
+        return repr(self)
+
+    @Renderable.bits.getter
+    def bits(self):
+        for bit in self._raw_bitmap:
+            yield bit
+
+    @Renderable.word_count.getter
+    def word_count(self):
+        return self._raw_bitmap.word_count
+
+    @property
+    def raw_bitmap(self):
+        return self._raw_bitmap
+
+    def render(self, matrix):
+        FrameRenderer(self._raw_bitmap,
+                      matrix).render()
 
     def print(self, *,
               one='X',

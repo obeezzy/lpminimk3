@@ -1,2 +1,4 @@
 recursive-include lpminimk3/graphics/glyphs *.json
 recursive-include lpminimk3/graphics/schema *.json
+recursive-include lpminimk3/graphics/bitmaps *.json
+recursive-include lpminimk3/graphics/movies *.json
