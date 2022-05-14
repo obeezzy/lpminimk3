@@ -821,20 +821,9 @@ class Movie(Renderable):
             print('\n', end='')
 
     def _print_in_console(self, one='X', zero=' '):
-        matrix = RawBitmapMatrix(self.frame_to_render.raw_bitmap)
-        if self._flip_axis and not self._angle:
-            for index, bit in enumerate(matrix.flipped_range(self._flip_axis),   # noqa
-                                        start=1):  # noqa
-                self._print_bit(bit, index, one=one, zero=zero)
-        elif self.angle:
-            for index, bit in enumerate(matrix.rotated_range(self._angle,
-                                                             flip_axis=self._flip_axis),  # noqa
-                                        start=1):
-                self._print_bit(bit, index, one=one, zero=zero)
-        else:
-            for index, bit in enumerate(self.character_to_render.raw_bitmap,
-                                        start=1):
-                self._print_bit(bit, index, one=one, zero=zero)
+        for index, bit in enumerate(self.frame_to_render.raw_bitmap,
+                                    start=1):
+            self._print_bit(bit, index, one=one, zero=zero)
 
 
 class Frame(Renderable):
