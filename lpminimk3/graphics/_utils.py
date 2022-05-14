@@ -1,5 +1,3 @@
-import os
-import time
 import math
 from ._parser import BitmapConfig
 

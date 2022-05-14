@@ -257,7 +257,7 @@ class MovieRoll:
                     print(zero, end='')
                 if index % movie.frame_to_render.word_count == 0:
                     print('\n', end='')
-            
+
             movie.position = (0
                               if rotations_left
                               and (movie.position == len(movie.frames) - 1)
@@ -571,7 +571,7 @@ class String(Renderable):
                                         start=1):
                 self._print_bit(bit, index, one=one, zero=zero)
         else:
-            for index, bit in enumerate(self.frame_to_render.raw_bitmap,
+            for index, bit in enumerate(self.character_to_render.raw_bitmap,
                                         start=1):
                 self._print_bit(bit, index, one=one, zero=zero)
 
@@ -835,6 +835,7 @@ class Movie(Renderable):
             for index, bit in enumerate(self.character_to_render.raw_bitmap,
                                         start=1):
                 self._print_bit(bit, index, one=one, zero=zero)
+
 
 class Frame(Renderable):
     def __init__(self, data):
