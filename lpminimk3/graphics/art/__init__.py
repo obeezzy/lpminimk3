@@ -1,1 +1,1 @@
-from ._art import Bitmaps  # noqa
+from ._art import Bitmaps, Movies  # noqa
