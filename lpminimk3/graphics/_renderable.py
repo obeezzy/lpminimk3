@@ -694,14 +694,12 @@ class Movie(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
-        if len(self._raw_bitmaps):
-            for bit in self._raw_bitmaps[self._position]:
-                yield bit
-        yield None
+        for bit in self.frame_to_render.raw_bitmap:
+            yield bit
 
     @Renderable.word_count.getter
     def word_count(self):
-        return self._raw_bitmap.word_count
+        return self.frame_to_render.raw_bitmap.word_count
 
     @property
     def fg_color(self):
