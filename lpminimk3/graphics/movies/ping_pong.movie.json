@@ -3796,5 +3796,9 @@
             }
         }
     ],
-    "version": "0.1"
+    "version": "0.1",
+    "metadata": {
+        "author": "Chronic Coder",
+        "url": "https://github.com/obeezzy/lpminimk3/tree/main/lpminimk3/graphics/movies"
+    }
 }
