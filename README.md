@@ -140,7 +140,7 @@ Scroll `Hello, world!` on Launchpad's surface once:
 
 
 ## Extended graphics support
-`lpminimk3` is also capable of rendering graphics from _**bitmaps**_ and _**movies**_. These are JSON files that describe the rendering data in a high-level format. Data in these files are grouped as _**frames**_. A frame is a sequence of bits and their color configurations. A bitmap file consists of a single frame while a movie file consists of a sequence of frames. 
+`lpminimk3` is also capable of rendering graphics from _**bitmaps**_ and _**movies**_. These are JSON files that describe the rendering data in a high-level format. Data in these files are grouped as _**frames**_. A **frame** is a sequence of bits and their color configurations. A **bitmap** file consists of a single frame while a **movie** file consists of a sequence of frames. 
 
 ### Syncing with LP Sketch
 If you want to create and edit bitmaps and/or movies with a graphical tool, try [LP Sketch](https://www.github.com/obeezzy/lpsketch). LP Sketch is a free online Launchpad editor specifically designed for use with `lpminimk3`. You can also sync your Launchpad with LP Sketch by starting `lpminimk3`'s sync server:
