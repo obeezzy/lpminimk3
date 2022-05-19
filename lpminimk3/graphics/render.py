@@ -48,7 +48,7 @@ def render_movie(filename,
 
 def find_lp():
     found_lps = find_launchpads()
-    if found_lps:
+    if len(found_lps):
         lp = found_lps[0]
         lp.open()
         lp.mode = Mode.PROG
