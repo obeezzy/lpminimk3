@@ -1,5 +1,5 @@
 # lpminimk3
-Python API for the [Novation Launchpad Mini MK3](https://novationmusic.com/en/launch/launchpad-mini) with an object-oriented approach.
+Python API for the [Novation Launchpad Mini MK3](https://novationmusic.com/en/launch/launchpad-mini)
 
 [![CI](https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml/badge.svg)](https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml)
 [![CD](https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml/badge.svg?branch=v0.3.0)](https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml)
@@ -139,47 +139,60 @@ Scroll `Hello, world!` on Launchpad's surface once:
 ```
 
 
-## Release History
-* [0.4.5](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.5)
-    * Correct issue with examples deployment
-* [0.4.4](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.4)
-    * Add initial support for Mac
-    * Add hex and RGB support
-    * Expose examples from root package
-    * Refactor port parsing logic
-* [0.4.3](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.3)
-    * Add initial support for Windows
-* [0.4.2](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.2)
-    * Correct `MANIFEST.in`
-* [0.4.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.1)
-    * Add `MANIFEST.in`
-    * Clean up README
-* [0.4.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.4.0)
-    * Add `lpminimk3.graphics` module
-    * Introduce text rendering, printing, scrolling and transformations
-    * Add `Region`, for representing a group of LEDs
-    * Add and update examples
-* [0.3.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.3.0)
-    * Change `ButtonEvent.event_type` to `ButtonEvent.type`
-* [0.2.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.1)
-    * Fix version error
-* [0.2.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.2.0)
-    * Add `led_range()` for easy iteration through LEDs
-    * Update and add examples
-    * Update README for clarity
-    * Add `ButtonEvent` and `buttons()`, for handling of button presses and releases
-    * Clean up documentation
-    * Add logger, for logging MIDI events
-    * Move all MIDI messages to `midi_messages` module
-    * More robust testing
-    * Bug fixes
-    * Complete [Project Foundation](https://github.com/obeezzy/lpminimk3/projects/1)
-* [0.1.2](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.2)
-    * Properly bump up version
-* [0.1.1](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.1)
-    * Clean up README
-* [0.1.0](https://github.com/obeezzy/lpminimk3/releases/tag/v0.1.0)
-    * First release ever (Still a work in progress)
+## Extended graphics support
+`lpminimk3` is also capable of rendering graphics from _**bitmaps**_ and _**movies**_. These are JSON files that describe the rendering data in a high-level format. Data in these files are grouped as _**frames**_. A frame is a sequence of bits and their color configurations. A bitmap file consists of a single frame while a movie file consists of a sequence of frames. 
+
+### Syncing with LP Sketch
+If you want to create and edit bitmaps and/or movies with a graphical tool, try [LP Sketch](https://www.github.com/obeezzy/lpsketch). LP Sketch is a free online Launchpad editor specifically designed for use with `lpminimk3`. You can also sync your Launchpad with LP Sketch by starting `lpminimk3`'s sync server:
+```bash
+$ python -m lpminimk3.graphics.sync
+```
+Once the server is running, visit the [LP Sketch](https://www.github.com/obeezzy/lpsketch) website to start creating bitmaps and movies live.
+
+### Rendering bitmaps and movies
+Render `smiley.bitmap.json` on Launchpad's surface:
+```python
+"""
+Display "Smiley" bitmap.
+"""
+
+from lpminimk3 import Mode, find_launchpads
+from lpminimk3.graphics import Bitmap
+
+lp = find_launchpads()[0]  # Get the first available launchpad
+lp.open()  # Open device for reading and writing on MIDI interface (by default)
+
+lp.mode = Mode.PROG  # Switch to the programmer mode
+
+lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))  # Display bitmap
+```
+Render `ping_pong.movie.json` on Launchpad's surface:
+```python
+"""
+Render "Ping/Pong" movie.
+"""
+
+from lpminimk3 import Mode, find_launchpads
+from lpminimk3.graphics import Movie
+
+lp = find_launchpads()[0]  # Get the first available launchpad
+lp.open()  # Open device for reading and writing on MIDI interface (by default)
+
+lp.mode = Mode.PROG  # Switch to the programmer mode
+
+print('Watch movie played on the Launchpad\'s surface.\n'
+      'Press Ctrl+C to quit.\n')
+
+lp.grid.render(Movie("/path/to/ping_pong.movie.json").play())  # Play movie indefinitely
+```
+For convenience, you can use the render script, `render.py`:
+```bash
+$ python -m lpminimk3.graphics.render -f /path/to/bitmap/or/movie.json
+```
+`render.py` can be used to render text, bitmaps and movies on the Launchpad and on the console. For more options, run:
+```bash
+$ python -m lpminimk3.graphics.render -h
+```
 
 
 ## Notes
