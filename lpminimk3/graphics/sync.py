@@ -3,8 +3,8 @@ import websockets
 import json
 import sys
 from functools import partial
-from ..__init__ import find_launchpads, Mode
-from ._renderable import Frame
+from lpminimk3 import find_launchpads, Mode
+from lpminimk3.graphics import Frame
 
 
 # Create handler for each connection

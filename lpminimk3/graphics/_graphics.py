@@ -10,6 +10,7 @@ from ._renderable import Renderable,\
 from ._utils import ScrollDirection,\
                     FlipAxis,\
                     Framerate
+from ._renderable import Frame  # noqa
 
 
 class Text(Renderable):
