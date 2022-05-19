@@ -194,7 +194,7 @@ class MidiPort:
                 self._midi_in.open_port(self.port_index, MidiPort.IN)
 
             if platform.system() != 'Windows':
-                self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+                self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
         if self.is_open():
