@@ -240,7 +240,8 @@ class MovieRoll:
     def render(self, movie, matrix):
         MovieRenderer(movie.raw_bitmaps,
                       self._framerate,
-                      matrix).render()
+                      matrix,
+                      count=self._count).render()
 
     def print(self, *,
               movie,
