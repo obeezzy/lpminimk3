@@ -242,8 +242,8 @@ class MidiPort:
                 time.sleep(read_delay)
                 elapsed += .1 if timeout and timeout > 0 else 0
             except KeyboardInterrupt:
-                print('\nPolling terminated.')
-                break
+                logger.debug('\nPolling terminated.')
+                raise
         return event
 
     def clear_event_queue(self, *, read_delay=.001):
