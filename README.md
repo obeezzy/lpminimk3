@@ -153,7 +153,7 @@ Once the server is running, visit the [LP Sketch](https://www.github.com/obeezzy
 Render `smiley.bitmap.json` on Launchpad's surface:
 ```python
 """
-Display "Smiley" bitmap.
+Render "Smiley" bitmap.
 """
 
 from lpminimk3 import Mode, find_launchpads
