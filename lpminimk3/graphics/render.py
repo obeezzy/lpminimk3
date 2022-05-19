@@ -70,7 +70,8 @@ def _render(args, *, lp=None):
                          lp=lp)
     elif len(args.text) == 1:
         render_character(args.text,
-                         on_screen=args.s)
+                         on_screen=args.s,
+                         lp=lp)
     else:
         render_text(args.text,
                     on_screen=args.s,
