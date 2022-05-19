@@ -5,6 +5,7 @@ Utility classes for Launchpad Mini MK3.
 import enum
 import time
 import re
+import platform
 from collections import namedtuple
 from . import logging
 from ..match import Match
@@ -182,12 +183,18 @@ class MidiPort:
             else:
                 self._midi_out.open_port(self.port_index, MidiPort.OUT)
 
+            if platform.system() != 'Windows':
+                self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
+
         elif (self._direction == MidiPort.IN
                 and not self._midi_in.is_port_open()):
             if self._virtual:
                 self._midi_in.open_virtual_port(self._system_port_name)
             else:
                 self._midi_in.open_port(self.port_index, MidiPort.IN)
+
+            if platform.system() != 'Windows':
+                self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
         if self.is_open():
