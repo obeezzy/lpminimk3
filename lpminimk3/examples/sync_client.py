@@ -32,15 +32,16 @@ async def main(*, ip=None, port=7654):
     args = Args(ip, port)
     try:
         if len(sys.argv) > 1 or not ip:
-            parser = ArgumentParser(description="Sync client for lpminimk3")
+            parser = ArgumentParser(description="Sync client example "
+                                                "for lpminimk3")
             parser.add_argument("-i",
                                 "--ip",
                                 required=True,
-                                help="IP to serve on (Default: localhost)")
+                                help="Server IP")
             parser.add_argument("-p",
                                 "--port",
                                 type=int,
-                                help="Port to bind to (Default: 7654)")
+                                help="Server port (Default: 7654)")
             args = parser.parse_args(sys.argv[1:])
         lps = find_lps()
         ip = args.ip if args.ip else ip
@@ -48,7 +49,7 @@ async def main(*, ip=None, port=7654):
         if args.ip:
             await sync_with_server(lps, ip, port)
         else:
-            print("No IP provided.")
+            print("No IP provided.", file=sys.stderr)
             parser.print_help()
             return 1
     except KeyboardInterrupt:

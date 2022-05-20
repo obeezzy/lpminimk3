@@ -49,14 +49,14 @@ async def main(*, ip="localhost", port=7654, allow_all_hosts=False):
             parser.add_argument("-a",
                                 "--all",
                                 action="store_true",
-                                help="Listen for all hosts (on '0.0.0.0')")
+                                help="Listen for all hosts (on 0.0.0.0)")
             parser.add_argument("-i",
                                 "--ip",
-                                help="IP to serve on (Default: localhost)")
+                                help=f"IP to serve on (Default: {ip})")
             parser.add_argument("-p",
                                 "--port",
                                 type=int,
-                                help="Port to bind to (Default: 7654)")
+                                help=f"Port to bind to (Default: {port})")
             parser.add_argument("--version",
                                 action="version",
                                 version="%(prog) 0.1")
