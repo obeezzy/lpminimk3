@@ -19,8 +19,8 @@ def find_lps():
 
 async def sync_with_server(lps, host, port):
     uri = f"ws://{host}:{port}/sync"
-    while True:
-        async with connect(uri) as websocket:
+    async with connect(uri) as websocket:
+        while True:
             data = await websocket.recv()
             data = json.loads(data)
             for lp in lps:

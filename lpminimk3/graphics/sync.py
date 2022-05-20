@@ -9,14 +9,21 @@ from lpminimk3 import find_launchpads, Mode
 from lpminimk3.graphics import Frame
 
 
+_connected_clients = []
+
+
 async def handler(lps, websocket, path):
     if path == "/sync":
-        while True:
-            data = await websocket.recv()
-            json_data = json.loads(data)
-            for lp in lps:
-                lp.grid.render(Frame(json_data))
-            await websocket.send(data)
+        _connected_clients.append(websocket)
+        try:
+            while True:
+                data = await websocket.recv()
+                json_data = json.loads(data)
+                for lp in lps:
+                    lp.grid.render(Frame(json_data))
+                websockets.broadcast(_connected_clients, data)
+        finally:
+            _connected_clients.remove(websocket)
 
 
 async def sync_with_sketch(lps, host, port):
@@ -42,7 +49,6 @@ async def main(*, ip="localhost", port=7654, allow_all_hosts=False):
             parser.add_argument("-a",
                                 "--all",
                                 action="store_true",
-                                metavar="ALL_HOSTS",
                                 help="Listen for all hosts (on '0.0.0.0')")
             parser.add_argument("-i",
                                 "--ip",
