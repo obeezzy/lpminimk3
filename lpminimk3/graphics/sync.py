@@ -1,3 +1,7 @@
+"""
+Sync server for controlling connected Launchpad Mini MK3 clients.
+"""
+
 import asyncio
 import websockets
 import json

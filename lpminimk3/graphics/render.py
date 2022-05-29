@@ -1,3 +1,7 @@
+"""
+Render script for rendering texts, bitmaps and movies.
+"""
+
 import json
 import sys
 from argparse import ArgumentParser, FileType
