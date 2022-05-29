@@ -27,31 +27,36 @@ async def sync_with_server(lps, host, port):
                 lp.grid.render(Frame(data))
 
 
+def init_parser(port):
+    parser = ArgumentParser(description="Sync client example "
+                                        "for lpminimk3")
+    parser.add_argument("-i",
+                        "--ip",
+                        required=True,
+                        help="Server IP")
+    parser.add_argument("-p",
+                        "--port",
+                        type=int,
+                        help=f"Server port (Default: {port})")
+    return parser
+
+
 async def main(*, ip=None, port=7654):
     Args = namedtuple("Args", ["ip", "port"])
     args = Args(ip, port)
+    parser = init_parser(port)
     try:
         if len(sys.argv) > 1 or not ip:
-            parser = ArgumentParser(description="Sync client example "
-                                                "for lpminimk3")
-            parser.add_argument("-i",
-                                "--ip",
-                                required=True,
-                                help="Server IP")
-            parser.add_argument("-p",
-                                "--port",
-                                type=int,
-                                help="Server port (Default: 7654)")
             args = parser.parse_args(sys.argv[1:])
         lps = find_lps()
         ip = args.ip if args.ip else ip
         port = args.port if args.port else port
-        if args.ip:
-            await sync_with_server(lps, ip, port)
-        else:
+        if not ip:
             print("No IP provided.", file=sys.stderr)
             parser.print_help()
             return 1
+        else:
+            await sync_with_server(lps, ip, port)
     except KeyboardInterrupt:
         return 1
 

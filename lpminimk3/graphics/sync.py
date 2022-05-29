@@ -40,34 +40,42 @@ def find_lps():
     return lps
 
 
+def init_parser(ip, port):
+    parser = ArgumentParser(description="Sync server for lpminimk3")
+    parser.add_argument("-a",
+                        "--all",
+                        action="store_true",
+                        help="Listen for all hosts (on 0.0.0.0)")
+    parser.add_argument("-i",
+                        "--ip",
+                        help=f"IP to serve on (Default: {ip})")
+    parser.add_argument("-p",
+                        "--port",
+                        type=int,
+                        help=f"Port to bind to (Default: {port})")
+    parser.add_argument("--version",
+                        action="version",
+                        version="%(prog) 0.1")
+    return parser
+
+
 async def main(*, ip="localhost", port=7654, allow_all_hosts=False):
     Args = namedtuple("Args", ["ip", "port", "all"])
     args = Args(ip, port, allow_all_hosts)
+    parser = init_parser(ip, port)
     try:
         if len(sys.argv) > 1:
-            parser = ArgumentParser(description="Sync server for lpminimk3")
-            parser.add_argument("-a",
-                                "--all",
-                                action="store_true",
-                                help="Listen for all hosts (on 0.0.0.0)")
-            parser.add_argument("-i",
-                                "--ip",
-                                help=f"IP to serve on (Default: {ip})")
-            parser.add_argument("-p",
-                                "--port",
-                                type=int,
-                                help=f"Port to bind to (Default: {port})")
-            parser.add_argument("--version",
-                                action="version",
-                                version="%(prog) 0.1")
             args = parser.parse_args(sys.argv[1:])
-            if args.ip and args.all:
-                raise RuntimeError("Can't set both '--ip' and '--all'.")
         lps = find_lps()
-        ip = "localhost" if not args.ip else args.ip
-        ip = "0.0.0.0" if args.all else ip
+        ip = "0.0.0.0" if args.all else args.ip
+        ip = args.ip if args.ip else ip
         port = args.port if args.port else port
-        await sync_with_sketch(lps, ip, port)
+        if args.ip and args.all:
+            print("Can't set both '--ip' and '--all'.", file=sys.stderr)
+            parser.print_help()
+            return 1
+        else:
+            await sync_with_sketch(lps, ip, port)
     except KeyboardInterrupt:
         return 1
 
