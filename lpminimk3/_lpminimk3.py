@@ -1,7 +1,3 @@
-"""
-Software representation of the Launchpad Mini MK3.
-"""
-
 from rtmidi import MidiOut, MidiIn
 from ._core.components import Grid, Panel
 from ._core.utils import SystemMidiPortParser, \

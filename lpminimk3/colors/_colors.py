@@ -1,7 +1,3 @@
-"""
-Colors for the Launchpad Mini MK3.
-"""
-
 import re
 
 

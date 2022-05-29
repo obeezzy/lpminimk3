@@ -1,6 +1,7 @@
 """
 MIDI messages for the Launchpad Mini MK3.
 """
+
 from abc import ABC
 from functools import reduce
 
