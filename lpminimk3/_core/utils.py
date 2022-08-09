@@ -183,7 +183,7 @@ class MidiPort:
             else:
                 self._midi_out.open_port(self.port_index, MidiPort.OUT)
 
-            if platform.system() != 'Windows':
+            if platform.system() != 'Windows' and platform.system() != 'Darwin':
                 self._midi_out.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
         elif (self._direction == MidiPort.IN
@@ -193,7 +193,7 @@ class MidiPort:
             else:
                 self._midi_in.open_port(self.port_index, MidiPort.IN)
 
-            if platform.system() != 'Windows':
+            if platform.system() != 'Windows' and platform.system() != 'Darwin':
                 self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
