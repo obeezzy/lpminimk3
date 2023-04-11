@@ -26,7 +26,7 @@ Play "Ping/Pong" movie on the Launchpad's surface indefinitely:
     >>> lp.grid.render(Movie('/path/to/ping_pong.movie.json').play());
 
 Play "Ping/Pong" movie on the Launchpad's surface once at a frame rate of 10:
-    >>> lp.grid.render(Movie('/path/to/ping_pong.movie.json').play(framerate=10));
+    >>> lp.grid.render(Movie('/path/to/ping_pong.movie.json').play(framerate=10));  # noqa
 """
 
 from ._graphics import Text,\

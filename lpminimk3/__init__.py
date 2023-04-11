@@ -12,7 +12,8 @@ Find a connected device and open the device for reading and writing:
 
 Query the device to ensure reading and writing works:
     >>> lp.device_inquiry()
-    MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
+    MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247],
+              deltatime=150.938086752)
 
 Switch to the programmer mode:
     >>> lp.mode = Mode.PROG
@@ -37,7 +38,8 @@ Set color of LED at "Stop/Solo/Mute" to first shade of "white":
 Set color of LED at "Stop/Solo/Mute" to third shade of "orange":
     >>> lp.panel.led('mute').color = 'o3'
 
-Set color of LED at "Stop/Solo/Mute" to first shade of "red" (Invalid, but okay):
+Set color of LED at "Stop/Solo/Mute" to first shade of "red"
+(Invalid, but okay):
     >>> lp.panel.led('solo').color = 'r0'
 
 Set color of LED at "Scene Launch 1" to "red" using hex:
