@@ -1,5 +1,4 @@
-"""
-Match MIDI messages with incoming MIDI events.
+"""Collection of classes for matching MIDI messages with incoming MIDI events.
 """
 
 from abc import ABC
@@ -7,8 +6,7 @@ from .midi_messages import Lighting, Constants
 
 
 class Match(ABC):
-    """
-    A set of rules for filtering MIDI events.
+    """A set of rules for filtering MIDI events.
     """
 
     def contains(self, message):
@@ -16,8 +14,7 @@ class Match(ABC):
 
 
 class ButtonMatch(Match):
-    """
-    A set of rules for filtering button events.
+    """A set of rules for filtering button events.
     """
 
     def __init__(self, buttons, type):
@@ -25,8 +22,7 @@ class ButtonMatch(Match):
         self._type = type.lower().replace('|', '_')
 
     def contains(self, message):
-        """
-        Returns `True` if message `message` is a valid button
+        """Returns `True` if message `message` is a valid button
         message, otherwise returns `False`.
         """
         button_messages = self._determine_messages()

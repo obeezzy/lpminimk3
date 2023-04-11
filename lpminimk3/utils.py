@@ -1,5 +1,4 @@
-"""
-Utility classes for Launchpad Mini MK3.
+"""Utility classes for Launchpad Mini MK3.
 """
 
 import enum
@@ -7,17 +6,16 @@ import time
 import re
 import platform
 from collections import namedtuple
-from . import logging
-from ..match import Match
+from . import _logging
+from .match import Match
 
-logger = logging.getLogger(__name__)
+logger = _logging.getLogger(__name__)
 
 MIDI_MESSAGE_LENGTH = 9
 
 
 class MidiEvent:
-    """
-    A MIDI event.
+    """A MIDI event.
 
     A MIDI event is received every time the Launchpad's MIDI port
     is read.
@@ -36,10 +34,14 @@ class MidiEvent:
 
     @property
     def message(self):
+        """Message.
+        """
         return self._message
 
     @property
     def deltatime(self):
+        """Deltatime.
+        """
         return self._deltatime
 
     def __repr__(self):
@@ -49,8 +51,7 @@ class MidiEvent:
 
 
 class ButtonEvent:
-    """
-    A button event.
+    """A button event.
 
     A button event is received every time a button on the Launchpad
     is pushed.
@@ -77,18 +78,26 @@ class ButtonEvent:
 
     @property
     def message(self):
+        """Message.
+        """
         return self._midi_event.message
 
     @property
     def deltatime(self):
+        """Deltatime.
+        """
         return self._midi_event.deltatime
 
     @property
     def button(self):
+        """Button.
+        """
         return self._button
 
     @property
     def type(self):
+        """Type.
+        """
         if not self._midi_event:
             return ''
         return (ButtonEvent.RELEASE
@@ -107,8 +116,7 @@ class ButtonEvent:
 
 
 class MidiPort:
-    """
-    A MIDI port.
+    """A MIDI port.
     """
 
     OUT = 'out'
@@ -146,29 +154,48 @@ class MidiPort:
 
     @property
     def port_name(self):
+        """Port name.
+        """
         return self._port_name
 
     @property
     def port_number(self):
+        """Port number.
+        """
         return self._port_number
 
     @property
     def port_index(self):
+        """Port index.
+        """
         return self._port_index
 
     @property
     def system_port_name(self):
+        """System port name.
+        """
         return self._system_port_name
 
     @property
     def midi_in_handle(self):
+        """MIDI IN handle.
+        """
         return self._midi_in
 
     @property
     def midi_out_handle(self):
+        """MIDI OUT handle.
+        """
         return self._midi_out
 
     def is_open(self):
+        """Checks to see if port is open.
+
+        Returns
+        -------
+        bool
+            `True` if port is open, otherwise `False`.
+        """
         if self._midi_in and self._direction == MidiPort.IN:
             return self._midi_in.is_port_open()
         elif self._midi_out and self._direction == MidiPort.OUT:
@@ -176,6 +203,8 @@ class MidiPort:
         return False
 
     def open(self):
+        """Opens MIDI port.
+        """
         if (self._direction == MidiPort.OUT
                 and not self._midi_out.is_port_open()):
             if self._virtual:
@@ -197,6 +226,8 @@ class MidiPort:
                 self._midi_in.set_client_name(MidiPort.DEFAULT_CLIENT_NAME)
 
     def close(self):
+        """Closes MIDI port.
+        """
         if self.is_open():
             if self._midi_out and self._direction == MidiPort.OUT:
                 self._midi_out.close_port()
@@ -204,6 +235,13 @@ class MidiPort:
                 self._midi_in.close_port()
 
     def send_message(self, message):
+        """Sends raw MIDI message to Launchpad.
+
+        Parameters
+        ----------
+        message : list of str
+            Message of raw integers to send to Launchpad.
+        """
         if (not message
                 or (not isinstance(message, list)
                     and not hasattr(message, 'data'))):
@@ -222,6 +260,26 @@ class MidiPort:
             raise RuntimeError('Failed to send message.')
 
     def poll_for_event(self, *, timeout=5, match=None, read_delay=.001):
+        """Polls for button event.
+
+        Parameters
+        ----------
+        timeout : int
+            Timeout in seconds.
+        match : Match or None
+            Button match.
+        read_delay : float
+            Delay duration between reads.
+
+        Returns
+        -------
+        ButtonEvent or None
+            Received event.
+
+        See Also
+        --------
+        Match
+        """
         assert self._midi_in
         event = None
         polling = True
@@ -252,8 +310,7 @@ class MidiPort:
 
 
 class Interface:
-    """
-    Interface of the launchpad.
+    """Interface of the launchpad.
     """
 
     DAW = 'daw'
@@ -289,12 +346,13 @@ class Interface:
 
     @property
     def midi_event(self):
+        """MIDI event.
+        """
         return self._midi_event
 
 
 class Mode:
-    """
-    A Launchpad mode.
+    """A Launchpad mode.
     """
 
     LIVE = 'live'
@@ -330,12 +388,13 @@ class Mode:
 
     @property
     def midi_event(self):
+        """MIDI event.
+        """
         return self._midi_event
 
 
 class Layout:
-    """
-    A Launchpad layout.
+    """A Launchpad layout.
     """
 
     SESSION = 'session'
@@ -400,8 +459,7 @@ class Layout:
 
 
 class MidiClient:
-    """
-    A MIDI client.
+    """A MIDI client.
     """
 
     def __init__(self, client_name, client_number):
@@ -423,6 +481,8 @@ class MidiClient:
 
     @property
     def daw_out_port(self):
+        """DAW out port.
+        """
         daw_ports = list(filter(lambda port: re.search(r'1|DA',
                                 port.port_name),
                                 self._out_ports))
@@ -430,6 +490,8 @@ class MidiClient:
 
     @property
     def daw_in_port(self):
+        """DAW in port.
+        """
         daw_ports = list(filter(lambda port: re.search(r'1|DA',
                                 port.port_name),
                                 self._in_ports))
@@ -437,6 +499,8 @@ class MidiClient:
 
     @property
     def midi_out_port(self):
+        """MIDI out port.
+        """
         midi_ports = list(filter(lambda port: re.search(r'2|MI',
                                  port.port_name),
                                  self._out_ports))
@@ -444,6 +508,8 @@ class MidiClient:
 
     @property
     def midi_in_port(self):
+        """MIDI in port.
+        """
         midi_ports = list(filter(lambda port: re.search(r'2|MI',
                                  port.port_name),
                                  self._in_ports))
@@ -451,28 +517,56 @@ class MidiClient:
 
     @property
     def ports(self):
+        """Ports.
+        """
         return self._out_ports + self._in_ports
 
     @property
     def out_ports(self):
+        """Out ports.
+        """
         return self._out_ports
 
     @property
     def in_ports(self):
+        """In ports.
+        """
         return self._in_ports
 
     @property
     def client_name(self):
+        """Client name.
+        """
         return self._client_name
 
     @property
     def client_number(self):
+        """Client number.
+        """
         return self._client_number
 
     def is_open(self):
+        """Checks if ports all ports are open.
+
+        Returns
+        -------
+        bool
+            `True` if all ports are open, otherwise `False`.
+        """
         return all(port.is_open() for port in self.ports)
 
     def open(self, interface=Interface.MIDI):
+        """Opens a MIDI port for interface `interface`.
+
+        Parameters
+        ----------
+        interface : str, optional
+            Interface to open.
+
+        See Also
+        --------
+        Interface
+        """
         self.close()
         if interface == Interface.DAW:
             self.daw_in_port.open()
@@ -484,17 +578,41 @@ class MidiClient:
             raise ValueError('Must be a valid Interface.')
 
     def close(self):
+        """Closes MIDI ports.
+        """
         for port in self.ports:
             if port.is_open():
                 port.close()
 
     def append_out_port(self, port):
+        """Appends out port `port`.
+
+        Parameters
+        ----------
+        port : MidiPort
+            Port to append.
+
+        See Also
+        --------
+        MidiPort
+        """
         if not isinstance(port, MidiPort):
             raise TypeError('Must be of type MidiPort.')
         if port not in self._out_ports:
             self._out_ports.append(port)
 
     def append_in_port(self, port):
+        """Appends in port `port`.
+
+        Parameters
+        ----------
+        port : MidiPort
+            Port to append.
+
+        See Also
+        --------
+        MidiPort
+        """
         if not isinstance(port, MidiPort):
             raise TypeError('Must be of type MidiPort.')
         if port not in self._in_ports:
@@ -502,8 +620,7 @@ class MidiClient:
 
 
 class SystemMidiPortParser:
-    """
-    System-specific way of parsing MIDI port names.
+    """System-specific way of parsing MIDI port names.
     """
 
     def __init__(self, in_ports, out_ports):
@@ -582,4 +699,6 @@ class SystemMidiPortParser:
 
     @property
     def found_clients(self):
+        """Found clients.
+        """
         return self._found_clients
