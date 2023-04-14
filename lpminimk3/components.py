@@ -471,7 +471,7 @@ class ButtonGroup:
 
         Returns
         -------
-            ButtonEvent: Button event
+            ButtonEvent: Button event.
 
         See Also
         --------
@@ -914,6 +914,10 @@ class Panel(Matrix):
             Layout of buttons.
         mode : str, optional
             Lighting mode.
+
+        Returns
+        -------
+            Led: An LED.
         """
         return Led(launchpad=self._launchpad,
                    button_names=Panel._BUTTON_NAMES,
@@ -975,9 +979,13 @@ class Panel(Matrix):
         Parameters
         ----------
         args : list
-            Button names, button IDs or button XY-pairs
+            Button names, button IDs or button XY-pairs.
         layout : Layout, optional
             Layout of buttons.
+
+        Returns
+        -------
+            ButtonGroup: Button group.
         """
         args = (args
                 if len(args) > 0
@@ -995,7 +1003,7 @@ class Panel(Matrix):
 class Grid(Matrix):
     """Grid of Launchpad.
 
-    The grid represents the 8x8 grid of white, faceless
+    The grid represents the 8x8 grid of translucent, faceless
     buttons of the Launchpad.
     """
     PROG = 'prog'
@@ -1089,7 +1097,7 @@ class Grid(Matrix):
         ----------
         x : int
             X position of LED, or index of LED
-            if `y`=-1.
+            if y=-1.
         y : int, optional
             Y position of LED.
         name : str, optional
@@ -1098,6 +1106,10 @@ class Grid(Matrix):
             Layout of buttons.
         mode : str, optional
             Lighting mode.
+
+        Returns
+        -------
+            Led: An LED.
         """
         return Led(launchpad=self._launchpad,
                    button_names=Grid._BUTTON_NAMES,
@@ -1159,9 +1171,13 @@ class Grid(Matrix):
         Parameters
         ----------
         args : list
-            Button names, button IDs or button XY-pairs
+            Button names, button IDs or button XY-pairs.
         layout : Layout, optional
             Layout of buttons.
+
+        Returns
+        -------
+            ButtonGroup: Button group.
         """
         args = (args
                 if len(args) > 0

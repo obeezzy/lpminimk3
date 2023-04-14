@@ -1,5 +1,4 @@
-"""
-Scroll text from right to left across the Launchpad's surface.
+"""Scroll text from right to left across the Launchpad's surface.
 """
 
 import sys

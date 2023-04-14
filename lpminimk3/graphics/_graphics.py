@@ -1,3 +1,5 @@
+"""Graphics API.
+"""
 import os
 from ..colors import ColorPalette
 from ._renderable import Renderable,\
@@ -14,33 +16,32 @@ from ._renderable import Frame  # noqa
 
 
 class Text(Renderable):
-    """
-    Text renderable on the Launchpad's surface. The text
+    """Text renderable on the Launchpad's surface. The text
     rendered can be transformed by calling any of the
     transformation methods of this class.
 
-
-    EXAMPLES
+    Examples
+    --------
     Render text on Launchpad's surface:
-        lp.grid.render(Text('A'))
+        >>> lp.grid.render(Text('A'))
 
     Print the text in the console:
-        Text('A').print()
+        >>> Text('A').print()
 
     Scroll text and render text on Launchpad's surface:
-        lp.grid.render(Text(' Hello, world!').scroll())
+        >>> lp.grid.render(Text(' Hello, world!').scroll())
 
     Scroll text and render text in the console:
-        Text(' Hello, world!').print()
+        >>> Text(' Hello, world!').print()
 
     Set the foreground color to "blue", rotate the text
     anticlockwise by 90 degrees, flip the text on its 'X'
     axis and scroll once:
-        lp.grid.render(Text(' Hello, world!')
-                       .fg_color.set('blue')
-                       .rotate(-90)
-                       .flip()
-                       .scroll(count=1))
+        >>> lp.grid.render(Text(' Hello, world!')
+                           .fg_color.set('blue')
+                           .rotate(-90)
+                           .flip()
+                           .scroll(count=1))
     """
     def __init__(self,
                  text='', *,
@@ -71,22 +72,19 @@ class Text(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
-        """
-        Text as bits (i.e. 0s and 1s).
+        """Text as bits (i.e. 0s and 1s).
         """
         return self._string.bits
 
     @Renderable.word_count.getter
     def word_count(self):
-        """
-        Number of (bit)words.
+        """Number of (bit)words.
         """
         return self._string.word_count
 
     @property
     def fg_color(self):
-        """
-        Foreground color.
+        """Foreground color.
         """
         return self._string.fg_color
 
@@ -96,8 +94,7 @@ class Text(Renderable):
 
     @property
     def bg_color(self):
-        """
-        Background color.
+        """Background color.
         """
         return self._string.bg_color
 
@@ -106,36 +103,43 @@ class Text(Renderable):
         self._string.bg_color = RenderableColor(self, color)
 
     def print(self, one='X', zero=' '):
-        """
-        Prints text to the screen as bits, used to give a preview of
+        """Prints text to the screen as bits, used to give a preview of
         how text would be rendered on the Launchpad's surface.
 
-        Keyword Args:
-            one (str): Character to represent bit 1.
-            zero (str): Character to represent bit 0.
+        Parameters
+        ----------
+        one : str
+            Character to represent bit 1.
+        zero : str
+            Character to represent bit 0.
 
-        Returns:
-            Text: `Text` reference.
+        Returns
+        -------
+        Text
+            `Text` reference.
         """
         self._string.print(one=one, zero=zero)
 
     def shift(self, count=1, *, circular=True):
-        """
-        Shifts text to the left if `count` is positive, or to the
+        """Shifts text to the left if `count` is positive, or to the
         right if `count` is negative.
 
-        Args:
-            count (int): Number of times to shift.
+        Parameters
+        ----------
+        count : int
+            Number of times to shift.
+        circular : bool
+            If True, enable text wrapping; else diable text wrapping.
 
-        Keyword Args:
-            circular (bool): If True, enable text wrapping; else
-                diable text wrapping.
+        Returns
+        -------
+        Text
+            `Text` reference.
 
-        Returns:
-            Text: `Text` reference.
-
-        Raises:
-            ValueError: When invalid value is set.
+        Raises
+        ------
+        ValueError
+            When invalid value is set.
         """
         if not isinstance(count, int):
             raise ValueError("'count' must be 'int'.")
@@ -146,17 +150,20 @@ class Text(Renderable):
         return self
 
     def rotate(self, angle):
-        """
-        Rotates rendered text by `angle` degrees. All values
+        """Rotates rendered text by `angle` degrees. All values
         must be a multiples of 90.
 
-        Args:
-            angle (int): Angle of rotation in degrees.
-                A negative `angle` rotates Text in an anticlockwise
-                direction; a positive `angle` clockwise.
+        Parameters
+        ----------
+        angle : int
+            Angle of rotation in degrees. A negative `angle`
+            rotates Text in an anticlockwise direction; a
+            positive `angle` clockwise.
 
-        Returns:
-            Text: `Text` reference.
+        Returns
+        -------
+        Text
+            `Text` reference.
         """
         self._string.rotate(angle)
         return self
@@ -167,33 +174,41 @@ class Text(Renderable):
                cycle_func=None,
                count=None,
                timeout=None):
-        """
-        Scrolls rendered text, shifting every `period` seconds in the
+        """Scrolls rendered text, shifting every `period` seconds in the
         `direction` direction; scrolls indefinitely if `count` is not
         set.
 
-        Keyword Args:
-            period (float): Delay before every text render call.
-            direction (str): Direction of scroll, either left or right.
+        Parameters
+        ----------
+        period : float
+            Delay before every text render call.
+        direction : str
+            Direction of scroll, either left or right.
                 (See :class:`ScrollDirection`.)
-            cycle_func (callable): Function to be called right after
-                text render call but before period delay. The function
-                signature is:
+        cycle_func : callable
+            Function to be called right after text render call but
+            before period delay. The function signature is:
                     cycle_func(fraction, launchpad)
-                where `fraction` is the fraction of the scroll (ranging
-                from 0 to 1) and `launchpad` is the Launchpad reference.
-            count (int): Number of complete scrolls. Scrolls
-                indefinitely if `count` and `timeout` are not set.
-            timeout (float): Duration in seconds for scroll. Scrolls
-                indefinitely if `count` and `timeout` are not set.
-                If both `timeout` and `count` are set, the scroll will
-                end depending on which value is reached first.
+            where `fraction` is the fraction of the scroll (ranging
+            from 0 to 1) and `launchpad` is the Launchpad reference.
+        count : int
+            Number of complete scrolls. Scrolls
+            indefinitely if `count` and `timeout` are not set.
+        timeout : float
+            Duration in seconds for scroll. Scrolls indefinitely if
+            `count` and `timeout` are not set. If both `timeout`
+            and `count` are set, the scroll will end depending on
+            which value is reached first.
 
-        Returns:
-            Text: `Text` reference.
+        Returns
+        -------
+        Text
+            `Text` reference.
 
-        Raises:
-            ValueError: When invalid value is set.
+        Raises
+        ------
+        ValueError
+            When invalid value is set.
         """
         if timeout and timeout <= period:
             raise ValueError("'timeout' must be greater than "
@@ -209,37 +224,52 @@ class Text(Renderable):
         return self
 
     def flip(self, axis=FlipAxis.X):
-        """
-        Flips text on `axis` axis.
+        """Flips text on `axis` axis.
 
-        Args:
-            axis (str): Axis to flip on (X, Y or both).
-                (See :class:`FlipAxis`.)
+        Parameters
+        ----------
+        axis : str
+            Axis to flip on (X, Y or both).
+            (See :class:`FlipAxis`.)
 
-        Returns:
-            Text: `Text` reference.
+        Returns
+        -------
+        Text
+            `Text` reference.
         """
         self._string.flip_axis = axis
         return self
 
     def swap_colors(self):
-        """
-        Swaps foreground and background colors.
+        """Swaps foreground and background colors.
 
-        Returns:
-            Text: `Text` reference.
+        Returns
+        -------
+        Text
+            `Text` reference.
         """
         self._string.fg_color, self._string.bg_color = self._string.bg_color, self._string.fg_color  # noqa
         return self
 
     def render(self, matrix):
-        """
-        Renders text on matrix `matrix`. Used for internal purposes only.
+        """Renders text on matrix `matrix`.
+        
+        Used for internal purposes only.
         """
         self._string.render(matrix)
 
 
 class Bitmap(Renderable):
+    """Bitmap renderable on the Launchpad's surface.
+
+    Examples
+    --------
+    Render text on Launchpad's surface:
+        >>> lp.grid.render(Bitmap('path/to/bitmap'))
+
+    Print the text in the console:
+        >>> Bitmap('path/to/bitmap').print()
+    """
     def __init__(self,
                  filename, *,
                  fg_color=None,
@@ -263,18 +293,26 @@ class Bitmap(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
+        """Bits.
+        """
         return self._bitmap.bits
 
     @Renderable.word_count.getter
     def word_count(self):
+        """Word count.
+        """
         return self._bitmap.word_count
 
     @property
     def filename(self):
+        """File name.
+        """
         return self._bitmap.filename
 
     @property
     def fg_color(self):
+        """Foreground color.
+        """
         return self._bitmap.fg_color
 
     @fg_color.setter
@@ -283,6 +321,8 @@ class Bitmap(Renderable):
 
     @property
     def bg_color(self):
+        """Background color.
+        """
         return self._bitmap.bg_color
 
     @bg_color.setter
@@ -290,11 +330,26 @@ class Bitmap(Renderable):
         self._bitmap.bg_color = RenderableColor(self, color)
 
     def render(self, matrix):
+        """Renders text on matrix `matrix`.
+        
+        Used for internal purposes only.
+        """
         self._bitmap.render(matrix)
 
     def print(self, *,
               one='X',
               zero=' '):
+        """Prints text on matrix surface. `one` is the marker
+        for an on bit (1) and `zero` is the marker for an off
+        bit (0).
+
+        Parameters
+        ----------
+        one : str
+            Character that represents 1.
+        zero : str
+            Character that represents 0.
+        """
         self._bitmap.print(one=one, zero=zero)
 
     def swap_colors(self):
@@ -303,6 +358,22 @@ class Bitmap(Renderable):
 
 
 class Movie(Renderable):
+    """Movie renderable on the Launchpad's surface.
+
+    Examples
+    --------
+    Render text on Launchpad's surface:
+        >>> lp.grid.render(Movie('path/to/movie'))
+
+    Print the first from of the movie in the console:
+        >>> Movie('path/to/movie').print()
+
+    Play a movie on Launchpad's surface:
+        >>> lp.grid.render(Movie('path/to/movie').play())
+
+    Play movie on the console:
+        >>> Movie('path/to/movie').play().print()
+    """
     def __init__(self,
                  filename, *,
                  fg_color=None,
@@ -326,18 +397,26 @@ class Movie(Renderable):
 
     @Renderable.bits.getter
     def bits(self):
+        """Bits.
+        """
         return self._movie.bits
 
     @Renderable.word_count.getter
     def word_count(self):
+        """Word count.
+        """
         return self._movie.word_count
 
     @property
     def filename(self):
+        """File name.
+        """
         return self._movie.filename
 
     @property
     def fg_color(self):
+        """Foreground color.
+        """
         return self._movie.fg_color
 
     @fg_color.setter
@@ -346,6 +425,8 @@ class Movie(Renderable):
 
     @property
     def bg_color(self):
+        """Background color.
+        """
         return self._movie.bg_color
 
     @bg_color.setter
@@ -354,22 +435,32 @@ class Movie(Renderable):
 
     @property
     def framerate(self):
+        """Frame rate.
+        """
         return Framerate(self, self._movie)
 
     @property
     def frames(self):
+        """Frames.
+        """
         return self._movie.frames
 
     @property
     def first_frame(self):
+        """First frame.
+        """
         return self._movie.first_frame
 
     @property
     def last_frame(self):
+        """Last frame.
+        """
         return self._movie.last_frame
 
     @property
     def position(self):
+        """Position.
+        """
         return self._movie.position
 
     @position.setter
@@ -377,11 +468,22 @@ class Movie(Renderable):
         self._movie.position = position
 
     def render(self, matrix):
+        """Render on matrix `matrix`.
+        """
         self._movie.render(matrix)
 
     def play(self, *,
              count=None,
              cycle_func=None):
+        """Plays movie on the Launchpad's surface.
+
+        Parameters
+        ----------
+        count : int or None
+            Number of times to play movie.
+        cycle_func : callable or None
+            Function to be called each cycle.
+        """
         if cycle_func and not callable(cycle_func):
             raise ValueError("'cycle_func' must be callable.")
         self._movie.roll = MovieRoll(self._movie,
@@ -391,13 +493,33 @@ class Movie(Renderable):
         return self
 
     def skip(self, frame_count=1):
+        """Skips a frame by `frame_count`.
+
+        Parameters
+        ----------
+        frame_count : int
+            Frame count.
+        """
         return self._movie.skip(frame_count, ref=self)
 
     def print(self, *,
               one='X',
               zero=' '):
+        """Prints text on matrix surface. `one` is the marker
+        for an on bit (1) and `zero` is the marker for an off
+        bit (0).
+
+        Parameters
+        ----------
+        one : str
+            Character that represents 1.
+        zero : str
+            Character that represents 0.
+        """
         self._movie.print(one=one, zero=zero)
 
     def swap_colors(self):
+        """Swaps colors.
+        """
         self._movie.fg_color, self._movie.bg_color = self._movie.bg_color, self._movie.fg_color  # noqa
         return self

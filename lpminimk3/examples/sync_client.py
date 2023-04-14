@@ -1,3 +1,6 @@
+"""Sync client for the Launchpad MK3.
+"""
+
 import sys
 import asyncio
 import json

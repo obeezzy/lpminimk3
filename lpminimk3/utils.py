@@ -440,6 +440,8 @@ class Layout:
 
     @property
     def midi_event(self):
+        """Midi event.
+        """
         return self._midi_event
 
     def _determine_layout(self, midi_value):

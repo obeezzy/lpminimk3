@@ -1,4 +1,4 @@
-"""Software representation of Launchpad Mini MK3.
+"""Software model and discovery functions for Launchpad Mini MK3.
 """
 from rtmidi import MidiOut, MidiIn
 from .components import Grid, Panel
@@ -27,6 +27,11 @@ class LaunchpadMiniMk3:
         """Returns `True` if the device is open, otherwise
         returns `False`. An open device is a device that can
         be read from and/or written to.
+
+        Returns
+        -------
+        Boolean
+            `True` if device is open, otherwise `False`.
         """
         return self._midi_client.is_open()
 

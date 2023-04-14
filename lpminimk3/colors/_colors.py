@@ -146,9 +146,19 @@ class ColorShade:
 
     @staticmethod
     def is_valid_id(value):
-        """
-        Returns `True` if `value` is a valid color ID,
+        """Returns `True` if `value` is a valid color ID,
         otherwise returns `False`.
+
+        Parameters
+        ----------
+        value : int
+            Color ID.
+
+        Returns
+        -------
+        Boolean
+            `True` if provided value is valid, otherwise
+            `False`.
         """
         return (True
                 if isinstance(value, int)
@@ -158,17 +168,20 @@ class ColorShade:
 
     @property
     def hex(self):
-        """Hex color code."""
+        """Hex color code.
+        """
         return ColorShade.HEX_VALUES[self._color_id]
 
     @property
     def color_id(self):
-        """Unique color ID."""
+        """Unique color ID.
+        """
         return self._color_id
 
     @property
     def color_group(self):
-        """Color group."""
+        """Color group.
+        """
         return self._color_group
 
 

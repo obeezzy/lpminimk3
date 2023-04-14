@@ -1,7 +1,7 @@
-"""Library to access connected Launchpad Mini MK3 clients.
+"""Python API for the Launchpad Mini MK3.
 
-This module exposes functions that provide access to
-connected Launchpads on your computer.
+This module exposes API to discover connected Launchpads
+on your computer and control them.
 
 Examples
 --------
@@ -38,8 +38,7 @@ Set color of LED at "Stop/Solo/Mute" to first shade of "white":
 Set color of LED at "Stop/Solo/Mute" to third shade of "orange":
     >>> lp.panel.led('mute').color = 'o3'
 
-Set color of LED at "Stop/Solo/Mute" to first shade of "red"
-(Invalid, but okay):
+Set color of LED at "Stop/Solo/Mute" to first shade of "red" (Invalid, but okay):  # noqa
     >>> lp.panel.led('solo').color = 'r0'
 
 Set color of LED at "Scene Launch 1" to "red" using hex:

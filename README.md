@@ -27,8 +27,7 @@ Make sure your Launchpad is connected to your computer.
 ### In script
 Control LEDs individually:
 ```python
-"""
-Display a random array of colors for 5 seconds.
+"""Display a random array of colors for 5 seconds.
 """
 
 from lpminimk3 import Mode, find_launchpads
@@ -50,8 +49,7 @@ for led in lp.panel.led_range():
 ```
 Render text on Launchpad's surface:
 ```python
-"""
-Scroll text from right to left across the Launchpad's surface.
+"""Scroll text from right to left across the Launchpad's surface.
 """
 
 from lpminimk3 import Mode, find_launchpads
@@ -82,7 +80,7 @@ Query the device to ensure we can read and write to it:
 >>> lp.device_inquiry()  # Query device
 MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 ```
-Switch to `programmer` mode to start manipulating button LEDs.
+Switch to `programmer` mode to start manipulating button LEDs:
 ```python
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
@@ -99,7 +97,7 @@ Switch to `programmer` mode to start manipulating button LEDs.
 >>> del lp.panel.led('stop').color  # Another way to turn off LED
 ```
 Note in the above snippet that `lp.grid` only contains the __*grid*__ buttons
-(i.e. the faceless white buttons) and `lp.panel` contains all buttons
+(i.e. the translucent, faceless buttons) and `lp.panel` contains all buttons
 (including the __*logo*__ LED at the top right corner).  
 
 Wait for and respond to button presses and releases:
@@ -120,6 +118,7 @@ Pass button names as arguments to wait for specific button events:
 ```
 Render `A` on Launchpad's surface:
 ```python
+>>> from lpminimk3.graphics import Text
 >>> lp.grid.render(Text('A'))
 ```
 Print `A` in console:
@@ -152,8 +151,7 @@ Once the server is running, visit the [LP Sketch](https://www.github.com/obeezzy
 ### Rendering bitmaps and movies
 Render `smiley.bitmap.json` on Launchpad's surface:
 ```python
-"""
-Render "Smiley" bitmap.
+"""Render "Smiley" bitmap.
 """
 
 from lpminimk3 import Mode, find_launchpads
@@ -168,8 +166,7 @@ lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))  # Display bitmap
 ```
 Render `ping_pong.movie.json` on Launchpad's surface:
 ```python
-"""
-Render "Ping/Pong" movie.
+"""Render "Ping/Pong" movie.
 """
 
 from lpminimk3 import Mode, find_launchpads

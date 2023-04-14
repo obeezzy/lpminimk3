@@ -24,6 +24,12 @@ class ButtonMatch(Match):
     def contains(self, message):
         """Returns `True` if message `message` is a valid button
         message, otherwise returns `False`.
+
+        Returns
+        -------
+        Boolean
+            `True` if provided message is a valid
+            button message, otherwise `False`.
         """
         button_messages = self._determine_messages()
         for button_message in button_messages:

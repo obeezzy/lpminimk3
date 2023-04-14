@@ -1,5 +1,4 @@
-"""
-Scroll text from left to right along the Launchpad's surface,
+"""Scroll text from left to right along the Launchpad's surface,
 lighting a specified region.
 """
 

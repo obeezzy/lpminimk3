@@ -1,5 +1,4 @@
-"""
-Display characters typed with a QWERTY keyboard on the Launchpad's surface.
+"""Display characters typed with a QWERTY keyboard on the Launchpad's surface.
 """
 
 from lpminimk3 import Mode, find_launchpads
