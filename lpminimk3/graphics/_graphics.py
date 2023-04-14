@@ -253,7 +253,6 @@ class Text(Renderable):
 
     def render(self, matrix):
         """Renders text on matrix `matrix`.
-        
         Used for internal purposes only.
         """
         self._string.render(matrix)
@@ -331,7 +330,6 @@ class Bitmap(Renderable):
 
     def render(self, matrix):
         """Renders text on matrix `matrix`.
-        
         Used for internal purposes only.
         """
         self._bitmap.render(matrix)
