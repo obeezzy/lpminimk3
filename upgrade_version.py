@@ -318,7 +318,7 @@ def main(*, new_version=""):
                             type=str,
                             metavar="NEW_VERSION",
                             help=("Version to upgrade to "
-                                  "(format: major.minor.patch or SemVer) "
+                                  "(format: major.minor.patch) "
                                   f"(e.g. 0.1.2)"))
         parser.add_argument("--version",
                             action="version",
