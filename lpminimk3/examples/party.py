@@ -1,5 +1,4 @@
-"""
-Random party mode with some interactivity
+"""Random party mode with some interactivity
 
 Author: Matthew Wachter
 """

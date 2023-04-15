@@ -1,5 +1,4 @@
-"""
-Render script for rendering texts, bitmaps and movies.
+"""Render script for rendering texts, bitmaps and movies.
 """
 
 import json

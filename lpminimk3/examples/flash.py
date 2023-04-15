@@ -1,5 +1,4 @@
-"""
-Display a random array of colors for 5 seconds.
+"""Display a random array of colors for 5 seconds.
 """
 
 from lpminimk3 import Mode, find_launchpads

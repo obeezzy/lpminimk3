@@ -1,9 +1,10 @@
+"""Colors for the Launchpad Mini MK3.
+"""
 import re
 
 
 class RgbColor:
-    """
-    An RGB color.
+    """An RGB color.
     """
     _RGB_LENGTH = 3
     _MIN_HEX_LENGTH = 4
@@ -27,9 +28,13 @@ class RgbColor:
 
     @staticmethod
     def is_valid(value):
-        """
-        Returns `True` if `value` is a valid (r,g,b) or hex value,
+        """Returns `True` if `value` is a valid (r,g,b) or hex value,
         otherwise returns `False`.
+
+        Returns
+        -------
+        bool
+            `True` if `value` is valid, otherwise `False`.
         """
         if isinstance(value, str):
             match = re.match('^#(?:[0-9a-fA-F]{3}){1,2}$', value)
@@ -44,29 +49,25 @@ class RgbColor:
 
     @property
     def value(self):
-        """
-        RGB value, as string.
+        """RGB value, as string.
         """
         return self._value
 
     @property
     def r(self):
-        """
-        Red value
+        """Red value.
         """
         return self._r >> 1
 
     @property
     def g(self):
-        """
-        Green value
+        """Green value.
         """
         return self._g >> 1
 
     @property
     def b(self):
-        """
-        Blue value
+        """Blue value.
         """
         return self._b >> 1
 
@@ -92,10 +93,9 @@ class RgbColor:
 
 
 class ColorShade:
-    """
-    A color shade.
+    """Color shade.
 
-    A color shade is color from the Launchpad's color palette.
+    A color shade is a color from the Launchpad's color palette.
     There are 128 valid color shades, ranging from ID 0 to 127
     (with ID 0 used for OFF).
     """
@@ -146,9 +146,19 @@ class ColorShade:
 
     @staticmethod
     def is_valid_id(value):
-        """
-        Returns `True` if `value` is a valid color ID,
+        """Returns `True` if `value` is a valid color ID,
         otherwise returns `False`.
+
+        Parameters
+        ----------
+        value : int
+            Color ID.
+
+        Returns
+        -------
+        Boolean
+            `True` if provided value is valid, otherwise
+            `False`.
         """
         return (True
                 if isinstance(value, int)
@@ -158,23 +168,25 @@ class ColorShade:
 
     @property
     def hex(self):
-        """Hex color code."""
+        """Hex color code.
+        """
         return ColorShade.HEX_VALUES[self._color_id]
 
     @property
     def color_id(self):
-        """Unique color ID."""
+        """Unique color ID.
+        """
         return self._color_id
 
     @property
     def color_group(self):
-        """Color group."""
+        """Color group.
+        """
         return self._color_group
 
 
 class ColorPalette:
-    """
-    Color palette of Launchpad.
+    """Color palette of Launchpad.
 
     The color palette contains 127 predefined color shades.
     """
@@ -322,8 +334,7 @@ class ColorPalette:
 
 
 class ColorShadeStore:
-    """
-    Color shade store for the Launchpad.
+    """Color shade store for the Launchpad.
     """
     COLOR_GROUPS = ['red', 'orange', 'yellow', 'green',
                     'blue', 'violet', 'white']
@@ -338,17 +349,33 @@ class ColorShadeStore:
                     yield color_shade
 
     def contains(self, value):
-        """
-        Searches for color shade `value` and returns `True` if
+        """Searches for color shade `value` and returns `True` if
         the color shade exists, otherwise returns `False`.
+
+        Parameters
+        ----------
+        value : ColorShadeStore
+            Color shade.
+
+        Returns
+        -------
+            `True` if color shade exists, otherwise `False`.
         """
         color, _ = self._parse(value)
         return True if color else False
 
     def find(self, value):
-        """
-        Searches for color shade `value` and returns the
+        """Searches for color shade `value` and returns the
         `ColorShade` if found, otherwise returns `None`.
+
+        Parameters
+        ----------
+        value : ColorShadeStore
+            Color shade.
+
+        Returns
+        -------
+            `True` if color shade found, otherwise `False`.
         """
         if isinstance(value, ColorShade):
             return value

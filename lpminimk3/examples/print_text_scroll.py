@@ -1,5 +1,4 @@
-"""
-Print a typed string on the console.
+"""Print a typed string on the console.
 """
 
 from lpminimk3.graphics import Text

@@ -1,14 +1,15 @@
+"""Software model and discovery functions for Launchpad Mini MK3.
+"""
 from rtmidi import MidiOut, MidiIn
-from ._core.components import Grid, Panel
-from ._core.utils import SystemMidiPortParser, \
-                          MidiPort, MidiClient, \
-                          Interface, Mode, Layout # noqa
+from .components import Grid, Panel
+from .utils import SystemMidiPortParser, \
+                   MidiPort, MidiClient, \
+                   Interface, Mode, Layout # noqa
 from .midi_messages import SysExMessages
 
 
 class LaunchpadMiniMk3:
-    """
-    A Launchpad Mini MK3 device.
+    """A Launchpad Mini MK3 device.
     """
 
     def __init__(self, midi_client):
@@ -23,49 +24,60 @@ class LaunchpadMiniMk3:
         return f'LaunchpadMiniMk3(id={self.id})'
 
     def is_open(self):
-        """
-        Returns `True` if the device is open, otherwise
+        """Returns `True` if the device is open, otherwise
         returns `False`. An open device is a device that can
         be read from and/or written to.
+
+        Returns
+        -------
+        Boolean
+            `True` if device is open, otherwise `False`.
         """
         return self._midi_client.is_open()
 
     def open(self, interface=Interface.MIDI):
-        """
-        Opens interface `interface` on this device for reading
+        """Opens interface `interface` on this device for reading
         and writing.
 
-        Args:
-            interface (str): Interface to open.
-                (See :class:`Interface`.)
+        Parameters
+        ----------
+        interface : str, optional
+            Interface to open.
 
-        Raise:
-            ValueError: If `interface` is invalid.
+        Raises
+        ------
+        ValueError
+            If `interface` is invalid.
+
+        See Also
+        --------
+        Interface
         """
         self._midi_client.open(interface)
         self.interface = interface
 
     def close(self):
-        """
-        Closes this device.
+        """Closes this device.
         """
         self._midi_client.close()
 
     def send_message(self, msg, *, interface=Interface.MIDI):
-        """
-        Sends a MIDI message `msg` to the `interface` of
+        """Sends a MIDI message `msg` to the `interface` of
         this device.
 
-        Args:
-            message (list): MIDI message
+        Parameters
+        ----------
+        message : list
+            MIDI message.
+        interface : str, optional
+            Interface to which to send message.
 
-        Keyword Args:
-            interface (str): Interface to which to send message.
-                (See :class:`Interface`.)
-
-        Raises:
-            ValueError: If `interface` is invalid.
-            RuntimeError: If device is closed.
+        Raises
+        ------
+        ValueError
+            If `interface` is invalid.
+        RuntimeError
+            If device is closed.
         """
         if self.is_open():
             if interface == Interface.DAW:
@@ -79,23 +91,34 @@ class LaunchpadMiniMk3:
 
     def poll_for_event(self, *, interface=Interface.MIDI,
                        timeout=5, match=None):
-        """
-        Polls for a MIDI event from interface `interface` either until
+        """Polls for a MIDI event from interface `interface` either until
         `timeout` is reached or `match` is found.
 
-        Keyword Args:
-            interface (str): Interface to poll.
-                (See :class:`Interface`.)
-            timeout (float): Duration in seconds to wait for event
-                before returning `None`.
-            match (Match): Match criterion. (See :class:`Match`).
+        Parameters
+        ----------
+        interface : str, optional
+            Interface to poll.
+        timeout : float, optional
+            Duration in seconds to wait for event before returning `None`.
+        match : Match or None, optional
+            Match criterion.
 
-        Returns:
-            MidiEvent: MIDI event received. (See :class:`MidiEvent`).
+        Returns
+        -------
+        MidiEvent
+            MIDI event received.
 
-        Raises:
-            ValueError: If `interface` is invalid.
-            RuntimeError: If this device is closed.
+        Raises
+        ------
+        ValueError
+            If `interface` is invalid.
+        RuntimeError
+            If this device is closed.
+
+        See Also
+        --------
+        Interface
+        MidiEvent
         """
         if self.is_open():
             if interface == Interface.DAW:
@@ -110,16 +133,23 @@ class LaunchpadMiniMk3:
             raise RuntimeError('Port closed.')
 
     def clear_event_queue(self, *, interface=Interface.MIDI):
-        """
-        Clears MIDI event queue for interface `interface`.
+        """Clears MIDI event queue for interface `interface`.
 
-        Keyword Args:
-            interface (str): Interface to clear.
-                (See :class:`Interface`.)
+        Parameters
+        ----------
+        interface : str
+            Interface to clear.
 
-        Raises:
-            ValueError: If `interface` is invalid.
-            RuntimeError: If device is closed.
+        Raises
+        ------
+        ValueError
+            If `interface` is invalid.
+        RuntimeError
+            If device is closed.
+
+        See Also
+        --------
+        Interface
         """
         if self.is_open():
             if interface == Interface.DAW:
@@ -133,47 +163,49 @@ class LaunchpadMiniMk3:
 
     @property
     def id(self):
-        """
-        Unique ID of this device.
+        """Unique ID of this device.
         """
         return self._midi_client.client_number
 
     @property
     def daw_in_port(self):
-        """
-        DAW interface MIDI-in port.
+        """DAW interface MIDI-in port.
+
         Used for internal purposes.
         """
         return self._midi_client.daw_in_port
 
     @property
     def daw_out_port(self):
-        """
-        DAW interface MIDI-out port.
+        """DAW interface MIDI-out port.
+
         Used for internal purposes.
         """
         return self._midi_client.daw_out_port
 
     @property
     def midi_in_port(self):
-        """
-        MIDI interface MIDI-in port.
+        """MIDI interface MIDI-in port.
+
         Used for internal purposes.
         """
         return self._midi_client.midi_in_port
 
     @property
     def midi_out_port(self):
-        """
-        MIDI interface MIDI-out port.
+        """MIDI interface MIDI-out port.
+
         Used for internal purposes.
         """
         return self._midi_client.midi_out_port
 
     @property
     def interface(self):
-        """
-        Interface of Launchpad. (See :class:`Interface`.)
+        """Interface of Launchpad.
+
+        See Also
+        --------
+        Interface
         """
         self.send_message(SysExMessages.Interfaces.READBACK)
         return Interface(self.poll_for_event())
@@ -189,24 +221,34 @@ class LaunchpadMiniMk3:
 
     @property
     def panel(self):
-        """
-        Panel of Launchpad; represents the 9x9 array of buttons,
-        with face buttons included. (See :class:`Panel`.)
+        """Panel of Launchpad; represents the 9x9 array of buttons,
+        with face buttons included.
+
+        See Also
+        --------
+        Panel
         """
         return Panel(self)
 
     @property
     def grid(self):
-        """
-        Grid of Launchpad; represents the 8x8 array of white,
-        faceless buttons. (See :class:`Grid`.)
+        """Grid of Launchpad; represents the 8x8 array of white,
+        faceless buttons.
+
+        See Also
+        --------
+        Grid
         """
         return Grid(self)
 
     @property
     def mode(self):
         """
-        Mode of Launchpad. (See :class:`Mode`.)
+        Mode of Launchpad.
+
+        See Also
+        --------
+        Mode
         """
         self.send_message(SysExMessages.Modes.READBACK)
         return Mode(self.poll_for_event())
@@ -222,8 +264,11 @@ class LaunchpadMiniMk3:
 
     @property
     def layout(self):
-        """
-        Layout of Launchpad. (See :class:`Layout`.)
+        """Layout of Launchpad.
+
+        See Also
+        --------
+        Layout
         """
         self.send_message(SysExMessages.Layouts.READBACK)
         return Layout(self.poll_for_event())
@@ -246,11 +291,12 @@ class LaunchpadMiniMk3:
             raise ValueError('Invalid layout set.')
 
     def device_inquiry(self):
-        """
-        Sends a "device inquiry" message to this device.
+        """Sends a "device inquiry" message to this device.
 
-        Returns:
-            MidiEvent: MIDI event received.
+        Returns
+        -------
+        MidiEvent
+            MIDI event received.
         """
         self.mode = Mode.PROG
         self.send_message(SysExMessages.DEVICE_INQUIRY)
@@ -258,11 +304,12 @@ class LaunchpadMiniMk3:
 
 
 def find_launchpads():
-    """
-    Searches for connected Launchpad Mini MK3 devices.
+    """Searches for connected Launchpad Mini MK3 devices.
 
-    Returns:
-        list of LaunchpadMiniMk3: List of found devices.
+    Returns
+    -------
+    list of LaunchpadMiniMk3
+        List of found devices.
     """
     midi_out = MidiOut()
     out_ports = midi_out.get_ports()

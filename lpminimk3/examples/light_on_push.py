@@ -1,5 +1,4 @@
-"""
-Wait for button presses and log events.
+"""Wait for button presses/releases and log events.
 """
 
 from lpminimk3 import ButtonEvent, Mode, find_launchpads

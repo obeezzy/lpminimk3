@@ -1,64 +1,94 @@
-"""
-Software representation of physical components for Launchpad Mini MK3.
+"""Components that make up the Launchpad Mini MK3.
 """
 
 import math
 import re
 from abc import ABC
-from ..colors._colors import ColorShade, ColorShadeStore, RgbColor
-from ..midi_messages import Colorspec,\
-                            ColorspecFragment,\
-                            Constants,\
-                            Lighting
-from ..match import ButtonMatch
+from .colors._colors import ColorShade, ColorShadeStore, RgbColor
+from .midi_messages import Colorspec,\
+                           ColorspecFragment,\
+                           Constants,\
+                           Lighting
+from .match import ButtonMatch
 from .utils import ButtonEvent
-from ..region import Region
+from .region import Region
 
 
 class Matrix(ABC):
-    """
-    A matrix of pad buttons/LEDs on the surface of the Launchpad.
+    """A matrix of pad buttons/LEDs on the surface of the Launchpad.
     """
     @property
     def launchpad(self):
+        """Launchpad reference.
+        """
         pass
 
     @property
     def width(self):
+        """Width of matrix.
+        """
         return -1
 
     @property
     def height(self):
+        """Height of matrix.
+        """
         return -1
 
     @property
     def max_x(self):
+        """Max X.
+        """
         return -1
 
     @property
     def max_y(self):
+        """Max Y.
+        """
         return -1
 
     def led_range(self):
+        """LED range.
+        """
         pass
 
     def render(self, renderable):
+        """Render `renderable` on matrix.
+        """
         renderable.render(self)
 
 
 class FlipAxis:
+    """Flip axis.
+    """
     X = 'x'
     Y = 'y'
     XY = 'xy'
 
 
 class _MatrixTransform:
+    """Matrix transform.
+    """
     def __init__(self, matrix, layout, led_mode):
         self._matrix = matrix
         self._layout = layout
         self._led_mode = led_mode
 
     def rotated_led_range(self, angle, *, flip_axis=''):
+        """Returns an immutable sequence of rotated LEDs.
+
+        Parameters
+        ----------
+        angle : int
+            Angle of rotation.
+        flip_axis : str, optional
+            Flip axis.
+
+        Yields
+        ------
+        Led
+            Sequence of LEDs.
+        """
         assert angle, 'Angle cannot be zero.'
         angle = self._normalize_angle(angle)
         angle = self._flip_angle(angle)
@@ -92,6 +122,17 @@ class _MatrixTransform:
                                        mode=self._led_mode)
 
     def flipped_led_range(self, axis):
+        """Returns an immutable sequence of flipped LEDs.
+
+        Parameters
+        ----------
+        axis : str
+            Flip axis. (Possible values: 'x', 'y', 'xy')
+
+        Yields
+        ------
+            Sequence of LEDs.
+        """
         for led in self._matrix.led_range(layout=self._layout,
                                           mode=self._led_mode):
             flipped_x = (self._flip_axis(led.x)
@@ -164,6 +205,8 @@ class _MatrixCoordinate:
 
     @property
     def id(self):
+        """Matrix coordinate ID.
+        """
         within_range = (self._x >= 0
                         and self._y >= 0
                         and self._x < self._matrix_width
@@ -174,26 +217,38 @@ class _MatrixCoordinate:
 
     @property
     def name(self):
+        """Matrix coordinate name.
+        """
         return self._name
 
     @property
     def x(self):
+        """X position.
+        """
         return self._x
 
     @property
     def y(self):
+        """Y position.
+        """
         return self._y
 
     @property
     def midi_value(self):
+        """MIDI value.
+        """
         return self._midi_value
 
     @property
     def matrix_width(self):
+        """Matrix width.
+        """
         return self._matrix_width
 
     @property
     def matrix_height(self):
+        """Matrix height.
+        """
         return self._matrix_height
 
     def _determine_coordinate_from_id(self, led_id, bounds):
@@ -300,6 +355,8 @@ class _LedColor:
 
     @property
     def message(self):
+        """Message.
+        """
         return self._message
 
     def _create_colorspec_message(self, value, lighting_type, midi_value):
@@ -337,8 +394,7 @@ class _LedColor:
 
 
 class ButtonFace:
-    """
-    A button face.
+    """A button face.
 
     A button face is the marking placed on the top of
     some Launchpad buttons.
@@ -363,8 +419,7 @@ class ButtonFace:
 
 
 class ButtonGroup:
-    """
-    A group of buttons.
+    """A group of buttons.
     """
 
     def __init__(self, launchpad,
@@ -388,35 +443,40 @@ class ButtonGroup:
 
     @property
     def launchpad(self):
-        """
-        Launchpad reference.
+        """Launchpad reference.
         """
         return self._launchpad
 
     @property
     def names(self):
-        """
-        Names of buttons in group.
+        """Names of buttons in group.
         """
         return [button.name for button in self._buttons]
 
     def poll_for_event(self, *, interface='midi', timeout=None,
                        type=ButtonEvent.PRESS_RELEASE):
-        """
-        Polls for MIDI events of buttons specified
+        """Polls for MIDI events of buttons specified
         in this group. If `timeout` is `None`, this function will
         wait indefinitely until a :class:`ButtonEvent` is
         received. If no event is received, `None` is returned.
 
-        Keyword Args:
-            interface (str): Interface to which to send message.
-                (See :class:`Interface`.)
-            timeout (float): Duration in seconds to wait for event to occur
-            type (str): Event type.
-                (Possible values: 'press', 'release', 'press|release')
+        Parameters
+        ----------
+        interface : str
+            Interface to which to send message.
+        timeout : float or None
+            Duration in seconds to wait for event to occur.
+        type : str
+            Event type. (Possible values: 'press', 'release', 'press|release')
 
-        Returns:
-            ButtonEvent: Button event (See :class:`ButtonEvent`).
+        Returns
+        -------
+            ButtonEvent: Button event.
+
+        See Also
+        --------
+        Interface
+        ButtonEvent
         """
         if (not type
                 or (type.lower().replace('|', '_') != ButtonEvent.PRESS_RELEASE  # noqa
@@ -433,16 +493,23 @@ class ButtonGroup:
                 else None)
 
     def clear_event_queue(self, *, interface='midi'):
-        """
-        Clears event queue.
+        """Clears event queue.
 
-        Keyword Args:
-            interface (str): Interface to clear.
-                (See :class:`Interface`.)
+        Parameters
+        ----------
+        interface : str
+            Interface to clear.
 
-        Raises:
-            ValueError: If `interface` is invalid.
-            RuntimeError: If device is closed.
+        Raises
+        ------
+        ValueError
+            If `interface` is invalid.
+        RuntimeError
+            If device is closed.
+
+        See Also
+        --------
+        Interface
         """
         self._launchpad.clear_event_queue()
 
@@ -485,8 +552,7 @@ class ButtonGroup:
 
 
 class Led:
-    """
-    An LED on the Launchpad.
+    """An LED on the Launchpad.
     """
 
     OFF = 'off'
@@ -549,8 +615,7 @@ class Led:
 
     @property
     def id(self):
-        """
-        Unique ID of LED.
+        """Unique, nonzero ID.
         """
         if not self._is_within_range():
             return -1
@@ -558,22 +623,19 @@ class Led:
 
     @property
     def x(self):
-        """
-        X position of LED.
+        """X position.
         """
         return self._x
 
     @property
     def y(self):
-        """
-        Y position of LED.
+        """Y position.
         """
         return self._y
 
     @property
     def name(self):
-        """
-        Name of LED.
+        """Name.
         """
         return (self._button_names[self.y][self.x]
                 if self._is_within_range()
@@ -581,36 +643,37 @@ class Led:
 
     @property
     def midi_value(self):
-        """
-        Midi value of LED.
+        """MIDI value.
         """
         return self._midi_value
 
     @property
     def launchpad(self):
-        """
-        Launchpad reference.
+        """Launchpad reference.
         """
         return self._launchpad
 
     @property
     def color(self):
-        """
-        Color. Retrieving the set color is not supported.
+        """Color. Retrieving the set color is not supported.
         """
         return None
 
     @color.setter
     def color(self, value):
-        """
-        Sets the color of the LED to `value`.
+        """Sets the color of the LED to `value`.
 
-        Args:
-            value (ColorShade or str or int): Color value.
+        Parameters
+        ----------
+        value : ColorShade or str or int
+            Color value.
 
-        Raises:
-            ValueError: When invalid value is used.
-            TypeError: When invalid type is used.
+        Raises
+        ------
+        ValueError
+            If invalid value is set.
+        TypeError
+            If invalid type is set.
         """
         message = _LedColor(value,
                             lighting_mode=self._LIGHTING_MODE[self._mode],
@@ -620,11 +683,13 @@ class Led:
 
     @color.deleter
     def color(self):
-        """Turns LED off."""
+        """Turns LED off.
+        """
         self.reset()
 
     def reset(self):
-        """Turns LED off."""
+        """Turns LED off.
+        """
         message = _LedColor(lighting_mode=self._LIGHTING_MODE[self._mode],
                             midi_value=self._midi_value).message
         self.launchpad.send_message(message)
@@ -637,8 +702,7 @@ class Led:
 
 
 class Button:
-    """
-    A button on the Launchpad.
+    """A button on the Launchpad.
     """
 
     def __init__(self, launchpad,
@@ -680,50 +744,43 @@ class Button:
 
     @property
     def launchpad(self):
-        """
-        Launchpad reference.
+        """Launchpad reference.
         """
         return self._launchpad
 
     @property
     def x(self):
-        """
-        X position of button.
+        """X position of button.
         """
         return self._x
 
     @property
     def y(self):
-        """
-        Y position of button.
+        """Y position of button.
         """
         return self._y
 
     @property
     def name(self):
-        """
-        Name of button.
+        """Name of button.
         """
         return self._name
 
     @property
     def midi_value(self):
-        """
-        MIDI value of button.
+        """MIDI value of button.
         """
         return self._midi_value
 
     @property
     def id(self):
-        """
-        Unique ID of button.
+        """Unique ID of button.
         """
         return self._button_id
 
     @property
     def parent(self):
-        """
-        Parent of button, either 'grid' or 'panel'.
+        """Parent of button, either 'grid' or 'panel'.
         """
         match = re.match('^\\d+x\\d+$', self._name)
         if match:
@@ -732,8 +789,7 @@ class Button:
 
     @property
     def led(self):
-        """
-        LED of button.
+        """LED of button.
         """
         return Led(launchpad=self._launchpad,
                    layout=self._layout,
@@ -743,15 +799,13 @@ class Button:
 
     @property
     def layout(self):
-        """
-        Button layout.
+        """Button layout.
         """
         return self._layout
 
 
 class Panel(Matrix):
-    """
-    Panel of Launchpad.
+    """Panel of Launchpad.
 
     The panel represents the 9x9 matrix of pad buttons
     on the surface of the Launchpad.
@@ -806,36 +860,31 @@ class Panel(Matrix):
 
     @Matrix.launchpad.getter
     def launchpad(self):
-        """
-        Launchpad reference.
+        """Launchpad reference.
         """
         return self._launchpad
 
     @Matrix.width.getter
     def width(self):
-        """
-        Max X.
+        """Max X.
         """
         return len(Panel._BUTTON_NAMES[0])
 
     @Matrix.height.getter
     def height(self):
-        """
-        Max Y.
+        """Max Y.
         """
         return len(Panel._BUTTON_NAMES)
 
     @property
     def max_id(self):
-        """
-        Max ID.
+        """Max ID.
         """
         return self.width * self.height
 
     @Matrix.max_x.getter
     def max_x(self):
-        """
-        Max X.
+        """Max X.
         """
         return (self.width - 1
                 if self.width >= 0
@@ -843,25 +892,32 @@ class Panel(Matrix):
 
     @Matrix.max_y.getter
     def max_y(self):
-        """
-        Max Y.
+        """Max Y.
         """
         return (self.height - 1
                 if self.height >= 0
                 else -1)
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
-        """
-        Returns an LED.
+        """Returns an LED.
 
-        Args:
-            x (int): X position of LED.
-            y (int): Y position of LED.
+        Parameters
+        ----------
+        x : int
+            X position of LED, or index of LED
+            if ``y=-1``.
+        y : int, optional
+            Y position of LED.
+        name : str, optional
+            Name of LED.
+        layout : Layout, optional
+            Layout of buttons.
+        mode : str, optional
+            Lighting mode.
 
-        Keyword Args:
-            name (str): Name of LED.
-            layout (Layout): Layout of buttons.
-            mode (str): Lighting mode.
+        Returns
+        -------
+            Led: An LED.
         """
         return Led(launchpad=self._launchpad,
                    button_names=Panel._BUTTON_NAMES,
@@ -878,17 +934,23 @@ class Panel(Matrix):
                   rotation=0,
                   flip_axis='',
                   region=None):
-        """
-        Returns an immutable sequence of LEDs.
+        """Returns an immutable sequence of LEDs.
 
-        Keyword Args:
-            layout (Layout): Layout of buttons.
-            mode (str): Lighting mode.
-            rotation (int): Rotation angle in degrees.
-                (Possible values: 0, 90, 180, 270, -90)
+        Parameters
+        ----------
+        layout : Layout, optional
+            Layout of buttons.
+        mode : str, optional
+            Lighting mode.
+        rotation : int, optional
+            Rotation angle in degrees. (Possible values: 0, 90, 180, 270, -90)
+        region : Region or None, optional
+            Region of LEDs on the matrix.
 
-        Yields:
-            Led: Sequence of LEDs
+        Yields
+        ------
+        Led
+            Sequence of LEDs.
         """
         if region and not isinstance(region, Region):
             raise TypeError("'region' must be of type 'Region'.")
@@ -912,15 +974,18 @@ class Panel(Matrix):
                 yield self.led(led_id, layout=layout, mode=mode)
 
     def buttons(self, *args, layout=PROG):
-        """
-        Returns a :class:`ButtonGroup`.
+        """Returns a ButtonGroup.
 
-        Args:
-            args (list): Button names, button IDs
-                or button XY-pairs
+        Parameters
+        ----------
+        args : list
+            Button names, button IDs or button XY-pairs.
+        layout : Layout, optional
+            Layout of buttons.
 
-        Keyword Args:
-            layout (Layout): Layout of buttons.
+        Returns
+        -------
+            ButtonGroup: Button group.
         """
         args = (args
                 if len(args) > 0
@@ -936,10 +1001,9 @@ class Panel(Matrix):
 
 
 class Grid(Matrix):
-    """
-    Grid of Launchpad.
+    """Grid of Launchpad.
 
-    The grid represents the 8x8 grid of white, faceless
+    The grid represents the 8x8 grid of translucent, faceless
     buttons of the Launchpad.
     """
     PROG = 'prog'
@@ -988,36 +1052,31 @@ class Grid(Matrix):
 
     @Matrix.launchpad.getter
     def launchpad(self):
-        """
-        Launchpad reference.
+        """Launchpad reference.
         """
         return self._launchpad
 
     @Matrix.width.getter
     def width(self):
-        """
-        Max X.
+        """Max X.
         """
         return len(Grid._BUTTON_NAMES[0])
 
     @Matrix.height.getter
     def height(self):
-        """
-        Max Y.
+        """Max Y.
         """
         return len(Grid._BUTTON_NAMES)
 
     @property
     def max_id(self):
-        """
-        Max ID.
+        """Max ID.
         """
         return self.width * self.height
 
     @Matrix.max_x.getter
     def max_x(self):
-        """
-        Max X.
+        """Max X.
         """
         return (self.width - 1
                 if self.width >= 0
@@ -1025,25 +1084,32 @@ class Grid(Matrix):
 
     @Matrix.max_y.getter
     def max_y(self):
-        """
-        Max Y.
+        """Max Y.
         """
         return (self.height - 1
                 if self.height >= 0
                 else -1)
 
     def led(self, x=-1, y=-1, *, name='', layout=PROG, mode=Led.STATIC):
-        """
-        Returns an LED.
+        """Returns an LED.
 
-        Args:
-            x (int): X position of LED.
-            y (int): Y position of LED.
+        Parameters
+        ----------
+        x : int
+            X position of LED, or index of LED
+            if y=-1.
+        y : int, optional
+            Y position of LED.
+        name : str, optional
+            Name of LED.
+        layout : Layout, optional
+            Layout of buttons.
+        mode : str, optional
+            Lighting mode.
 
-        Keyword Args:
-            name (str): Name of LED.
-            layout (Layout): Layout of buttons.
-            mode (str): Lighting mode.
+        Returns
+        -------
+            Led: An LED.
         """
         return Led(launchpad=self._launchpad,
                    button_names=Grid._BUTTON_NAMES,
@@ -1060,17 +1126,23 @@ class Grid(Matrix):
                   rotation=0,
                   flip_axis='',
                   region=None):
-        """
-        Returns an immutable sequence of LEDs.
+        """Returns an immutable sequence of LEDs.
 
-        Keyword Args:
-            layout (Layout): Layout of buttons.
-            mode (str): Lighting mode.
-            rotation (int): Rotation angle in degrees.
-                (Possible values: 0, 90, 180, 270, -90)
+        Parameters
+        ----------
+        layout : Layout, optional
+            Layout of buttons.
+        mode : str, optional
+            Lighting mode.
+        rotation : int, optional
+            Rotation angle in degrees. (Possible values: 0, 90, 180, 270, -90)
+        region : Region or None, optional
+            Region of LEDs on the matrix.
 
-        Yields:
-            Led: Sequence of LEDs
+        Yields
+        ------
+        Led
+            Sequence of LEDs.
         """
         if region and not isinstance(region, Region):
             raise TypeError("'region' must be of type 'Region'.")
@@ -1094,15 +1166,18 @@ class Grid(Matrix):
                 yield self.led(led_id, layout=layout, mode=mode)
 
     def buttons(self, *args, layout=PROG):
-        """
-        Returns a :class:`ButtonGroup`.
+        """Returns a ButtonGroup.
 
-        Args:
-            args (list): Button names, button IDs
-                or button XY-pairs
+        Parameters
+        ----------
+        args : list
+            Button names, button IDs or button XY-pairs.
+        layout : Layout, optional
+            Layout of buttons.
 
-        Keyword Args:
-            layout (Layout): Layout of buttons.
+        Returns
+        -------
+            ButtonGroup: Button group.
         """
         args = (args
                 if len(args) > 0

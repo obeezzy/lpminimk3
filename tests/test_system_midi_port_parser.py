@@ -1,5 +1,5 @@
 import unittest
-from lpminimk3._core.utils import SystemMidiPortParser, MidiPort
+from lpminimk3.utils import SystemMidiPortParser, MidiPort
 
 
 class TestSystemMidiPortParser(unittest.TestCase):

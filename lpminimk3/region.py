@@ -1,13 +1,11 @@
-"""
-Region of LEDs on a matrix.
+"""Region of LEDs on a matrix.
 """
 
 from abc import ABC
 
 
 class Region(ABC):
-    """
-    A collection of LEDs on a matrix.
+    """A collection of LEDs on a matrix.
     """
 
     def __len__(self):
@@ -15,19 +13,19 @@ class Region(ABC):
 
     @property
     def button_names(self):
-        """
-        Button names for region.
+        """Button names for region.
         """
         pass
 
 
 class Labeled(Region):
-    """
-    All labeled buttons on a panel.
+    """All labeled buttons on a panel.
     """
 
     @Region.button_names.getter
     def button_names(self):
+        """Button names for labeled region.
+        """
         return ['up',
                 'down',
                 'left',
