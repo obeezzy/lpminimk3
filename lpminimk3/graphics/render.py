@@ -1,9 +1,11 @@
-"""Render script for rendering texts, bitmaps and movies.
+"""Renders texts, bitmaps and movies on the Launchpad's surface.
 """
 
 import json
 import sys
-from argparse import ArgumentParser, FileType
+from argparse import (ArgumentParser,
+                      FileType,
+                      RawDescriptionHelpFormatter)
 from lpminimk3 import find_launchpads, Mode
 from lpminimk3.graphics import Text, Bitmap, Movie
 
@@ -88,6 +90,8 @@ def main(args=None):
         parser = ArgumentParser(description="Render texts, bitmaps, "
                                             "and movies on the "
                                             "Launchpad Mini MK3")
+        parser = ArgumentParser(description=__doc__,
+                                formatter_class=RawDescriptionHelpFormatter)
 
         parser.add_argument("-c",
                             type=int,
