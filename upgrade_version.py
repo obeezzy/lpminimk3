@@ -25,12 +25,11 @@ from abc import ABC, abstractmethod
 # The directory containing this file
 ROOT_DIR = pathlib.Path(__file__).parent
 RUN_FROM_SHELL = __name__ != "__main__"
-SEMVER_REGEX = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-"  # noqa
 
 
 class ValidateVersion(Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        if not re.match(SEMVER_REGEX, values):
+        if not re.match(r"^\d+\.\d+\.\d+$", values):
             raise ValueError(f"Invalid version format: {values}")
         setattr(namespace, self.dest, values)
 
@@ -319,7 +318,7 @@ def main(*, new_version=""):
                             metavar="NEW_VERSION",
                             help=("Version to upgrade to "
                                   "(format: major.minor.patch) "
-                                  f"(e.g. 0.1.2)"))
+                                  "(e.g. 0.1.2)"))
         parser.add_argument("--version",
                             action="version",
                             version="%(prog) 0.1")
