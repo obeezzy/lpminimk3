@@ -1,4 +1,9 @@
-"""Sync server for controlling connected Launchpad Mini MK3 clients.
+"""Syncs all Launchpad clients with LP Sketch.
+
+This script starts a sync server for controlling connected
+Launchpad Mini MK3 clients. All changes made with LP Sketch
+will immediately be reflected on the surface of connected
+clients if sync was successful.
 """
 
 import asyncio
@@ -6,7 +11,8 @@ import websockets
 import json
 import sys
 from collections import namedtuple
-from argparse import ArgumentParser
+from argparse import (ArgumentParser,
+                      RawDescriptionHelpFormatter)
 from functools import partial
 from lpminimk3 import find_launchpads, Mode
 from lpminimk3.graphics import Frame
@@ -44,7 +50,8 @@ def find_lps():
 
 
 def init_parser(ip, port):
-    parser = ArgumentParser(description="Sync server for lpminimk3")
+    parser = ArgumentParser(description=__doc__,
+                            formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument("-a",
                         "--all",
                         action="store_true",

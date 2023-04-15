@@ -1,6 +1,6 @@
 """Upgrades lpminimk3 version.
 
-This script updates all the files required for a version
+This script upgrades all the files required for a version
 upgrade. The files include:
     - setup.py
     - README.md
@@ -11,7 +11,9 @@ upgrade. The files include:
 This script should only be run on fresh commits so failed
 upgrades can easily be reverted.
 """
-from argparse import Action, ArgumentParser
+from argparse import (Action,
+                      ArgumentParser,
+                      RawDescriptionHelpFormatter)
 from collections import namedtuple
 import sys
 import re
@@ -22,6 +24,7 @@ from abc import ABC, abstractmethod
 
 # The directory containing this file
 ROOT_DIR = pathlib.Path(__file__).parent
+RUN_FROM_SHELL = __name__ != "__main__"
 
 
 class ValidateVersion(Action):
@@ -292,15 +295,15 @@ class PackageVersionUpgrade(Upgrade):
 def main(*, new_version=""):
     args = None
     try:
-        run_from_shell = __name__ != "__main__"
-        if run_from_shell and new_version:
+        if RUN_FROM_SHELL and new_version:
             Args = namedtuple("Args", ["u"])
             args = Args(new_version)
 
         args = args if args else sys.argv[1:]
         current_version = lpminimk3.__version__
 
-        parser = ArgumentParser(description="Upgrade lpminimk3")
+        parser = ArgumentParser(description=__doc__,
+                                formatter_class=RawDescriptionHelpFormatter)
         parser.add_argument("-u",
                             action=ValidateVersion,
                             type=str,
@@ -312,7 +315,7 @@ def main(*, new_version=""):
                             action="version",
                             version="%(prog) 0.1")
         if len(args):
-            args = (args if run_from_shell
+            args = (args if RUN_FROM_SHELL
                     else parser.parse_args(args))
             if args.u:
                 VersionUpgrade(current_version,
