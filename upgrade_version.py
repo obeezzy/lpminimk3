@@ -12,6 +12,7 @@ This script should only be run on fresh commits so failed
 upgrades can easily be reverted.
 """
 from argparse import Action, ArgumentParser
+from collections import namedtuple
 import sys
 import re
 import os
@@ -288,12 +289,18 @@ class PackageVersionUpgrade(Upgrade):
         return self
 
 
-def main(args=None):
-    args = args if args else sys.argv[1:]
+def main(*, new_version=""):
+    args = None
     try:
-        current_version = lpminimk3.__version__
-        parser = ArgumentParser(description="Upgrade lpminimk3")
+        run_from_shell = __name__ != "__main__"
+        if run_from_shell and new_version:
+            Args = namedtuple("Args", ["u"])
+            args = Args(new_version)
 
+        args = args if args else sys.argv[1:]
+        current_version = lpminimk3.__version__
+
+        parser = ArgumentParser(description="Upgrade lpminimk3")
         parser.add_argument("-u",
                             action=ValidateVersion,
                             type=str,
@@ -305,7 +312,8 @@ def main(args=None):
                             action="version",
                             version="%(prog) 0.1")
         if len(args):
-            args = parser.parse_args(args)
+            args = (args if run_from_shell
+                    else parser.parse_args(args))
             if args.u:
                 VersionUpgrade(current_version,
                                args.u).run().test()
@@ -321,4 +329,4 @@ def main(args=None):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
