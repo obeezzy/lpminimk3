@@ -129,3 +129,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 quick_init.py
+
+# Docs generated from docstrings in source
+docs/source/docstrings/
