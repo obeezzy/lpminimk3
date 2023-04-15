@@ -99,9 +99,6 @@ class VersionUpgrade(Upgrade):
 
 
 class SetupUpgrade(Upgrade):
-    def __init__(self, current_version, new_version):
-        super().__init__(current_version, new_version)
-
     @property
     def filename(self):
         return str(ROOT_DIR / "setup.py")
@@ -134,9 +131,6 @@ class SetupUpgrade(Upgrade):
 
 
 class ReadmeUpgrade(Upgrade):
-    def __init__(self, current_version, new_version):
-        super().__init__(current_version, new_version)
-
     @property
     def filename(self):
         return str(ROOT_DIR / "README.md")
@@ -169,9 +163,6 @@ class ReadmeUpgrade(Upgrade):
 
 
 class SphinxConfUpgrade(Upgrade):
-    def __init__(self, current_version, new_version):
-        super().__init__(current_version, new_version)
-
     @property
     def filename(self):
         return str(ROOT_DIR / "docs/source/conf.py")
@@ -205,9 +196,6 @@ class SphinxConfUpgrade(Upgrade):
 
 
 class SphinxIndexUpgrade(Upgrade):
-    def __init__(self, current_version, new_version):
-        super().__init__(current_version, new_version)
-
     @property
     def filename(self):
         return str(ROOT_DIR / "docs/source/index.rst")
@@ -242,9 +230,6 @@ class SphinxIndexUpgrade(Upgrade):
 
 
 class PackageVersionUpgrade(Upgrade):
-    def __init__(self, current_version, new_version):
-        super().__init__(current_version, new_version)
-
     @property
     def filename(self):
         return str(ROOT_DIR / "lpminimk3/__version__.py")
