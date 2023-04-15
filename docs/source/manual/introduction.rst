@@ -38,8 +38,8 @@ Features
 
 - Full LED control
 - Text rendering
-- Bitmap rendering
-- Movie rendering
+- Data-driven *bitmap* rendering
+- Data-driven *movie* rendering
 - Console rendering
 - Button event handling
 - Control over a network via websockets
