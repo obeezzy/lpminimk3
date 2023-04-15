@@ -25,11 +25,12 @@ from abc import ABC, abstractmethod
 # The directory containing this file
 ROOT_DIR = pathlib.Path(__file__).parent
 RUN_FROM_SHELL = __name__ != "__main__"
+SEMVER_REGEX = r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-"  # noqa
 
 
 class ValidateVersion(Action):
     def __call__(self, parser, namespace, values, option_string=None):
-        if not re.match(r"^\d+\.\d+\.\d+$", values):
+        if not re.match(SEMVER_REGEX, values):
             raise ValueError(f"Invalid version format: {values}")
         setattr(namespace, self.dest, values)
 
@@ -44,7 +45,7 @@ class Upgrade(ABC):
 
     @property
     def filename(self):
-        return self._file_to_upgrade
+        return self.filename
 
     @abstractmethod
     def run(self):
@@ -101,15 +102,14 @@ class VersionUpgrade(Upgrade):
 class SetupUpgrade(Upgrade):
     def __init__(self, current_version, new_version):
         super().__init__(current_version, new_version)
-        self._file_to_upgrade = str(ROOT_DIR / "setup.py")
 
     @property
     def filename(self):
-        return self._file_to_upgrade
+        return str(ROOT_DIR / "setup.py")
 
     def run(self):
         lines = []
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             lines = f.readlines()
 
         for index, line in enumerate(lines):
@@ -117,35 +117,34 @@ class SetupUpgrade(Upgrade):
             if m:
                 version = m.group(1)
                 self.ensure_current_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
                 lines[index] = re.sub(version, self._new_version, line)
-        with open(self._file_to_upgrade, "w") as f:
+        with open(self.filename, "w") as f:
             f.writelines(lines)
         return self
 
     def test(self):
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             for line in f.readlines():
                 m = re.match(r"\s*version=\"(.*)\"", line)
                 if m:
                     version = m.group(1)
                     self.ensure_new_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
         return self
 
 
 class ReadmeUpgrade(Upgrade):
     def __init__(self, current_version, new_version):
         super().__init__(current_version, new_version)
-        self._file_to_upgrade = str(ROOT_DIR / "README.md")
 
     @property
     def filename(self):
-        return self._file_to_upgrade
+        return str(ROOT_DIR / "README.md")
 
     def run(self):
         lines = []
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             lines = f.readlines()
 
         for index, line in enumerate(lines):
@@ -153,35 +152,34 @@ class ReadmeUpgrade(Upgrade):
             if m:
                 version = m.group(1)
                 self.ensure_current_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
                 lines[index] = re.sub(version, self._new_version, line)
-        with open(self._file_to_upgrade, "w") as f:
+        with open(self.filename, "w") as f:
             f.writelines(lines)
         return self
 
     def test(self):
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             for line in f.readlines():
                 m = re.search(r"badge\.svg\?branch=v(.*?)\)", line)
                 if m:
                     version = m.group(1)
                     self.ensure_new_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
         return self
 
 
 class SphinxConfUpgrade(Upgrade):
     def __init__(self, current_version, new_version):
         super().__init__(current_version, new_version)
-        self._file_to_upgrade = str(ROOT_DIR / "docs/source/conf.py")
 
     @property
     def filename(self):
-        return self._file_to_upgrade
+        return str(ROOT_DIR / "docs/source/conf.py")
 
     def run(self):
         lines = []
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             lines = f.readlines()
 
         for index, line in enumerate(lines):
@@ -190,35 +188,34 @@ class SphinxConfUpgrade(Upgrade):
             if m:
                 version = m.group(1)
                 self.ensure_current_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
                 lines[index] = re.sub(version, self._new_version, line)
-        with open(self._file_to_upgrade, "w") as f:
+        with open(self.filename, "w") as f:
             f.writelines(lines)
         return self
 
     def test(self):
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             for line in f.readlines():
                 m = re.match(r"^release\s*=\s*'v(.*)'$", line)
                 if m:
                     version = m.group(1)
                     self.ensure_new_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
         return self
 
 
 class SphinxIndexUpgrade(Upgrade):
     def __init__(self, current_version, new_version):
         super().__init__(current_version, new_version)
-        self._file_to_upgrade = str(ROOT_DIR / "docs/source/index.rst")
 
     @property
     def filename(self):
-        return self._file_to_upgrade
+        return str(ROOT_DIR / "docs/source/index.rst")
 
     def run(self):
         lines = []
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             lines = f.readlines()
 
         for index, line in enumerate(lines):
@@ -226,37 +223,36 @@ class SphinxIndexUpgrade(Upgrade):
             if m:
                 version = m.group(1)
                 self.ensure_current_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
                 lines[index] = re.sub(version, self._new_version, line)
 
-        with open(self._file_to_upgrade, "w") as f:
+        with open(self.filename, "w") as f:
             f.writelines(lines)
 
         return self
 
     def test(self):
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             for line in f.readlines():
                 m = re.search(r"badge\.svg\?branch=v(.*)$", line)
                 if m:
                     version = m.group(1)
                     self.ensure_new_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
         return self
 
 
 class PackageVersionUpgrade(Upgrade):
     def __init__(self, current_version, new_version):
         super().__init__(current_version, new_version)
-        self._file_to_upgrade = str(ROOT_DIR / "lpminimk3/__version__.py")
 
     @property
     def filename(self):
-        return self._file_to_upgrade
+        return str(ROOT_DIR / "lpminimk3/__version__.py")
 
     def run(self):
         lines = []
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             lines = f.readlines()
 
         for index, line in enumerate(lines):
@@ -266,19 +262,19 @@ class PackageVersionUpgrade(Upgrade):
                 major, minor, patch = m.group(1, 2, 3)
                 version = f"{major}.{minor}.{patch}"
                 self.ensure_current_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
                 major, minor, patch = (re.match(r"(\d+)\.(\d+)\.(\d+)",
                                                 self._new_version)
                                        .group(1, 2, 3))
                 lines[index] = f"VERSION = ({major}, {minor}, {patch})\n"
 
-        with open(self._file_to_upgrade, "w") as f:
+        with open(self.filename, "w") as f:
             f.writelines(lines)
 
         return self
 
     def test(self):
-        with open(self._file_to_upgrade, "r") as f:
+        with open(self.filename, "r") as f:
             for line in f.readlines():
                 m = re.match(r"VERSION\s*=\s*\(\s*(\d+),\s*(\d+),\s*(\d+)\s*\)",  # noqa
                              line)
@@ -288,11 +284,24 @@ class PackageVersionUpgrade(Upgrade):
                     patch = m.group(3)
                     version = f"{major}.{minor}.{patch}"
                     self.ensure_new_version(version,
-                                            self._file_to_upgrade)
+                                            self.filename)
         return self
 
 
 def main(*, new_version=""):
+    """Upgrades lpminimk3 version.
+
+    Parameters
+    ----------
+    new_version : str
+        Version to upgrade to.
+
+    Raises
+    ------
+    ValueError
+        If same version is set.
+        If version set does not follow the SemVer spec.
+    """
     args = None
     try:
         if RUN_FROM_SHELL and new_version:
