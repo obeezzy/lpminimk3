@@ -4,11 +4,14 @@
 import math
 import re
 from abc import ABC
-from .colors._colors import ColorShade, ColorShadeStore, RgbColor
-from .midi_messages import Colorspec,\
-                           ColorspecFragment,\
-                           Constants,\
-                           Lighting
+from .colors._colors import (ColorShade,
+                             ColorShadeStore,
+                             RgbColor)
+from .colors.web_color import WebColor
+from .midi_messages import (Colorspec,
+                            ColorspecFragment,
+                            Constants,
+                            Lighting)
 from .match import ButtonMatch
 from .utils import ButtonEvent
 from .region import Region
@@ -330,20 +333,26 @@ class _LedColor:
         if not value:
             self._message = self._create_reset_message(lighting_mode,
                                                        midi_value)
-        elif (not isinstance(value, ColorShade)
+        elif (not isinstance(value, (ColorShade, WebColor))
                 and not isinstance(value, str)
                 and not isinstance(value, int)
                 and not isinstance(value, (tuple, list))):
-            raise TypeError('Must be of type ColorShade or str '
-                            'or int or tuple or list.')
+            raise TypeError('Must be of type ColorShade, WebColor, str, '
+                            'int, tuple or list.')
         elif ((isinstance(value, str)
                 and not ColorShadeStore().contains(value)
+                and not isinstance(value, WebColor)
                 and not RgbColor.is_valid(value))
                 or (isinstance(value, (tuple, list))
                     and not RgbColor.is_valid(value))):
             raise ValueError('Invalid color.')
         elif RgbColor.is_valid(value):
             colorspec = self._create_colorspec_message(value,
+                                                       lighting_type,
+                                                       midi_value)
+            self._message = colorspec
+        elif isinstance(value, WebColor):
+            colorspec = self._create_colorspec_message(value.rgb_normalized,
                                                        lighting_type,
                                                        midi_value)
             self._message = colorspec

@@ -1,7 +1,10 @@
 import unittest
-from lpminimk3.__init__ import ButtonFace, Panel, ButtonEvent
-from lpminimk3.colors._colors import ColorPalette,\
-                                     ColorShadeStore
+from lpminimk3.__init__ import (ButtonFace,
+                                Panel,
+                                ButtonEvent)
+from lpminimk3.colors._colors import (ColorPalette,
+                                      ColorShadeStore)
+from lpminimk3.colors.web_color import WebColor
 from lpminimk3.region import Labeled
 from tests._vlpminimk3 import VirtualMidiEvent,\
                               create_virtual_launchpad
@@ -161,6 +164,7 @@ class TestLed(unittest.TestCase):
         self.lp.panel.led('up').color = '#fff'
         self.lp.panel.led('up').color = '#ff0000'
         self.lp.panel.led('up').color = (0, 0, 255)
+        self.lp.grid.led('0x0').color = WebColor("amethyst")
 
         with self.assertRaises(ValueError):
             self.lp.panel.led('up').color = '1r'

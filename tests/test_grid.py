@@ -1,9 +1,11 @@
 import unittest
-from lpminimk3.__init__ import Grid, ButtonEvent
+from lpminimk3.__init__ import (Grid,
+                                ButtonEvent)
 from lpminimk3.colors import ColorPalette
 from lpminimk3.colors._colors import ColorShadeStore
-from tests._vlpminimk3 import VirtualMidiEvent,\
-                              create_virtual_launchpad
+from lpminimk3.colors.web_color import WebColor
+from tests._vlpminimk3 import (VirtualMidiEvent,
+                               create_virtual_launchpad)
 
 
 class TestGrid(unittest.TestCase):
@@ -159,6 +161,7 @@ class TestLed(unittest.TestCase):
         self.lp.grid.led('0x0').color = '#fff'
         self.lp.grid.led('0x0').color = '#ff0000'
         self.lp.grid.led('0x0').color = (0, 0, 255)
+        self.lp.grid.led('0x0').color = WebColor("amethyst")
 
         with self.assertRaises(ValueError):
             self.lp.grid.led('0x0').color = '1r'
