@@ -1,0 +1,32 @@
+{
+    "title": "Web Color Dictionary",
+    "description": "A dictionary of web colors",
+    "type": "object",
+    "patternProperties": {
+        "[a-z_]*": {
+            "type": "object",
+            "required": [ "name", "hex", "rgb" ],
+            "properties":{
+                "name":{
+                    "description": "Name",
+                    "type": "string"
+                },
+                "hex":{
+                    "description": "Hex color",
+                    "type": "string"
+                },
+                "rgb": {
+                    "type": "array",
+                    "description": "RGB color",
+                    "minItems": 3,
+                    "maxItems": 3,
+                    "items": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255
+                    }
+                }
+            }
+        }
+    }
+}

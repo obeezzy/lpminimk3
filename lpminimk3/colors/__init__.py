@@ -2,3 +2,4 @@
 """
 
 from ._colors import ColorPalette  # noqa
+from .web_color import WebColor  # noqa
