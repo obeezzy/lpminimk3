@@ -49,11 +49,15 @@ Features
 Installation
 ============
 
-To install the most stable version of this package, run::
+To install the most stable version of this package, run:
+
+    .. code-block:: python
 
     $ pip install lpminimk3
 
-To test the installation, connect your Launchpad to your computer and run::
+To test the installation, connect your Launchpad to your computer and run:
+
+    .. code-block:: python
 
     $ python -m lpminimk3.examples.hello
 
@@ -66,7 +70,9 @@ Make sure your Launchpad is connected to the computer.
 In script
 ---------
 
-Control LEDs individually::
+Control LEDs individually:
+
+    .. code-block:: python
 
     """Display a random array of colors for 5 seconds.
     """
@@ -88,7 +94,9 @@ Control LEDs individually::
     for led in lp.panel.led_range():
         del led.color  # Turn off LED
 
-Render text on Launchpad's surface::
+Render text on Launchpad's surface:
+
+    .. code-block:: python
 
     """Scroll text from right to left across the Launchpad's surface.
     """
@@ -112,18 +120,24 @@ See more examples `here <https://github.com/obeezzy/lpminimk3/tree/main/lpminimk
 In shell
 --------
 
-Start by finding a connected device and opening the device for reading and writing::
+Start by finding a connected device and opening the device for reading and writing:
+
+    .. code-block:: bash
 
     $ python
     >>> import lpminimk3
     >>> lp = lpminimk3.find_launchpads()[0]
     >>> lp.open()
 
-Query the device to ensure we can read and write to it::
+Query the device to ensure we can read and write to it:
+
+    .. code-block:: bash
 
     >>> lp.device_inquiry()  # Query device
 
-Switch to :code:`programmer` mode to start manipulating button LEDs::
+Switch to :code:`programmer` mode to start manipulating button LEDs:
+
+    .. code-block:: bash
 
     >>> lp.mode = 'prog'  # Switch to programmer mode
     >>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
@@ -143,28 +157,38 @@ Note in the above snippet that :code:`lp.grid` only contains the **grid** button
 (i.e. the faceless white buttons) and :code:`lp.panel` contains all buttons
 (including the **logo** LED at the top right corner).  
 
-Wait for and respond to button presses and releases::
+Wait for and respond to button presses and releases:
+
+    .. code-block:: bash
 
     >>> ev = lp.panel.buttons().poll_for_event()  # Block until any button is pressed/released
     >>> ev
     ButtonEvent(button='7x5', type='press', deltatime=0.0)
 
-Or only button releases instead::
+Or only button releases instead:
+
+    .. code-block:: bash
 
     >>> ev = lp.panel.buttons().poll_for_event(type='release')  # Block until released
     >>> ev
     ButtonEvent(button='up', type='release', deltatime=0.0)
 
-Pass button names as arguments to wait for specific button events::
+Pass button names as arguments to wait for specific button events:
+
+    .. code-block:: bash
 
     >>> lp.panel.buttons('up', '0x0', 'stop').poll_for_event()
 
-Render :code:`A` on Launchpad's surface::
+Render :code:`A` on Launchpad's surface:
+
+    .. code-block:: bash
 
     >>> from lpminimk3.graphics import Text
     >>> lp.grid.render(Text('A'))
 
-Print :code:`A` in console::
+Print :code:`A` in console:
+
+    .. code-block:: bash
 
     >>> Text('A').print()
       XX    
@@ -175,6 +199,8 @@ Print :code:`A` in console::
     XX  XX  
     XX  XX  
 
-Scroll :code:`Hello, world!` on Launchpad's surface once::
+Scroll :code:`Hello, world!` on Launchpad's surface once:
+
+    .. code-block:: bash
 
     >>> lp.grid.render(Text(' Hello, world!').scroll(count=1))

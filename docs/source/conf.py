@@ -28,4 +28,5 @@ exclude_patterns = ['lpminimk3.examples.rst']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
+# -- Add root directory to PYTHONPATH
 sys.path.insert(0, os.path.abspath('../..'))

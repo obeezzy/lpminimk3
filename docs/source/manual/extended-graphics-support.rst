@@ -16,7 +16,9 @@ Once the server is running, visit the `LP Sketch <https://www.github.com/obeezzy
 Rendering bitmaps and movies
 ============================
 
-Render :code:`smiley.bitmap.json` on Launchpad's surface::
+Render :code:`smiley.bitmap.json` on Launchpad's surface:
+
+    .. code-block:: python
 
     """Render "Smiley" bitmap.
     """
@@ -31,7 +33,9 @@ Render :code:`smiley.bitmap.json` on Launchpad's surface::
     
     lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))  # Display bitmap
 
-Render :code:`ping_pong.movie.json` on Launchpad's surface::
+Render :code:`ping_pong.movie.json` on Launchpad's surface:
+
+    .. code-block:: python
 
     """Render "Ping/Pong" movie.
     """
@@ -49,10 +53,14 @@ Render :code:`ping_pong.movie.json` on Launchpad's surface::
     
     lp.grid.render(Movie("/path/to/ping_pong.movie.json").play())  # Play movie indefinitely
 
-For convenience, you can use the render script, :code:`render.py`::
+For convenience, you can use the render script, :code:`render.py`:
+
+    .. code-block:: bash
 
     $ python -m lpminimk3.graphics.render -f /path/to/bitmap/or/movie.json
 
-:code:`render.py` can be used to render text, bitmaps and movies on the Launchpad and on the console. For more options, run::
+:code:`render.py` can be used to render text, bitmaps and movies on the Launchpad and on the console. For more options, run:
+
+    .. code-block:: bash
 
     $ python -m lpminimk3.graphics.render -h
