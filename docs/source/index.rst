@@ -12,7 +12,10 @@ lpminimk3 documentation
     :alt: GitHub workflow
 .. image:: https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml/badge.svg?branch=v0.5.1
     :target: https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml
-    :alt: Github releases
+    :alt: Deployment to PyPI
+.. image:: https://readthedocs.org/projects/lpminimk3/badge/?version=latest
+    :target: https://lpminimk3.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 Python API for the `Novation Launchpad Mini MK3 <https://novationmusic.com/en/launch/launchpad-mini>`_
 
