@@ -14,7 +14,7 @@ class TestBitmap(unittest.TestCase):
         self.lp.close()
 
     def test_init(self):
-        bitmap = Bitmap(Bitmaps.SMILEY)
+        bitmap = Bitmap(Bitmaps.SOCKET)
         self.assertEqual(bitmap.word_count, 8, 'Word count mismatch.')
         self.assertListEqual([0, 0, 0, 0, 0, 0, 0, 0,
                               0, 0, 1, 1, 1, 1, 0, 0,
@@ -28,7 +28,7 @@ class TestBitmap(unittest.TestCase):
                              'Bit mismatch.')
 
     def test_fg_color(self):
-        bitmap = Bitmap(Bitmaps.SMILEY)
+        bitmap = Bitmap(Bitmaps.SOCKET)
         self.assertIsNotNone(bitmap.fg_color, 'Bitmap color is None.')
         bitmap.fg_color = 0
         bitmap.fg_color = ColorPalette.Red.SHADE_1
@@ -102,7 +102,7 @@ class TestBitmap(unittest.TestCase):
             bitmap.fg_color = 'yellow-1'
 
     def test_bg_color(self):
-        bitmap = Bitmap(Bitmaps.SMILEY)
+        bitmap = Bitmap(Bitmaps.SOCKET)
         self.assertIsNotNone(bitmap.bg_color, 'Bitmap color is None.')
         bitmap.bg_color = 0
         bitmap.bg_color = ColorPalette.Red.SHADE_1
@@ -176,13 +176,13 @@ class TestBitmap(unittest.TestCase):
             bitmap.bg_color = 'yellow-1'
 
     def test_render(self):
-        self.lp.grid.render(Bitmap(Bitmaps.SMILEY))
+        self.lp.grid.render(Bitmap(Bitmaps.SOCKET))
 
     def test_print(self):
-        Bitmap(Bitmaps.SMILEY).print()
+        Bitmap(Bitmaps.SOCKET).print()
 
     def test_swap_colors(self):
-        bitmap = Bitmap(Bitmaps.SMILEY,
+        bitmap = Bitmap(Bitmaps.SOCKET,
                         fg_color=ColorPalette.Red.SHADE_1,
                         bg_color=ColorPalette.White.SHADE_1)
 
