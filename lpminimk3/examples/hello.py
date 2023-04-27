@@ -1,4 +1,5 @@
-"""Scroll text from right to left across the Launchpad's surface.
+"""Scroll the text "Hello, world!" from right to left
+across the Launchpad's surface once.
 """
 
 import sys
@@ -12,11 +13,10 @@ def main():
 
     lp.mode = Mode.PROG  # Switch to the programmer mode
 
-    print('Watch text scroll across the Launchpad\'s surface.\n'  # noqa
-          'Press Ctrl+C to quit.\n')
+    print('Watch text scroll across the Launchpad\'s surface.\n')  # noqa
 
     try:
-        lp.grid.render(Text(' Hello, world!').scroll())
+        lp.grid.render(Text(' Hello, world!').scroll(count=1))  # Scroll text once  # noqa
     except KeyboardInterrupt:
         return 1
 
