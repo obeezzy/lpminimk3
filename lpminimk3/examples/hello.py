@@ -13,13 +13,8 @@ def main():
 
     lp.mode = Mode.PROG  # Switch to the programmer mode
 
-    print('Watch text scroll across the Launchpad\'s surface.\n')  # noqa
-
-    try:
-        lp.grid.render(Text(' Hello, world!').scroll(count=1))  # Scroll text once  # noqa
-    except KeyboardInterrupt:
-        return 1
+    lp.grid.render(Text(' Hello, world!').scroll(count=1))  # Scroll text once  # noqa
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    main()
