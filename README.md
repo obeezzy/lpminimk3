@@ -83,7 +83,7 @@ Switch to `programmer` mode to start manipulating button LEDs:
 >>> lp.mode = 'prog'  # Switch to programmer mode
 >>> lp.grid.led(0).color = 10  # Set color of LED at grid position 0 to yellow (Valid values: 0 - 127)
 >>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
->>> lp.panel.led('0x1').color = lpminimk3.colors.WebColor("amethyst")  # Set color from web colors
+>>> lp.grid.led('0x1').color = lpminimk3.colors.WebColor("amethyst")  # Set color from web colors
 >>> lp.panel.led('logo').color = 'violet'  # Set logo LED color to violet
 >>> lp.panel.led('drums').color = 'green2'  # Set 'Drums' LED color to second shade of green
 >>> lp.panel.led('stop').color = 'w1'  # Set 'Stop/Solo/Mute' LED color to first shade of white
