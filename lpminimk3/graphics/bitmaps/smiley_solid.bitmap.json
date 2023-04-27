@@ -1,64 +1,18 @@
 {
-    "title": "Pacman",
-    "description": "Pacman",
+    "title": "Solid Smiley",
+    "description": "Solid Smiley",
     "bitmap": {
         "data": [
+            60,
+            126,
+            219,
             255,
-            255,
-            239,
-            255,
-            255,
-            255,
-            255,
-            255
+            219,
+            231,
+            38,
+            60
         ],
         "config": {
-            "0x0": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "1x0": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
             "2x0": {
                 "lighting_type": "rgb",
                 "lighting_data": {
@@ -137,75 +91,6 @@
                                 127,
                                 127,
                                 0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "6x0": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "7x0": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "0x1": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
                             ]
                         }
                     },
@@ -358,29 +243,6 @@
                     }
                 }
             },
-            "7x1": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
             "0x2": {
                 "lighting_type": "rgb",
                 "lighting_data": {
@@ -427,29 +289,6 @@
                     }
                 }
             },
-            "2x2": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
             "3x2": {
                 "lighting_type": "rgb",
                 "lighting_data": {
@@ -473,7 +312,7 @@
                     }
                 }
             },
-            "5x2": {
+            "4x2": {
                 "lighting_type": "rgb",
                 "lighting_data": {
                     "on_state": {
@@ -663,9 +502,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
+                                127,
+                                127,
+                                0
                             ]
                         }
                     },
@@ -686,9 +525,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
+                                127,
+                                127,
+                                0
                             ]
                         }
                     },
@@ -709,9 +548,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
+                                127,
+                                127,
+                                0
                             ]
                         }
                     },
@@ -772,29 +611,6 @@
                     }
                 }
             },
-            "2x4": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
             "3x4": {
                 "lighting_type": "rgb",
                 "lighting_data": {
@@ -824,32 +640,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
+                                127,
+                                127,
                                 0
-                            ]
-                        }
-                    }
-                }
-            },
-            "5x4": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
                             ]
                         }
                     },
@@ -870,9 +663,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
+                                127,
+                                127,
+                                0
                             ]
                         }
                     },
@@ -893,9 +686,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
+                                127,
+                                127,
+                                0
                             ]
                         }
                     },
@@ -979,52 +772,6 @@
                     }
                 }
             },
-            "3x5": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "4x5": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
             "5x5": {
                 "lighting_type": "rgb",
                 "lighting_data": {
@@ -1054,9 +801,32 @@
                     "on_state": {
                         "color": {
                             "rgb": [
+                                127,
+                                127,
+                                0
+                            ]
+                        }
+                    },
+                    "off_state": {
+                        "color": {
+                            "rgb": [
                                 0,
                                 0,
-                                127
+                                0
+                            ]
+                        }
+                    }
+                }
+            },
+            "6x6": {
+                "lighting_type": "rgb",
+                "lighting_data": {
+                    "on_state": {
+                        "color": {
+                            "rgb": [
+                                127,
+                                127,
+                                0
                             ]
                         }
                     },
@@ -1077,32 +847,9 @@
                     "on_state": {
                         "color": {
                             "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
+                                127,
+                                127,
                                 0
-                            ]
-                        }
-                    }
-                }
-            },
-            "0x6": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
                             ]
                         }
                     },
@@ -1163,52 +910,6 @@
                     }
                 }
             },
-            "3x6": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "4x6": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
             "5x6": {
                 "lighting_type": "rgb",
                 "lighting_data": {
@@ -1218,98 +919,6 @@
                                 127,
                                 127,
                                 0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "6x6": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                127,
-                                127,
-                                0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "7x6": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "0x7": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "1x7": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
                             ]
                         }
                     },
@@ -1402,52 +1011,6 @@
                                 127,
                                 127,
                                 0
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "6x7": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
-                            ]
-                        }
-                    },
-                    "off_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                0
-                            ]
-                        }
-                    }
-                }
-            },
-            "7x7": {
-                "lighting_type": "rgb",
-                "lighting_data": {
-                    "on_state": {
-                        "color": {
-                            "rgb": [
-                                0,
-                                0,
-                                127
                             ]
                         }
                     },

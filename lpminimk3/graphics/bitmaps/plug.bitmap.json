@@ -1,20 +1,37 @@
 {
-    "title": "Socket",
-    "description": "Socket bitmap",
+    "title": "Plug",
+    "description": "Plug bitmap",
     "bitmap": {
-        "data": [0, 60, 126, 126, 126, 126, 60, 0],
+        "data": [
+            0,
+            60,
+            126,
+            126,
+            126,
+            126,
+            60,
+            0
+        ],
         "config": {
             "2x2": {
                 "lighting_type": "rgb",
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 29, 0]
+                            "rgb": [
+                                63,
+                                29,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -24,12 +41,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 0, 0]
+                            "rgb": [
+                                63,
+                                0,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -39,12 +64,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 0, 0]
+                            "rgb": [
+                                63,
+                                0,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -54,12 +87,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 29, 0]
+                            "rgb": [
+                                63,
+                                29,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -69,12 +110,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 58, 0]
+                            "rgb": [
+                                63,
+                                58,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -84,12 +133,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 63, 0]
+                            "rgb": [
+                                63,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -99,12 +156,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 29, 0]
+                            "rgb": [
+                                63,
+                                29,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -114,12 +179,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 29, 0]
+                            "rgb": [
+                                63,
+                                29,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -129,12 +202,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 58, 0]
+                            "rgb": [
+                                63,
+                                58,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -144,12 +225,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 63, 0]
+                            "rgb": [
+                                63,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -159,12 +248,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [12, 63, 0]
+                            "rgb": [
+                                12,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -174,12 +271,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 54, 0]
+                            "rgb": [
+                                63,
+                                54,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -189,12 +294,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [63, 54, 0]
+                            "rgb": [
+                                63,
+                                54,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -204,12 +317,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [12, 63, 0]
+                            "rgb": [
+                                12,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -219,12 +340,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [0, 46, 63]
+                            "rgb": [
+                                0,
+                                46,
+                                63
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -234,12 +363,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [12, 63, 0]
+                            "rgb": [
+                                12,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -249,12 +386,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [42, 63, 0]
+                            "rgb": [
+                                42,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -264,12 +409,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [42, 63, 0]
+                            "rgb": [
+                                42,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -279,12 +432,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [12, 63, 0]
+                            "rgb": [
+                                12,
+                                63,
+                                0
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -294,12 +455,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [0, 46, 63]
+                            "rgb": [
+                                0,
+                                46,
+                                63
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -309,12 +478,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [21, 4, 63]
+                            "rgb": [
+                                21,
+                                4,
+                                63
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -324,12 +501,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [0, 58, 63]
+                            "rgb": [
+                                0,
+                                58,
+                                63
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -339,12 +524,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [0, 58, 63]
+                            "rgb": [
+                                0,
+                                58,
+                                63
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
@@ -354,12 +547,20 @@
                 "lighting_data": {
                     "on_state": {
                         "color": {
-                            "rgb": [21, 4, 63]
+                            "rgb": [
+                                21,
+                                4,
+                                63
+                            ]
                         }
                     },
                     "off_state": {
                         "color": {
-                            "rgb": [0, 0, 0]
+                            "rgb": [
+                                0,
+                                0,
+                                0
+                            ]
                         }
                     }
                 }
