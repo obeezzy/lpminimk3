@@ -61,7 +61,7 @@ lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
 
-lp.grid.render(Text(' Hello, world!').scroll(count=1))  # Scroll text once
+lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text once
 ```
 See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/lpminimk3/examples).
 
@@ -132,9 +132,9 @@ XXXXXX
 XX  XX  
 XX  XX  
 ```
-Scroll `Hello, world!` on Launchpad's surface once:
+Scroll `Hello, world!` on Launchpad's surface indefinitely:
 ```python
->>> lp.grid.render(Text(' Hello, world!').scroll(count=1))
+>>> lp.grid.render(Text(' Hello, world!').scroll(count=-1))
 ```
 
 
@@ -181,9 +181,9 @@ lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
 
-lp.grid.render(Movie(Movies.PING_PONG).play(count=1))  # Play movie once
+lp.grid.render(Movie(Movies.PING_PONG).play())  # Play movie once
 # OR
-# lp.grid.render(Movie("/path/to/ping_pong.movie.json").play(count=1))
+# lp.grid.render(Movie("/path/to/ping_pong.movie.json").play())
 ```
 For convenience, you can use the render script, `render.py`:
 ```bash
