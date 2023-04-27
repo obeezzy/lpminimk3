@@ -2,7 +2,6 @@
 across the Launchpad's surface once.
 """
 
-import sys
 from lpminimk3 import Mode, find_launchpads
 from lpminimk3.graphics import Text
 
