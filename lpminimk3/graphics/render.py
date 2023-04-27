@@ -118,6 +118,7 @@ def main(args=None):
         parser.add_argument("-c",
                             type=int,
                             metavar="COUNT",
+                            default=1,
                             help="Stop after looping COUNT times")
         parser.add_argument("-f",
                             type=FileType('r', encoding='latin-1'),
