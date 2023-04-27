@@ -61,10 +61,7 @@ lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
 
-print('Watch text scroll across the Launchpad\'s surface.\n'
-      'Press Ctrl+C to quit.\n')
-
-lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text indefinitely
+lp.grid.render(Text(' Hello, world!').scroll(count=1))  # Scroll text once
 ```
 See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/lpminimk3/examples).
 
@@ -158,13 +155,16 @@ Render `smiley.bitmap.json` on Launchpad's surface:
 
 from lpminimk3 import Mode, find_launchpads
 from lpminimk3.graphics import Bitmap
+from lpminimk3.graphics.art import Bitmaps
 
 lp = find_launchpads()[0]  # Get the first available launchpad
 lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
 
-lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))  # Display bitmap
+lp.grid.render(Bitmap(Bitmaps.SMILEY))  # Display bitmap
+# OR
+# lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))  # Display bitmap
 ```
 Render `ping_pong.movie.json` on Launchpad's surface:
 ```python
@@ -173,16 +173,16 @@ Render `ping_pong.movie.json` on Launchpad's surface:
 
 from lpminimk3 import Mode, find_launchpads
 from lpminimk3.graphics import Movie
+from lpminimk3.graphics.art import Movies
 
 lp = find_launchpads()[0]  # Get the first available launchpad
 lp.open()  # Open device for reading and writing on MIDI interface (by default)
 
 lp.mode = Mode.PROG  # Switch to the programmer mode
 
-print('Watch movie played on the Launchpad\'s surface.\n'
-      'Press Ctrl+C to quit.\n')
-
-lp.grid.render(Movie("/path/to/ping_pong.movie.json").play())  # Play movie indefinitely
+lp.grid.render(Movie(Movies.PING_PONG).play(count=1))  # Play movie once
+# OR
+# lp.grid.render(Movie("/path/to/ping_pong.movie.json").play(count=1))  # Play movie once
 ```
 For convenience, you can use the render script, `render.py`:
 ```bash
