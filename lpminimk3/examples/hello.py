@@ -12,7 +12,7 @@ def main():
 
     lp.mode = Mode.PROG  # Switch to the programmer mode
 
-    lp.grid.render(Text(' Hello, world!').scroll(count=1))  # Scroll text once  # noqa
+    lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text once  # noqa
 
 
 if __name__ == '__main__':

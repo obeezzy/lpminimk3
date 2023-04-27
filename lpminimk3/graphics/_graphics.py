@@ -172,11 +172,10 @@ class Text(Renderable):
                period=.05,
                direction=ScrollDirection.LEFT,
                cycle_func=None,
-               count=None,
+               count=1,
                timeout=None):
         """Scrolls rendered text, shifting every `period` seconds in the
-        `direction` direction; scrolls indefinitely if `count` is not
-        set.
+        `direction` direction.
 
         Parameters
         ----------
@@ -192,13 +191,13 @@ class Text(Renderable):
             where `fraction` is the fraction of the scroll (ranging
             from 0 to 1) and `launchpad` is the Launchpad reference.
         count : int
-            Number of complete scrolls. Scrolls
-            indefinitely if `count` and `timeout` are not set.
+            Number of complete scrolls. Scrolls indefinitely if
+            `count` is set to -1.
         timeout : float
             Duration in seconds for scroll. Scrolls indefinitely if
-            `count` and `timeout` are not set. If both `timeout`
-            and `count` are set, the scroll will end depending on
-            which value is reached first.
+            `count` is set to -1 and `timeout` is not set. If both
+            `timeout` and `count` are set, the scroll will end
+            depending on which value is reached first.
 
         Returns
         -------
@@ -471,7 +470,7 @@ class Movie(Renderable):
         self._movie.render(matrix)
 
     def play(self, *,
-             count=None,
+             count=1,
              cycle_func=None):
         """Plays movie on the Launchpad's surface.
 
