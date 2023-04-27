@@ -1,6 +1,7 @@
 """Renders texts, bitmaps and movies on the Launchpad's surface.
 """
 
+import os
 import json
 import sys
 from argparse import (ArgumentParser,
@@ -61,15 +62,36 @@ def find_lp():
     return None
 
 
+def _find_art(tag):
+    path_prefix = os.path.dirname(os.path.realpath(__file__))
+    if tag.startswith("bitmap:"):
+        tag = tag.replace("bitmap:", "bitmaps/")
+        tag = f"{path_prefix}/{tag}.bitmap.json"
+        return tag
+    elif tag.startswith("movie:"):
+        tag = tag.replace("movie:", "movies/")
+        tag = f"{path_prefix}/{tag}.movie.json"
+        return tag
+
+    return ""
+
+
 def _render(args, *, lp=None):
-    if args.f:
-        data = json.load(args.f)
+    if args.f or args.t:
+        filename = _find_art(args.t)
+        filename = (os.path.abspath(args.f.name)
+                    if not filename
+                    else filename)
+        data = None
+        with open(filename) as f:
+            data = json.load(f)
+
         if "bitmap" in data:
-            render_bitmap(args.f.name,
+            render_bitmap(filename,
                           on_screen=args.s,
                           lp=lp)
         elif "frames" in data:
-            render_movie(args.f.name,
+            render_movie(filename,
                          on_screen=args.s,
                          count=args.c,
                          lp=lp)
@@ -104,6 +126,10 @@ def main(args=None):
         parser.add_argument("-s",
                             action="store_true",
                             help="Print to screen")
+        parser.add_argument("-t",
+                            type=str,
+                            metavar="TAG",
+                            help="Art tag")
         parser.add_argument("text",
                             nargs="?",
                             metavar="TEXT",
