@@ -81,7 +81,7 @@ MidiEvent(message=[240, 0, 32, 41, 2, 13, 14, 1, 247], deltatime=150.938086752)
 Switch to `programmer` mode to start manipulating button LEDs:
 ```python
 >>> lp.mode = 'prog'  # Switch to programmer mode
->>> lp.grid.led('0x0').color = 10  # Set color to yellow (Valid values: 0 - 127)
+>>> lp.grid.led(0).color = 10  # Set color of LED at grid position 0 to yellow (Valid values: 0 - 127)
 >>> lp.grid.led(1,0).color = lpminimk3.colors.ColorPalette.Red.SHADE_1  # Set from palette
 >>> lp.panel.led('0x1').color = lpminimk3.colors.WebColor("amethyst")  # Set color from web colors
 >>> lp.panel.led('logo').color = 'violet'  # Set logo LED color to violet
@@ -94,6 +94,7 @@ Switch to `programmer` mode to start manipulating button LEDs:
 >>> lp.panel.led('mute').color = 0  # Turn off LED
 >>> lp.panel.led('logo').reset()  # Another way to turn off LED
 >>> del lp.panel.led('stop').color  # Another way to turn off LED
+>>> lp.panel.reset()  # Turn off all LEDs
 ```
 Note in the above snippet that `lp.grid` only contains the __*grid*__ buttons
 (i.e. the translucent, faceless buttons) and `lp.panel` contains all buttons
@@ -164,7 +165,7 @@ lp.mode = Mode.PROG  # Switch to the programmer mode
 
 lp.grid.render(Bitmap(Bitmaps.SMILEY))  # Display bitmap
 # OR
-# lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))  # Display bitmap
+# lp.grid.render(Bitmap("/path/to/smiley.bitmap.json"))
 ```
 Render `ping_pong.movie.json` on Launchpad's surface:
 ```python
@@ -182,7 +183,7 @@ lp.mode = Mode.PROG  # Switch to the programmer mode
 
 lp.grid.render(Movie(Movies.PING_PONG).play(count=1))  # Play movie once
 # OR
-# lp.grid.render(Movie("/path/to/ping_pong.movie.json").play(count=1))  # Play movie once
+# lp.grid.render(Movie("/path/to/ping_pong.movie.json").play(count=1))
 ```
 For convenience, you can use the render script, `render.py`:
 ```bash
@@ -192,10 +193,6 @@ $ python -m lpminimk3.graphics.render -f /path/to/bitmap/or/movie.json
 ```bash
 $ python -m lpminimk3.graphics.render -h
 ```
-
-
-## Notes
-* Work in progress, so expect things to break!
 
 
 ## License
