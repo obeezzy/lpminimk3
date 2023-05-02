@@ -7,6 +7,8 @@ from lpminimk3.graphics import Text
 
 
 def main():
+    """Scroll text from right to left across the Launchpad's surface.
+    """
     lp = find_launchpads()[0]  # Get the first available launchpad
     lp.open()  # Open device for reading and writing on MIDI interface (by default)  # noqa
 

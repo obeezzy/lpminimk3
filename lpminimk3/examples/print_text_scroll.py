@@ -5,6 +5,8 @@ from lpminimk3.graphics import Text
 
 
 def main():
+    """Runs script.
+    """
     try:
         text_to_print = ''
         while not text_to_print:

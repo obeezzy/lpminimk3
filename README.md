@@ -5,6 +5,8 @@ Python API for the [Novation Launchpad Mini MK3](https://novationmusic.com/en/la
 [![Deployment to PyPI](https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml/badge.svg?branch=v0.6.0)](https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml)
 [![Documentation Status](https://readthedocs.org/projects/lpminimk3/badge/?version=latest)](https://lpminimk3.readthedocs.io/en/latest/?badge=latest)
 
+![image description](media/logos.gif)
+
 The goals of this project are as follows:
 * Intuitive, object-oriented design
 * Convenient for use in script and shell

@@ -1,4 +1,4 @@
-"""Random party mode with some interactivity
+"""Random party mode with some interactivity.
 
 Author: Matthew Wachter
 """
@@ -9,6 +9,8 @@ import math
 
 
 def main():  # noqa
+    """Runs script.
+    """
     lp = find_launchpads()[0]  # Get the first available launchpad
     lp.open()  # Open device for reading and writing on MIDI interface (by default)  # noqa
 

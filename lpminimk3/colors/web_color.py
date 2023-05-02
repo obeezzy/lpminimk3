@@ -4,15 +4,43 @@ This module is an abstraction over web colors. The full list
 of colors can be found on
 `Wikipedia <https://en.wikipedia.org/wiki/Lists_of_colors>`_.
 
-Example
--------
+Examples
+--------
+
 Set color of LED "0x0" to "amethyst":
->>> import lpminimk3
->>> lp = lpminimk3.find_launchpads()[0]
->>> lp.open()
->>> lp.mode = 'prog'
->>> lp.grid.led('0x0').color = lpminimk3.colors.WebColor("amethyst")
+    >>> import lpminimk3
+    >>> from lpminimk3.colors import WebColor
+    >>> lp = lpminimk3.find_launchpads()[0]
+    >>> lp.open()
+    >>> lp.mode = 'prog'
+    >>> lp.grid.led(0, 0).color = WebColor('amethyst')
+
+Print hex, RGB and name for color:
+    >>> from lpminimk3.colors import WebColor
+    >>> WebColor('magenta').hex
+    '#f0f'
+    >>> WebColor('magenta').rgb
+    (255, 0, 255)
+    >>> WebColor('magenta').name
+    'magenta'
+
+Check if color exists in color dictionary:
+    >>> from lpminimk3.colors import WebColor
+    >>> 'yellow' in WebColor.COLOR_DICT
+    True
+    >>> 'brown' in WebColor.COLOR_DICT
+    False
+    >>> 'teal' in WebColor.COLOR_DICT
+    True
+    >>> 'magenta' in WebColor.COLOR_DICT
+    True
+
+Print full details for color in color dictionary:
+    >>> from lpminimk3.colors import WebColor
+    >>> WebColor.COLOR_DICT['crimson']
+    {'name': 'Crimson', 'hex': '#dc143c', 'rgb': [220, 20, 60]}
 """
+
 
 import os
 import json
@@ -39,6 +67,10 @@ class WebColorDictionary:
         self._data = self._load(json_filename)
         schema = self._load(schema_filename)
         self._validate(self._data, schema)
+
+    def __iter__(self):
+        for color, properties in self._data.items():
+            yield {color: properties}
 
     def __contains__(self, color):
         return color in self._data
@@ -93,12 +125,12 @@ class WebColor:
     Example
     -------
     Set color of LED "0x0" to "amethyst":
-    >>> import lpminimk3
-    >>> from lpminimk3.colors import WebColor
-    >>> lp = lpminimk3.find_launchpads()[0]
-    >>> lp.open()
-    >>> lp.mode = 'prog'
-    >>> lp.grid.led('0x0').color = WebColor("amethyst")
+        >>> import lpminimk3
+        >>> from lpminimk3.colors import WebColor
+        >>> lp = lpminimk3.find_launchpads()[0]
+        >>> lp.open()
+        >>> lp.mode = 'prog'
+        >>> lp.grid.led(0, 0).color = WebColor('amethyst')
     """
 
     """Web color dictionary.
@@ -126,18 +158,27 @@ class WebColor:
         """RGB value.
         Its possible values range from 0 to 255.
         """
-        return WebColor.COLOR_DICT[self._name]['rgb']
+        return tuple(WebColor.COLOR_DICT[self._name]['rgb'])
 
     @property
     def rgb_normalized(self):
         """RGB value, normalized to work on a Launchpad.
         Its possible values range from 0 to 127.
         """
-        r, g, b = self.COLOR_DICT[self._name]['rgb']
+        r, g, b = WebColor.COLOR_DICT[self._name]['rgb']
         return (r >> 1, g >> 1, b >> 1)
 
     @property
     def hex(self):
         """Hex color.
         """
-        return self.WEB_COLOR_DICTIONARY[self._name]['hex']
+        return WebColor.COLOR_DICT[self._name]['hex']
+
+    def __repr__(self):
+        return ("WebColor("
+                f"name='{self.name}')")
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

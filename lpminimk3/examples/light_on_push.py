@@ -18,6 +18,8 @@ def handle_event(button_event):
 
 
 def main():
+    """Runs script.
+    """
     lp = find_launchpads()[0]  # Get the first available launchpad
     lp.open()  # Open device for reading and writing on MIDI interface (by default)  # noqa
 
