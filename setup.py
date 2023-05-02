@@ -10,7 +10,7 @@ README = (ROOT_DIR / "README.md").read_text()
 # This call to setup() does all the work
 setup(
     name="lpminimk3",
-    version="0.6.0",
+    version="0.6.1",
     description="Python API for the Novation Launchpad Mini MK3",
     long_description=README,
     long_description_content_type="text/markdown",
