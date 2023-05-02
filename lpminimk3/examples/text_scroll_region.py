@@ -32,8 +32,7 @@ def main():
     while True:
         try:
             lp.grid.render(Text(" Don't read this.")
-                           .scroll(count=1,
-                                   cycle_func=_cycle_func)
+                           .scroll(cycle_func=_cycle_func)
                            .rotate(-90)
                            .fg_color.set(random.randint(1, 127)))
         except KeyboardInterrupt:

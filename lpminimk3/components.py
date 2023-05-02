@@ -60,6 +60,11 @@ class Matrix(ABC):
         """
         renderable.render(self)
 
+    def reset(self):
+        """Turn off all LEDs.
+        """
+        pass
+
 
 class FlipAxis:
     """Flip axis.
@@ -1008,6 +1013,12 @@ class Panel(Matrix):
                            button_names=Panel._BUTTON_NAMES,
                            args=list(args))
 
+    def reset(self):
+        """Turns off all LEDs.
+        """
+        for led in self.led_range():
+            del led.color
+
 
 class Grid(Matrix):
     """Grid of Launchpad.
@@ -1199,3 +1210,9 @@ class Grid(Matrix):
                                    else Grid._PROG_MODE_MIDI_LAYOUT),
                            button_names=Grid._BUTTON_NAMES,
                            args=list(args))
+
+    def reset(self):
+        """Turns off all LEDs.
+        """
+        for led in self.led_range():
+            del led.color
