@@ -1,4 +1,8 @@
 """Utility classes for Launchpad Mini MK3.
+
+This module contains classes that represent the logical
+parts of the Launchpad i.e. parts that have not physical
+representation (like components).
 """
 
 import enum

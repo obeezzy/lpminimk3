@@ -34,4 +34,4 @@ Python API for the `Novation Launchpad Mini MK3 <https://novationmusic.com/en/la
    :maxdepth: 1
    :caption: API Reference
 
-   reference/lpminimk3
+   modules

@@ -1,6 +1,14 @@
 lpminimk3.examples package
 ==========================
 
+Module contents
+---------------
+
+.. automodule:: lpminimk3.examples
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -64,14 +72,6 @@ lpminimk3.examples.text\_scroll\_region module
 ----------------------------------------------
 
 .. automodule:: lpminimk3.examples.text_scroll_region
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: lpminimk3.examples
    :members:
    :undoc-members:
    :show-inheritance:

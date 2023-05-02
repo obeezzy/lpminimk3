@@ -43,3 +43,26 @@ class Labeled(Region):
                 'scene_launch_6',
                 'scene_launch_7',
                 'stop_solo_mute']
+
+
+class Custom(Region):
+    """Custom region.
+    """
+
+    def __init__(self, button_names):
+        """Constructs a region whose buttons
+        can be specified through `button_names`.
+
+        Parameters
+        ----------
+        button_names : list of str
+            List of buttons to be included
+            in region.
+        """
+        self._button_names = button_names
+
+    @Region.button_names.getter
+    def button_names(self):
+        """Button names for custom region.
+        """
+        return self._button_names

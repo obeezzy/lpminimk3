@@ -8,7 +8,7 @@ import termios
 import tty
 
 
-def getchar():
+def _getchar():
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
@@ -19,9 +19,9 @@ def getchar():
     return ch
 
 
-def render_character(lp):
+def _render_character(lp):
     while True:
-        c = getchar()
+        c = _getchar()
         if ord(c) == 0x03:
             sys.exit()
         else:
@@ -29,6 +29,8 @@ def render_character(lp):
 
 
 def main():
+    """Runs script.
+    """
     lp = find_launchpads()[0]  # Get the first available launchpad
     lp.open()  # Open device for reading and writing on MIDI interface (by default)  # noqa
 
@@ -36,7 +38,7 @@ def main():
 
     print('Press a key on your keyboard to display a character on your Launchpad.\n'  # noqa
           'Press Ctrl+C to quit.\n')
-    render_character(lp)  # Render character on Launchpad's surface
+    _render_character(lp)  # Render character on Launchpad's surface
 
 
 if __name__ == '__main__':

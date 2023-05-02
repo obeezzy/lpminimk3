@@ -4,10 +4,10 @@ This module provides a high-level abstraction for rendering
 on the Launchpad Mini MK3.
 """
 
-from ._graphics import Text,\
-                       Bitmap,\
-                       Movie,\
-                       Frame,\
-                       Renderable,\
-                       ScrollDirection,\
-                       FlipAxis  # noqa
+from ._graphics import (Text,  # noqa
+                        Bitmap,
+                        Movie,
+                        Frame,
+                        Renderable,
+                        ScrollDirection,
+                        FlipAxis)

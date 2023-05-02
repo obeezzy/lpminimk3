@@ -44,7 +44,7 @@ class Upgrade(ABC):
 
     @property
     def filename(self):
-        return self.filename
+        return ""
 
     @abstractmethod
     def run(self):
@@ -99,7 +99,7 @@ class VersionUpgrade(Upgrade):
 
 
 class SetupUpgrade(Upgrade):
-    @property
+    @Upgrade.filename.getter
     def filename(self):
         return str(ROOT_DIR / "setup.py")
 
@@ -131,7 +131,7 @@ class SetupUpgrade(Upgrade):
 
 
 class ReadmeUpgrade(Upgrade):
-    @property
+    @Upgrade.filename.getter
     def filename(self):
         return str(ROOT_DIR / "README.md")
 
@@ -163,7 +163,7 @@ class ReadmeUpgrade(Upgrade):
 
 
 class SphinxConfUpgrade(Upgrade):
-    @property
+    @Upgrade.filename.getter
     def filename(self):
         return str(ROOT_DIR / "docs/source/conf.py")
 
@@ -196,7 +196,7 @@ class SphinxConfUpgrade(Upgrade):
 
 
 class SphinxIndexUpgrade(Upgrade):
-    @property
+    @Upgrade.filename.getter
     def filename(self):
         return str(ROOT_DIR / "docs/source/index.rst")
 
@@ -230,7 +230,7 @@ class SphinxIndexUpgrade(Upgrade):
 
 
 class PackageVersionUpgrade(Upgrade):
-    @property
+    @Upgrade.filename.getter
     def filename(self):
         return str(ROOT_DIR / "lpminimk3/__version__.py")
 

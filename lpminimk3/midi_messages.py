@@ -54,17 +54,23 @@ class Constants:
     MIDI_MAX_VALUE = 0x7f
 
     class LightingMode:
+        """Lighting mode.
+        """
         OFF = 0x80
         STATIC = 0x90
         FLASH = 0x91
 
     class LightingType:
+        """Lighting type.
+        """
         STATIC = 0x00
         FLASH = 0x01
         PULSE = 0x02
         RGB = 0x03
 
     class MidiWord:
+        """MIDI word.
+        """
         NOTE_HEADER = 0x90
         CC_HEADER = 0xb0
 
