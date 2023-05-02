@@ -11,7 +11,7 @@ import sys
 project = 'lpminimk3'
 copyright = '2023, Chronic Coder'
 author = 'Chronic Coder'
-release = 'v0.6.1'
+release = 'v0.6.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
