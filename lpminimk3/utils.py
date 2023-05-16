@@ -294,7 +294,9 @@ class MidiPort:
             try:
                 raw_message = self._midi_in.get_message()
                 event = MidiEvent(*raw_message) if raw_message else None
-                logger.debug(f'MIDI event: {event}')
+                if event:
+                    logger.debug(f'MIDI event: {event}')
+
                 if event and not match:
                     polling = False
                 elif event and isinstance(match, list) and match == event.message:  # noqa
