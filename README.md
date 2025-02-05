@@ -1,5 +1,6 @@
 # lpminimk3
-Python API for the [Novation Launchpad Mini MK3](https://novationmusic.com/en/launch/launchpad-mini)
+
+Python API for the [Novation Launchpad Mini MK3](https://us.novationmusic.com/products/launchpad-mini-mk3)
 
 [![CI](https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml/badge.svg)](https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml)
 [![Deployment to PyPI](https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml/badge.svg?branch=v0.6.2)](https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml)
