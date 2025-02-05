@@ -6,8 +6,8 @@ from lpminimk3.colors._colors import (ColorPalette,
                                       ColorShadeStore)
 from lpminimk3.colors.web_color import WebColor
 from lpminimk3.region import Labeled
-from tests._vlpminimk3 import VirtualMidiEvent,\
-                              create_virtual_launchpad
+from tests._vlpminimk3 import (VirtualMidiEvent,
+                               create_virtual_launchpad)
 
 
 class TestPanel(unittest.TestCase):

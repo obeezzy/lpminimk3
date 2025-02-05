@@ -3,19 +3,19 @@ import time
 from abc import ABC
 from functools import reduce
 from ..colors._colors import ColorShade, ColorShadeStore, RgbColor
-from ._parser import GlyphDictionary,\
-                     BitmapDocument,\
-                     MovieDocument
-from ._renderer import CharacterRenderer,\
-                       BitmapRenderer,\
-                       MovieRenderer,\
-                       FrameRenderer,\
-                       TextRenderer
-from ._utils import RawBitmap,\
-                    RawBitmapMatrix,\
-                    ScrollDirection,\
-                    FlipAxis,\
-                    Offset
+from ._parser import (GlyphDictionary,
+                      BitmapDocument,
+                      MovieDocument)
+from ._renderer import (CharacterRenderer,
+                        BitmapRenderer,
+                        MovieRenderer,
+                        FrameRenderer,
+                        TextRenderer)
+from ._utils import (RawBitmap,
+                     RawBitmapMatrix,
+                     ScrollDirection,
+                     FlipAxis,
+                     Offset)
 
 
 class Renderable(ABC):

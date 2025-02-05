@@ -2,16 +2,16 @@
 """
 import os
 from ..colors import ColorPalette
-from ._renderable import Renderable,\
-                         RenderableColor,\
-                         String,\
-                         TextScroll,\
-                         MovieRoll,\
-                         Bitmap as _Bitmap,\
-                         Movie as _Movie
-from ._utils import ScrollDirection,\
-                    FlipAxis,\
-                    Framerate
+from ._renderable import (Renderable,
+                          RenderableColor,
+                          String,
+                          TextScroll,
+                          MovieRoll,
+                          Bitmap as _Bitmap,
+                          Movie as _Movie)
+from ._utils import (ScrollDirection,
+                     FlipAxis,
+                     Framerate)
 from ._renderable import Frame  # noqa
 
 
