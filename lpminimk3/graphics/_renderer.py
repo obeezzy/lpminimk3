@@ -1,7 +1,7 @@
 import time
-from ..midi_messages import Colorspec,\
-                            ColorspecFragment,\
-                            Constants
+from ..midi_messages import (Colorspec,
+                             ColorspecFragment,
+                             Constants)
 
 
 class RawBitmapRenderer:
