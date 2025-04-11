@@ -294,7 +294,6 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          MidiPort.IN,
                          "Direction mismatch.")
 
-
         # MIDI OUT port
         self.assertEqual(parser.found_clients[0].client_name,
                          "Launchpad Mini MK3",
