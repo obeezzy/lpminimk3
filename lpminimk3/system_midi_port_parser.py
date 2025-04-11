@@ -140,15 +140,14 @@ class _SystemMidiPortParserMac:
 
     def _parse(self, in_lp_ports, out_lp_ports):
         assert len(in_lp_ports) == len(out_lp_ports), "Launchpad port count mismatch"
-        assert len(self._mapped_in_ports) == len(self._mapped_out_ports), "MIDI port count mismatch"
+        assert len(self._mapped_in_ports) == len(self._mapped_out_ports), "Mapped port count mismatch"
 
         partial_client = None  # Client with only half its ports appended
         for index, (in_system_port_name, out_system_port_name) in enumerate(zip(in_lp_ports, out_lp_ports)):
             match = re.match(r'(.+\sMK3)\s(.+)$', in_system_port_name)
 
             client_number = len(self._found_clients) + 1
-            client_name = (self._unique_client_name(match.group(1),
-                                                    len(in_lp_ports) > 2)
+            client_name = (match.group(1)
                            if partial_client is None
                            else partial_client.client_name)
 
@@ -172,11 +171,6 @@ class _SystemMidiPortParserMac:
                 partial_client.ports.append(out_port_data)
                 self._found_clients.append(partial_client)
                 partial_client = None
-
-    def _unique_client_name(self, client_name, enumerate_clients=False):
-        if enumerate_clients:
-            return client_name + " " + str(len(self._found_clients) + 1)
-        return client_name
 
     @property
     def found_clients(self):

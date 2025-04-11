@@ -322,11 +322,13 @@ class TestSystemMidiPortParser(unittest.TestCase):
         os.environ["SIMULATED_OS"] = "Linux"
         out_ports = ["Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 DA 36:0",
                      "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 MI 36:1",
+                     "reface CP:reface CP MIDI 1 24:0",
                      "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 DA 38:0",
                      "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 MI 38:1",
                      ]
         in_ports = ["Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 DA 36:0",
                     "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 MI 36:1",
+                    "reface CP:reface CP MIDI 1 24:0",
                     "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 DA 38:0",
                     "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 MI 38:1"]
 
@@ -441,7 +443,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          0,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[0].port_index,
-                         2,
+                         3,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[0].system_port_name,
                          "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 DA 38:0",  # noqa
@@ -464,7 +466,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          1,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[1].port_index,
-                         3,
+                         4,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[1].system_port_name,
                          "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 MI 38:1",  # noqa
@@ -487,7 +489,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          0,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[2].port_index,
-                         2,
+                         3,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[2].system_port_name,
                          "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 DA 38:0",  # noqa
@@ -510,7 +512,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          1,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[3].port_index,
-                         3,
+                         4,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[3].system_port_name,
                          "Launchpad Mini MK3:Launchpad Mini MK3 LPMiniMK3 MI 38:1",  # noqa
@@ -523,10 +525,12 @@ class TestSystemMidiPortParser(unittest.TestCase):
         os.environ["SIMULATED_OS"] = "Darwin"
         in_ports = ["Launchpad Mini MK3 LPMiniMK3 DAW In",
                     "Launchpad Mini MK3 LPMiniMK3 MIDI In",
+                    "reface CP",
                     "Launchpad Mini MK3 LPMiniMK3 DAW In",
                     "Launchpad Mini MK3 LPMiniMK3 MIDI In"]
         out_ports = ["Launchpad Mini MK3 LPMiniMK3 DAW Out",
                      "Launchpad Mini MK3 LPMiniMK3 MIDI Out",
+                     "reface CP",
                      "Launchpad Mini MK3 LPMiniMK3 DAW Out",
                      "Launchpad Mini MK3 LPMiniMK3 MIDI Out"]
 
@@ -537,7 +541,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # DAW IN port, client 1
         self.assertEqual(parser.found_clients[0].client_name,
-                         "Launchpad Mini MK3 1",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[0].client_number,
                          1,
@@ -560,7 +564,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # DAW OUT port, client 1
         self.assertEqual(parser.found_clients[0].client_name,
-                         "Launchpad Mini MK3 1",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[0].client_number,
                          1,
@@ -583,7 +587,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # MIDI IN port, client 1
         self.assertEqual(parser.found_clients[0].client_name,
-                         "Launchpad Mini MK3 1",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[0].client_number,
                          1,
@@ -606,7 +610,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # MIDI OUT port, client 1
         self.assertEqual(parser.found_clients[0].client_name,
-                         "Launchpad Mini MK3 1",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[0].client_number,
                          1,
@@ -629,7 +633,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # DAW IN port, client 2
         self.assertEqual(parser.found_clients[1].client_name,
-                         "Launchpad Mini MK3 2",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[1].client_number,
                          2,
@@ -641,7 +645,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          1,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[0].port_index,
-                         2,
+                         3,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[0].system_port_name,
                          "Launchpad Mini MK3 LPMiniMK3 DAW In",
@@ -652,7 +656,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # DAW OUT port, client 2
         self.assertEqual(parser.found_clients[1].client_name,
-                         "Launchpad Mini MK3 2",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[1].client_number,
                          2,
@@ -664,7 +668,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          2,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[1].port_index,
-                         2,
+                         3,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[1].system_port_name,
                          "Launchpad Mini MK3 LPMiniMK3 DAW Out",
@@ -675,7 +679,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # MIDI IN port, client 2
         self.assertEqual(parser.found_clients[1].client_name,
-                         "Launchpad Mini MK3 2",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[1].client_number,
                          2,
@@ -687,7 +691,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          3,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[2].port_index,
-                         3,
+                         4,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[2].system_port_name,
                          "Launchpad Mini MK3 LPMiniMK3 MIDI In",
@@ -698,7 +702,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
 
         # MIDI OUT port, client 2
         self.assertEqual(parser.found_clients[1].client_name,
-                         "Launchpad Mini MK3 2",
+                         "Launchpad Mini MK3",
                          "Client name mismatch.")
         self.assertEqual(parser.found_clients[1].client_number,
                          2,
@@ -710,7 +714,7 @@ class TestSystemMidiPortParser(unittest.TestCase):
                          4,
                          "Port number mismatch.")
         self.assertEqual(parser.found_clients[1].ports[3].port_index,
-                         3,
+                         4,
                          "Port index mismatch.")
         self.assertEqual(parser.found_clients[1].ports[3].system_port_name,
                          "Launchpad Mini MK3 LPMiniMK3 MIDI Out",
