@@ -1,11 +1,15 @@
 """Software model and discovery functions for Launchpad Mini MK3.
 """
 from rtmidi import MidiOut, MidiIn
-from .components import Grid, Panel
-from .utils import SystemMidiPortParser, \
-                   MidiPort, MidiClient, \
-                   Interface, Mode, Layout # noqa
+from .components import (Grid,
+                         Panel)
+from .utils import (Interface,
+                    Layout,
+                    MidiClient,
+                    MidiPort,
+                    Mode)
 from .midi_messages import SysExMessages
+from .system_midi_port_parser import SystemMidiPortParser  # noqa
 
 
 class LaunchpadMiniMk3:
