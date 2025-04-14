@@ -2,12 +2,7 @@ import os
 import re
 import platform
 from collections import namedtuple
-from enum import Enum
-
-
-class MidiPort(str, Enum):
-    OUT = 'out'
-    IN = 'in'
+from .utils import MidiPort
 
 
 ClientData = namedtuple('ClientData',

@@ -1,5 +1,6 @@
 import unittest
-from lpminimk3.system_midi_port_parser import SystemMidiPortParser, MidiPort
+from lpminimk3.utils import MidiPort
+from lpminimk3.system_midi_port_parser import SystemMidiPortParser
 import os
 
 

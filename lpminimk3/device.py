@@ -331,9 +331,7 @@ def find_launchpads():
                                  port_data.port_number,
                                  port_data.port_index,
                                  port_data.system_port_name,
-                                 direction=(MidiPort.OUT
-                                            if port_data.direction == MidiPort.OUT  # noqa
-                                            else MidiPort.IN),
+                                 direction=port_data.direction,
                                  midi_out=midi_out,
                                  midi_in=midi_in)
             if port_data.direction == MidiPort.OUT:
