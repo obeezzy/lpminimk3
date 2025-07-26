@@ -315,10 +315,8 @@ def find_launchpads():
     list of LaunchpadMiniMk3
         List of found devices.
     """
-    midi_out = MidiOut()
-    out_ports = midi_out.get_ports()
-    midi_in = MidiIn()
-    in_ports = midi_in.get_ports()
+    out_ports = MidiOut().get_ports()
+    in_ports = MidiIn().get_ports()
     parser = SystemMidiPortParser(in_ports, out_ports)
 
     found_launchpads = []
@@ -327,6 +325,8 @@ def find_launchpads():
                                  client_data.client_number)
 
         for port_data in client_data.ports:
+            midi_out = MidiOut()
+            midi_in = MidiIn()
             midi_port = MidiPort(port_data.port_name,
                                  port_data.port_number,
                                  port_data.port_index,

@@ -560,7 +560,7 @@ class MidiClient:
         bool
             `True` if all ports are open, otherwise `False`.
         """
-        return all(port.is_open() for port in self.ports)
+        return any(port.is_open() for port in self.ports)
 
     def open(self, interface=Interface.MIDI):
         """Opens a MIDI port for interface `interface`.
@@ -574,7 +574,6 @@ class MidiClient:
         --------
         Interface
         """
-        self.close()
         if interface == Interface.DAW:
             self.daw_in_port.open()
             self.daw_out_port.open()
