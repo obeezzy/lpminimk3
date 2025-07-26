@@ -10,7 +10,7 @@ lpminimk3 documentation
 .. image:: https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml/badge.svg
     :target: https://github.com/obeezzy/lpminimk3/actions/workflows/main.yml
     :alt: GitHub workflow
-.. image:: https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml/badge.svg?branch=v0.6.2
+.. image:: https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml/badge.svg?branch=v0.6.3
     :target: https://github.com/obeezzy/lpminimk3/actions/workflows/deploy.yml
     :alt: Deployment to PyPI
 .. image:: https://readthedocs.org/projects/lpminimk3/badge/?version=latest
