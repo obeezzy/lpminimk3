@@ -9,7 +9,6 @@ import enum
 import time
 import re
 import platform
-from collections import namedtuple
 from . import _logging
 from .match import Match
 
@@ -561,7 +560,7 @@ class MidiClient:
         bool
             `True` if all ports are open, otherwise `False`.
         """
-        return all(port.is_open() for port in self.ports)
+        return any(port.is_open() for port in self.ports)
 
     def open(self, interface=Interface.MIDI):
         """Opens a MIDI port for interface `interface`.
@@ -575,7 +574,6 @@ class MidiClient:
         --------
         Interface
         """
-        self.close()
         if interface == Interface.DAW:
             self.daw_in_port.open()
             self.daw_out_port.open()
@@ -625,88 +623,3 @@ class MidiClient:
             raise TypeError('Must be of type MidiPort.')
         if port not in self._in_ports:
             self._in_ports.append(port)
-
-
-class SystemMidiPortParser:
-    """System-specific way of parsing MIDI port names.
-    """
-
-    def __init__(self, in_ports, out_ports):
-        lp_in_ports = list(filter(lambda port: re.search(r'Mini\s*MK3',
-                                                         port,
-                                                         re.IGNORECASE),
-                                  in_ports))
-        lp_out_ports = list(filter(lambda port: re.search(r'Mini\s*MK3',
-                                                          port,
-                                                          re.IGNORECASE),
-                                   out_ports))
-        self._found_clients = []
-        self._parse(lp_in_ports,
-                    in_ports,
-                    MidiPort.IN)
-        self._parse(lp_out_ports,
-                    out_ports,
-                    MidiPort.OUT)
-
-    def _parse(self, lp_ports, ports, direction):
-        ClientData = namedtuple('ClientData',
-                                ['client_name',
-                                 'client_number',
-                                 'ports'])
-        PortData = namedtuple('PortData',
-                              ['port_name',
-                               'port_number',
-                               'port_index',
-                               'system_port_name',
-                               'direction'])
-        for index, system_port_name in enumerate(lp_ports):
-            linux_match = re.match(r'(.+):(.+)\s(\d+):(\d+)$', system_port_name)  # noqa
-            windows_match = re.match(r'^(.+)\s\d+$', system_port_name)
-            windows_match2 = re.match(r'(.+)\s\((.+)\)\s\d+$', system_port_name)  # noqa
-            mac_match = re.match(r'(.+\sMK3)\s(.+)$', system_port_name)
-
-            client_name = ''
-            port_name = ''
-            client_number = int(index + 1)
-            port_number = int(index + 1)
-
-            if linux_match:
-                client_name = linux_match.group(1)
-                port_name = linux_match.group(2)
-                client_number = int(linux_match.group(3))
-                port_number = int(linux_match.group(4))
-            elif windows_match and not windows_match2:
-                client_name = windows_match.group(1)
-                port_name = system_port_name
-            elif windows_match2:
-                client_name = windows_match2.group(2)
-                port_name = system_port_name
-            elif mac_match:
-                client_name = mac_match.group(1)
-                port_name = system_port_name
-
-            port_index = ports.index(system_port_name)
-            port_data = PortData(port_name,
-                                 port_number,
-                                 port_index,
-                                 system_port_name,
-                                 direction)
-            existing_client_data = list(filter(lambda c: c.client_name == client_name,  # noqa
-                                        self._found_clients))
-            existing_client_data = (existing_client_data[0]
-                                    if len(existing_client_data) > 0
-                                    else None)
-            if not existing_client_data:
-                client_data = ClientData(client_name,
-                                         client_number,
-                                         [])
-                client_data.ports.append(port_data)
-                self._found_clients.append(client_data)
-            else:
-                existing_client_data.ports.append(port_data)
-
-    @property
-    def found_clients(self):
-        """Found clients.
-        """
-        return self._found_clients

@@ -1,11 +1,15 @@
 """Software model and discovery functions for Launchpad Mini MK3.
 """
 from rtmidi import MidiOut, MidiIn
-from .components import Grid, Panel
-from .utils import SystemMidiPortParser, \
-                   MidiPort, MidiClient, \
-                   Interface, Mode, Layout # noqa
+from .components import (Grid,
+                         Panel)
+from .utils import (Interface,
+                    Layout,
+                    MidiClient,
+                    MidiPort,
+                    Mode)
 from .midi_messages import SysExMessages
+from .system_midi_port_parser import SystemMidiPortParser  # noqa
 
 
 class LaunchpadMiniMk3:
@@ -311,10 +315,8 @@ def find_launchpads():
     list of LaunchpadMiniMk3
         List of found devices.
     """
-    midi_out = MidiOut()
-    out_ports = midi_out.get_ports()
-    midi_in = MidiIn()
-    in_ports = midi_in.get_ports()
+    out_ports = MidiOut().get_ports()
+    in_ports = MidiIn().get_ports()
     parser = SystemMidiPortParser(in_ports, out_ports)
 
     found_launchpads = []
@@ -323,13 +325,13 @@ def find_launchpads():
                                  client_data.client_number)
 
         for port_data in client_data.ports:
+            midi_out = MidiOut()
+            midi_in = MidiIn()
             midi_port = MidiPort(port_data.port_name,
                                  port_data.port_number,
                                  port_data.port_index,
                                  port_data.system_port_name,
-                                 direction=(MidiPort.OUT
-                                            if port_data.direction == MidiPort.OUT  # noqa
-                                            else MidiPort.IN),
+                                 direction=port_data.direction,
                                  midi_out=midi_out,
                                  midi_in=midi_in)
             if port_data.direction == MidiPort.OUT:
