@@ -135,3 +135,4 @@ format_json.sh
 
 # Docs generated from docstrings in source
 docs/source/docstrings/
+api-token.txt
