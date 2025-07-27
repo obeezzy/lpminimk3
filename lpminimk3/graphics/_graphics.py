@@ -1,7 +1,9 @@
 """Graphics API.
 """
 import os
+import time
 from ..colors import ColorPalette
+from ..utils import Mode
 from ._renderable import (Renderable,
                           RenderableColor,
                           String,
@@ -520,3 +522,53 @@ class Movie(Renderable):
         """
         self._movie.fg_color, self._movie.bg_color = self._movie.bg_color, self._movie.fg_color  # noqa
         return self
+
+
+class TextStrip:
+    """Text strip that renders words on multiple Launchpad surfaces.
+
+    Examples
+    --------
+    Render text on Launchpad surfaces:
+        >>> lps = lpminimk3.find_launchpads()
+        >>> TextStrip(*lps).render(" Hello, world!")
+
+    Scroll text on Launchpad surfaces twice:
+        >>> lps = lpminimk3.find_launchpads()
+        >>> TextStrip(*lps).scroll(" Hello, world!", count=2)
+    """
+    def __init__(self, *lps):
+        self._lps = lps
+
+    def render(self, text):
+        texts = []
+        for lp in self._lps:
+            lp.open()
+            lp.mode = Mode.PROG
+            texts.append(Text(text))
+
+        for index, lp in enumerate(self._lps):
+            lp.grid.render(texts[index].shift(index * -1 * texts[index].word_count, circular=True))
+
+    def scroll(self, text, *, count=1, period=.05):
+        texts = []
+        for lp in self._lps:
+            lp.open()
+            lp.mode = Mode.PROG
+            texts.append(Text(text))
+
+        for index, lp in enumerate(self._lps):
+            texts[index].shift(index * -1 * texts[index].word_count, circular=True)
+
+        if count < 1:
+            while True:
+                for index, lp in enumerate(self._lps):
+                    lp.grid.render(texts[index].shift(-1, circular=True))
+
+                time.sleep(period)
+        else:
+            for _ in range(len(text) * texts[0].word_count * count):
+                for index, lp in enumerate(self._lps):
+                    lp.grid.render(texts[index].shift(-1, circular=True))
+
+                time.sleep(period)
