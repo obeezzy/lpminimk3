@@ -590,7 +590,7 @@ class TextStrip:
                 lp.open()
                 lp.mode = Mode.PROG
                 texts.append(Text(text.text))
-                self._apply_option(index, texts[index])
+                self._apply_options(index, texts[index])
 
             for index, lp in enumerate(self._lps):
                 lp.grid.render(texts[index].shift(index * -1 * texts[index].word_count, circular=True))
@@ -635,7 +635,7 @@ class TextStrip:
             lp.open()
             lp.mode = Mode.PROG
             texts.append(Text(text))
-            self._apply_option(index, texts[index])
+            self._apply_options(index, texts[index])
 
         for index, lp in enumerate(self._lps):
             texts[index].shift(index * -1 * texts[index].word_count, circular=True)
@@ -685,7 +685,7 @@ class TextStrip:
         self._options[lp_index][name] = value
         return self
 
-    def _apply_option(self, lp_index, text):
+    def _apply_options(self, lp_index, text):
         if lp_index not in self._options:
             return
 
