@@ -574,7 +574,7 @@ class TextStrip:
     def scroll(self, text, *,
                count=1,
                period=.05,
-               direction=ScrollDirection.LEFT):
+               direction=ScrollDirection.LEFT):  # noqa
         """Scrolls set text on Launchpad surfaces, shifting every `period` seconds in the
         `direction` direction.
 
@@ -644,7 +644,7 @@ class TextStrip:
             for lp in self._lps:
                 lp.close()
 
-    def set_option(self, index, name, value):
+    def set_option(self, index, name, value):  # noqa
         if not isinstance(index, int):
             raise ValueError("Invalid index set")
         elif index < 0 or index >= len(self._lps):

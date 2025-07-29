@@ -2,7 +2,7 @@
 across the multiple Launchpad surfaces.
 """
 
-from lpminimk3 import Mode, find_launchpads
+from lpminimk3 import find_launchpads
 from lpminimk3.graphics import TextStrip
 import random
 
