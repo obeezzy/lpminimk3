@@ -14,7 +14,7 @@ def main():
 
     TextStrip(*lps).set_option(0, TextStrip.FG_COLOR, random.randint(1, 127)) \
                    .set_option(1, TextStrip.FG_COLOR, random.randint(1, 127)) \
-                    .render(Text((" "*len(lps)) + "Hello, world").scroll())  # Scroll text once
+                   .render(Text((" "*len(lps)) + "Hello, world").scroll())  # Scroll text once
 
 
 if __name__ == '__main__':
