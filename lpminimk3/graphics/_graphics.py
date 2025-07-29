@@ -542,12 +542,14 @@ class TextStrip:
     Examples
     --------
     Render text on Launchpad surfaces:
+        >>> from lpminimk3.graphics import Text, TextStrip
         >>> lps = lpminimk3.find_launchpads()
-        >>> TextStrip(*lps).render(" Hello, world!")
+        >>> TextStrip(*lps).render(Text(" Hello, world!"))
 
     Scroll text on Launchpad surfaces twice:
+        >>> from lpminimk3.graphics import Text, TextStrip
         >>> lps = lpminimk3.find_launchpads()
-        >>> TextStrip(*lps).scroll(" Hello, world!", count=2)
+        >>> TextStrip(*lps).render(Text(" Hello, world").scroll(count=2))
     """
     # Options
     FG_COLOR = "fg_color"
@@ -565,11 +567,6 @@ class TextStrip:
 
         text : Text
             Text to render.
-
-        Returns
-        -------
-        TextStrip
-            `TextStrip` reference.
 
         Raises
         ------
@@ -597,25 +594,20 @@ class TextStrip:
 
         return self
 
-    def _scroll(self, text, *,
-                count=1,
-                period=.05,
-                direction=ScrollDirection.LEFT):  # noqa: C901
-        """Scrolls set text on Launchpad surfaces, shifting every `period` seconds in the
-        `direction` direction.
+    def set_option(self, lp_index, name, value):  # noqa
+        """Sets an option `name` with value `value` for the Launchpad
+        at `lp_index`.
 
         Parameters
         ----------
-        text : str
-            Text to scroll.
-        period : float
-            Delay before every text render call.
-        direction : str
-            Direction of scroll, either left or right.
-                (See :class:`ScrollDirection`.)
-        count : int
-            Number of complete scrolls. Scrolls indefinitely if
-            `count` is set to -1.
+        lp_index : int
+            Index of Launchpad.
+        name : float
+            Name of option. Available options are TextStrip.FG_COLOR,
+            TextStrip.BG_COLOR, TextStrip.ROTATE, TextStrip.FLIP,
+            TextStrip.SHIFT.
+        value : str
+            Value of option.
 
         Returns
         -------
@@ -627,8 +619,37 @@ class TextStrip:
         ValueError
             When invalid value is set.
         """
-        if not isinstance(text, str):
-            raise ValueError("Invalid text set")
+        if not isinstance(lp_index, int):
+            raise ValueError("Invalid index set")
+        elif lp_index < 0 or lp_index >= len(self._lps):
+            raise ValueError("Index out of range")
+        elif not isinstance(name, str):
+            raise ValueError("Invalid name set")
+        elif name.lower() not in ["bg_color", "fg_color", "rotate", "flip", "shift"]:
+            raise ValueError(f"Invalid option '{name}'")
+
+        if lp_index not in self._options:
+            self._options[lp_index] = {}
+
+        if name.lower() == "bg_color" and not isinstance(value, (str, int)):
+            raise ValueError(f"Invalid BG color '{name}'")
+        elif name.lower() == "fg_color" and not isinstance(value, (str, int)):
+            raise ValueError(f"Invalid FG color '{name}'")
+        elif name.lower() == "rotate" and value not in [0, 90, 180, 270]:
+            raise ValueError(f"Invalid rotation angle '{name}'")
+        elif name.lower() == "flip" and value not in [FlipAxis.X, FlipAxis.Y]:
+            raise ValueError(f"Invalid flip axis '{name}'")
+        elif name.lower() == "shift" and not isinstance(value, int):
+            raise ValueError(f"Invalid shift count '{name}'")
+
+        self._options[lp_index][name] = value
+        return self
+
+    def _scroll(self, text, *,
+                count,
+                period,
+                direction):  # noqa: C901
+        assert isinstance(text, str)
 
         texts = []
         for index, lp in enumerate(self._lps):
@@ -657,33 +678,6 @@ class TextStrip:
         finally:
             for lp in self._lps:
                 lp.close()
-
-    def set_option(self, lp_index, name, value):  # noqa
-        if not isinstance(lp_index, int):
-            raise ValueError("Invalid index set")
-        elif lp_index < 0 or lp_index >= len(self._lps):
-            raise ValueError("Index out of range")
-        elif not isinstance(name, str):
-            raise ValueError("Invalid name set")
-        elif name.lower() not in ["bg_color", "fg_color", "rotate", "flip", "shift"]:
-            raise ValueError(f"Invalid option '{name}'")
-
-        if lp_index not in self._options:
-            self._options[lp_index] = {}
-
-        if name.lower() == "bg_color" and not isinstance(value, (str, int)):
-            raise ValueError(f"Invalid BG color '{name}'")
-        elif name.lower() == "fg_color" and not isinstance(value, (str, int)):
-            raise ValueError(f"Invalid FG color '{name}'")
-        elif name.lower() == "rotate" and value not in [0, 90, 180, 270]:
-            raise ValueError(f"Invalid rotation angle '{name}'")
-        elif name.lower() == "flip" and value not in [FlipAxis.X, FlipAxis.Y]:
-            raise ValueError(f"Invalid flip axis '{name}'")
-        elif name.lower() == "shift" and not isinstance(value, int):
-            raise ValueError(f"Invalid shift count '{name}'")
-
-        self._options[lp_index][name] = value
-        return self
 
     def _apply_options(self, lp_index, text):
         if lp_index not in self._options:
