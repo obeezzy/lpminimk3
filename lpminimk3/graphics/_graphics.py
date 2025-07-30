@@ -1,7 +1,9 @@
 """Graphics API.
 """
 import os
+import time
 from ..colors import ColorPalette
+from ..utils import Mode
 from ._renderable import (Renderable,
                           RenderableColor,
                           String,
@@ -48,9 +50,9 @@ class Text(Renderable):
                  fg_color=ColorPalette.Red.SHADE_4,
                  bg_color=None):
         if isinstance(text, Text):
-            text = text.text
             fg_color = text.fg_color
             bg_color = text.bg_color
+            text = text.text
         elif not isinstance(text, str):
             raise TypeError('Must be of type str.')
 
@@ -101,6 +103,18 @@ class Text(Renderable):
     @bg_color.setter
     def bg_color(self, color):
         self._string.bg_color = RenderableColor(self, color)
+
+    @property
+    def text(self):
+        """Text.
+        """
+        return self._text
+
+    @property
+    def string(self):
+        """String instance.
+        """
+        return self._string
 
     def print(self, one='X', zero=' '):
         """Prints text to the screen as bits, used to give a preview of
@@ -520,3 +534,162 @@ class Movie(Renderable):
         """
         self._movie.fg_color, self._movie.bg_color = self._movie.bg_color, self._movie.fg_color  # noqa
         return self
+
+
+class TextStrip:
+    """Text strip that renders words on multiple Launchpad surfaces.
+
+    Examples
+    --------
+    Render text on Launchpad surfaces:
+        >>> from lpminimk3.graphics import Text, TextStrip
+        >>> lps = lpminimk3.find_launchpads()
+        >>> TextStrip(*lps).render(Text(" Hello, world!"))
+
+    Scroll text on Launchpad surfaces twice:
+        >>> from lpminimk3.graphics import Text, TextStrip
+        >>> lps = lpminimk3.find_launchpads()
+        >>> TextStrip(*lps).render(Text(" Hello, world").scroll(count=2))
+    """
+    # Options
+    FG_COLOR = "fg_color"
+    BG_COLOR = "bg_color"
+    ROTATE = "rotate"
+    FLIP = "flip"
+    SHIFT = "shift"
+
+    def __init__(self, *lps, options={}):
+        self._lps = lps
+        self._options = options
+
+    def render(self, text):
+        """Render text on Launchpad surfaces.
+
+        text : Text
+            Text to render.
+
+        Raises
+        ------
+        ValueError
+            When invalid value is set.
+        """
+        if not isinstance(text, Text):
+            raise ValueError("Not a Text")
+
+        if text.string.text_scroll:
+            self._scroll(text.text,
+                         count=text.string.text_scroll.count,
+                         period=text.string.text_scroll.period,
+                         direction=text.string.text_scroll.direction)
+        else:
+            texts = []
+            for index, lp in enumerate(self._lps):
+                lp.open()
+                lp.mode = Mode.PROG
+                texts.append(Text(text.text))
+                self._apply_options(index, texts[index])
+
+            for index, lp in enumerate(self._lps):
+                lp.grid.render(texts[index].shift(index * -1 * texts[index].word_count, circular=True))
+
+        return self
+
+    def set_option(self, lp_index, name, value):  # noqa
+        """Sets an option `name` with value `value` for the Launchpad
+        at `lp_index`.
+
+        Parameters
+        ----------
+        lp_index : int
+            Index of Launchpad.
+        name : float
+            Name of option. Available options are TextStrip.FG_COLOR,
+            TextStrip.BG_COLOR, TextStrip.ROTATE, TextStrip.FLIP,
+            TextStrip.SHIFT.
+        value : str
+            Value of option.
+
+        Returns
+        -------
+        TextStrip
+            `TextStrip` reference.
+
+        Raises
+        ------
+        ValueError
+            When invalid value is set.
+        """
+        if not isinstance(lp_index, int):
+            raise ValueError("Invalid index set")
+        elif lp_index < 0 or lp_index >= len(self._lps):
+            raise ValueError("Index out of range")
+        elif not isinstance(name, str):
+            raise ValueError("Invalid name set")
+        elif name.lower() not in ["bg_color", "fg_color", "rotate", "flip", "shift"]:
+            raise ValueError(f"Invalid option '{name}'")
+
+        if lp_index not in self._options:
+            self._options[lp_index] = {}
+
+        if name.lower() == "bg_color" and not isinstance(value, (str, int)):
+            raise ValueError(f"Invalid BG color '{name}'")
+        elif name.lower() == "fg_color" and not isinstance(value, (str, int)):
+            raise ValueError(f"Invalid FG color '{name}'")
+        elif name.lower() == "rotate" and value not in [0, 90, 180, 270]:
+            raise ValueError(f"Invalid rotation angle '{name}'")
+        elif name.lower() == "flip" and value not in [FlipAxis.X, FlipAxis.Y]:
+            raise ValueError(f"Invalid flip axis '{name}'")
+        elif name.lower() == "shift" and not isinstance(value, int):
+            raise ValueError(f"Invalid shift count '{name}'")
+
+        self._options[lp_index][name] = value
+        return self
+
+    def _scroll(self, text, *,
+                count,
+                period,
+                direction):  # noqa: C901
+        assert isinstance(text, str)
+
+        texts = []
+        for index, lp in enumerate(self._lps):
+            lp.open()
+            lp.mode = Mode.PROG
+            texts.append(Text(text))
+            self._apply_options(index, texts[index])
+
+        for index, lp in enumerate(self._lps):
+            texts[index].shift(index * -1 * texts[index].word_count, circular=True)
+
+        direction_polarity = -1 if ScrollDirection.LEFT else 1
+        try:
+            if count < 1:
+                while True:
+                    for index, lp in enumerate(self._lps):
+                        lp.grid.render(texts[index].shift(direction_polarity, circular=True))
+
+                    time.sleep(period)
+            else:
+                for _ in range(len(text) * texts[0].word_count * count):
+                    for index, lp in enumerate(self._lps):
+                        lp.grid.render(texts[index].shift(direction_polarity, circular=True))
+
+                    time.sleep(period)
+        finally:
+            for lp in self._lps:
+                lp.close()
+
+    def _apply_options(self, lp_index, text):
+        if lp_index not in self._options:
+            return
+
+        if "bg_color" in self._options[lp_index]:
+            text.bg_color = self._options[lp_index]["bg_color"]
+        if "fg_color" in self._options[lp_index]:
+            text.fg_color = self._options[lp_index]["fg_color"]
+        if "rotate" in self._options[lp_index]:
+            text.rotate(self._options[lp_index]["rotate"])
+        if "flip" in self._options[lp_index]:
+            text.flip(self._options[lp_index]["flip"])
+        if "shift" in self._options[lp_index]:
+            text.shift(self._options[lp_index]["shift"])

@@ -10,4 +10,5 @@ from ._graphics import (Text,  # noqa
                         Frame,
                         Renderable,
                         ScrollDirection,
-                        FlipAxis)
+                        FlipAxis,
+                        TextStrip)

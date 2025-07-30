@@ -1,0 +1,21 @@
+"""Scroll the text "Hello, world!" from right to left
+across the multiple Launchpad surfaces.
+"""
+
+from lpminimk3 import find_launchpads
+from lpminimk3.graphics import Text, TextStrip
+import random
+
+
+def main():
+    """Scroll text from right to left across multiple Launchpad surfaces.
+    """
+    lps = find_launchpads()  # Get all launchpads
+
+    TextStrip(*lps).set_option(0, TextStrip.FG_COLOR, random.randint(1, 127)) \
+                   .set_option(1, TextStrip.FG_COLOR, random.randint(1, 127)) \
+                   .render(Text((" "*len(lps)) + "Hello, world").scroll())  # Scroll text once
+
+
+if __name__ == '__main__':
+    main()

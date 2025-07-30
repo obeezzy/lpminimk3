@@ -66,6 +66,20 @@ lp.mode = Mode.PROG  # Switch to the programmer mode
 
 lp.grid.render(Text(' Hello, world!').scroll())  # Scroll text once
 ```
+
+Render text on multiple Launchpad surfaces:
+```python
+"""Scroll text from right to left across multiple Launchpad surfaces.
+"""
+
+from lpminimk3 import find_launchpads
+from lpminimk3.graphics import Text, TextStrip
+
+lps = find_launchpads()  # Get the all available launchpads
+left_padding = " "*len(lps)  # Create left padding so text scrolls in
+TextStrip(*lps).render(Text(left_padding + 'Hello, world!').scroll())  # Scroll text once
+```
+
 See more examples [here](https://github.com/obeezzy/lpminimk3/tree/main/lpminimk3/examples).
 
 ### In shell
@@ -140,6 +154,13 @@ Scroll `Hello, world!` on Launchpad's surface indefinitely:
 >>> lp.grid.render(Text(' Hello, world!').scroll(count=-1))
 ```
 
+Scroll `Hello, world!` on multiple Launchpad surfaces twice:
+```python
+>>> from lpminimk3.graphics import TextStrip
+>>> lps = find_launchpads()
+>>> left_padding = " "*len(lps)  # Create left padding so text scrolls in
+>>> TextStrip(*lps).render(Text(left_padding + 'Hello, world!').scroll(count=2))
+```
 
 ## Extended graphics support
 `lpminimk3` is also capable of rendering graphics from _**bitmaps**_ and _**movies**_. These are JSON files that describe the rendering data in a high-level format. Data in these files are grouped as _**frames**_. A **frame** is a sequence of bits and their color configurations. A **bitmap** file consists of a single frame while a **movie** file consists of a sequence of frames. 
