@@ -156,7 +156,7 @@ Scroll `Hello, world!` on Launchpad's surface indefinitely:
 
 Scroll `Hello, world!` on multiple Launchpad surfaces twice:
 ```python
->>> from lpminimk3.graphics import Text, TextStrip
+>>> from lpminimk3.graphics import TextStrip
 >>> lps = find_launchpads()
 >>> left_padding = " "*len(lps)  # Create left padding so text scrolls in
 >>> TextStrip(*lps).render(Text(left_padding + 'Hello, world!').scroll(count=2))
