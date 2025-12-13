@@ -64,9 +64,9 @@ class ButtonEvent:
     RELEASE = 'release'
     PRESS_RELEASE = 'press_release'
 
-    def __init__(self, midi_event, buttons):
+    def __init__(self, midi_event, button):
         self._midi_event = midi_event
-        self._button = self._determine_button(midi_event, buttons)
+        self._button = button
 
     def __eq__(self, other):
         if not isinstance(other, ButtonEvent):
@@ -74,6 +74,9 @@ class ButtonEvent:
         return self.midi_event == other.midi_event
 
     def __repr__(self):
+        return str(self)
+
+    def __str__(self):
         return ("ButtonEvent("
                 f"button='{self.button.name}', "
                 f"type='{self.type}', "
@@ -108,14 +111,6 @@ class ButtonEvent:
                 and len(self._midi_event.message) == 3
                 and self._midi_event.message[2] == 0x0
                 else ButtonEvent.PRESS)
-
-    def _determine_button(self, midi_event, buttons):
-        found_buttons = (list(filter(lambda b: b.midi_value == midi_event.message[1], buttons))  # noqa
-                         if midi_event and midi_event.message and len(midi_event.message) == 3  # noqa
-                         else None)
-        return (found_buttons[0]
-                if found_buttons and len(found_buttons)
-                else None)
 
 
 class MidiPort:

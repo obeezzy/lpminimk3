@@ -25,7 +25,9 @@ class RawBitmapRenderer:
                                                    flip_axis=self._flip_axis),
                             self._raw_bitmap):
             bit_config = self._raw_bitmap.config[led.name]
-            lighting_type = bit_config.lighting_type
+            lighting_type = (Constants.LightingType.RGB
+                             if len(self._fg_color.rgb) or len(self._bg_color.rgb)
+                             else bit_config.lighting_type)
             led_index = led.midi_value
             lighting_data = self._determine_lighting_data(bit_config,
                                                           bit,
@@ -55,15 +57,32 @@ class RawBitmapRenderer:
         else:
             fg_color_id = fg_color.color_id if fg_color else 0
             bg_color_id = bg_color.color_id if bg_color else 0
-            on_state = ([config.lighting_data.on_state.color.id]
-                        if config.lighting_data
-                        else [fg_color_id])
-            off_state = ([config.lighting_data.off_state.color.id]
-                         if config.lighting_data
-                         else [bg_color_id])
-            lighting_data = (on_state
-                             if bit
-                             else off_state)
+            fg_color_rgb = fg_color.rgb if fg_color else []
+            bg_color_rgb = bg_color.rgb if bg_color else []
+
+            assert isinstance(fg_color_id, int)
+            assert isinstance(bg_color_id, int)
+            assert isinstance(fg_color_rgb, list)
+            assert isinstance(bg_color_rgb, list)
+
+            if len(fg_color_rgb) or len(bg_color_rgb):
+                on_state = fg_color_rgb
+                off_state = ([config.lighting_data.off_state.color.id]
+                             if config.lighting_data
+                             else bg_color_rgb)
+                lighting_data = (on_state
+                                 if bit
+                                 else off_state)
+            else:
+                on_state = ([config.lighting_data.on_state.color.id]
+                            if config.lighting_data
+                            else [fg_color_id])
+                off_state = ([config.lighting_data.off_state.color.id]
+                             if config.lighting_data
+                             else [bg_color_id])
+                lighting_data = (on_state
+                                 if bit
+                                 else off_state)
         return lighting_data
 
 

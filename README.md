@@ -158,8 +158,11 @@ Scroll `Hello, world!` on multiple Launchpad surfaces twice:
 ```python
 >>> from lpminimk3.graphics import TextStrip
 >>> lps = find_launchpads()
->>> left_padding = " "*len(lps)  # Create left padding so text scrolls in
->>> TextStrip(*lps).render(Text(left_padding + 'Hello, world!').scroll(count=2))
+>>> left_padding = " " * len(lps)  # Create left padding so text scrolls in
+>>> TextStrip(*lps) \
+    .set_option(0, TextStrip.FG_COLOR, random.randint(1, 127)) \
+    .set_option(1, TextStrip.FG_COLOR, random.randint(1, 127)) \
+    .render(Text(left_padding + 'Hello, world!').scroll(count=2))
 ```
 
 ## Extended graphics support

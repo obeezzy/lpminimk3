@@ -36,6 +36,8 @@ class RenderableColor:
         self._renderable = renderable
         self._value = value
         self._validate(value)
+        #self._color_id = 0
+        self._rgb = []
 
     def __repr__(self):
         return f'RenderableColor({self._value})'
@@ -44,8 +46,13 @@ class RenderableColor:
     def color_id(self):
         return self._color_id
 
+    @property
+    def rgb(self):
+        return self._rgb
+
     def set(self, value):
         self._validate(value)
+        self._value = value
         return self._renderable
 
     def _validate(self, value):
@@ -64,7 +71,10 @@ class RenderableColor:
                     and not RgbColor.is_valid(value))):
             raise ValueError('Invalid color.')
         elif RgbColor.is_valid(value):
-            self._rgb_color = RgbColor(value)
+            rgb_color = RgbColor(value)
+            self._rgb = [rgb_color.r,
+                         rgb_color.g,
+                         rgb_color.b]
         else:
             self._color_id = self._determine_color_id(value)
 
@@ -180,6 +190,18 @@ class TextScroll:
         self._cycle_func = cycle_func
         self._timeout = -1 if not timeout else timeout
         self._count = -1 if not count else count
+
+    @property
+    def count(self):
+        return self._count
+
+    @property
+    def period(self):
+        return self._period
+
+    @property
+    def direction(self):
+        return self._direction
 
     def render(self, string, matrix):
         TextRenderer(self._text,
