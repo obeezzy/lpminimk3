@@ -36,7 +36,7 @@ class RenderableColor:
         self._renderable = renderable
         self._value = value
         self._validate(value)
-        #self._color_id = 0
+        # self._color_id = 0
         self._rgb = []
 
     def __repr__(self):

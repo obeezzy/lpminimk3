@@ -11,9 +11,9 @@ HEAD_COLOR = 100     # bright color for head
 TICK = 0.18          # movement speed (seconds per step)
 
 # Side buttons for movement
-BTN_UP    = ("up",    (0, -1))
-BTN_DOWN  = ("down",  (0, 1))
-BTN_LEFT  = ("left",  (-1, 0))
+BTN_UP = ("up",    (0, -1))
+BTN_DOWN = ("down",  (0, 1))
+BTN_LEFT = ("left",  (-1, 0))
 BTN_RIGHT = ("right", (1, 0))
 CONTROLS = [BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT]
 BUTTON_NAMES = list(map(lambda direction: direction[0], CONTROLS))
@@ -22,7 +22,7 @@ BUTTON_NAMES = list(map(lambda direction: direction[0], CONTROLS))
 # Side button map
 def read_direction(lp):
     """Returns new direction if a control button is pressed.
-    
+
     Parameters
     ----------
     lp : object
@@ -44,7 +44,7 @@ def read_direction(lp):
 
 def spawn_apple(snake):
     """Places an apple somewhere not on the snake.
-    
+
     Parameters
     ----------
     snake : tuple
@@ -58,7 +58,7 @@ def spawn_apple(snake):
 
 def draw_board(lp, snake, apple):
     """Draws everything onto the Launchpad.
-    
+
     Parameters
     ----------
     lp : object
@@ -85,7 +85,7 @@ def draw_board(lp, snake, apple):
 
 def game_over_animation(lp):
     """Flashes the board red for game over.
-    
+
     Parameters
     ----------
     lp : object
@@ -102,7 +102,7 @@ def game_over_animation(lp):
 
 def run_snake(lp):
     """Runs the snake game.
-    
+
     Parameters
     ----------
     lp : object
@@ -164,7 +164,7 @@ def bid_farewell():
 
 def illuminate_controls(lp):
     """Illuminates the controls used to play the snake game.
-    
+
     Parameters
     ----------
     lp : object

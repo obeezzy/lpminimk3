@@ -515,7 +515,6 @@ class ButtonGroup:
                 if found_buttons and len(found_buttons)
                 else None)
 
-
     def clear_event_queue(self, *, interface='midi'):
         """Clears event queue.
 
