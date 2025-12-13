@@ -502,8 +502,17 @@ class ButtonGroup:
                                                     timeout=timeout,
                                                     match=ButtonMatch(self._buttons,  # noqa
                                                                       type))  # noqa
-        return (ButtonEvent(midi_event, self._buttons)
-                if midi_event
+        button = self._determine_button(midi_event, self._buttons)
+        return (ButtonEvent(midi_event, button)
+                if midi_event and button
+                else None)
+
+    def _determine_button(self, midi_event, buttons):
+        found_buttons = (list(filter(lambda b: b.midi_value == midi_event.message[1], buttons))  # noqa
+                         if midi_event and midi_event.message and len(midi_event.message) == 3  # noqa
+                         else None)
+        return (found_buttons[0]
+                if found_buttons and len(found_buttons)
                 else None)
 
     def clear_event_queue(self, *, interface='midi'):
